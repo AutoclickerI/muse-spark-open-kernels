@@ -1,0 +1,209 @@
+{
+  "production": {
+    "sha256": "82a94d2559d586d817efafbfc540f417f54551c2e31b5d2cfec391091ddccff3",
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "cc": "12.0",
+    "prepare_s": 39.861603423953056,
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "dynamic state contract: requires changed-unit/H200 checks"
+      }
+    ],
+    "TASK_cases": 13,
+    "captured_shapes": 12
+  },
+  "production_forced": {
+    "sha256": "82a94d2559d586d817efafbfc540f417f54551c2e31b5d2cfec391091ddccff3",
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "cc": "12.0",
+    "prepare_s": 95.7507838710444,
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "dynamic state contract: requires changed-unit/H200 checks"
+      }
+    ],
+    "TASK_cases": 13,
+    "captured_shapes": 12
+  },
+  "forced_lab": {
+    "TASK_checks": 3456,
+    "failures": 0,
+    "elapsed_s": 562.27,
+    "source": "out/receipt_forced.txt",
+    "note": "same native CUDA and Triton bodies; later helper namespace rename and packet-resource metadata have independent production/static verification"
+  },
+  "payload_static": {
+    "file": "/home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/stream_continuity/extend/lab_owned.py",
+    "sha256": "19d47994f8a2e07fb908a592dc7fb111be5eb85a80abde46df8232d21ed8bf85",
+    "tier": "static",
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "no literal prepare state contract"
+      }
+    ]
+  },
+  "native_cuda_units": 39,
+  "native_triton_builds": 25,
+  "production_fixed": {
+    "sha256": "520e69418ba171df9c49f8c8795c4f5c21fa1bd45123923986c80b0b20a1977b",
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "cc": "12.0",
+    "prepare_s": 32.385049022966996,
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "dynamic state contract: requires changed-unit/H200 checks"
+      }
+    ],
+    "TASK_cases": 13,
+    "captured_shapes": 12
+  },
+  "sass_witnesses": 146,
+  "wide_glue": [
+    {
+      "arm": "base",
+      "source_sha256": "3bed407e2d3442cb1257053b90a048fcd57fe0c63c4c74a5fbf630628e938f9b",
+      "eager": true,
+      "capture": true,
+      "marker": 1,
+      "max_dynamic_smem": 65536
+    },
+    {
+      "arm": "unrenamed",
+      "returncode": 1,
+      "max_dynamic_smem": 49152,
+      "marker": 0.0
+    },
+    {
+      "arm": "changed",
+      "source_sha256": "05f51d921a2adc374b9e8b5c9f69836faabcd9635e84b791235a14e5fa04f010",
+      "eager": true,
+      "capture": true,
+      "marker": 3,
+      "max_dynamic_smem": 65536
+    }
+  ],
+  "exact_lab_before_OL_host_fix": {
+    "TASK_checks": 3456,
+    "failures": 0,
+    "elapsed_s": 146.82,
+    "source": "out/receipt_normal.txt",
+    "note": "All final consumer math; OL host path separately fixed and exercised with64KiB native marker glue. The archived first H200 attempt fails before samples."
+  },
+  "H200": {
+    "completed_job": "73d2d80dd74848b7",
+    "TASK_checks": 3456,
+    "all_pass": true,
+    "elapsed_s": 555.0,
+    "A_A_native_fingerprint_identical": true,
+    "setup_failure_job": "724e9b8d8e1b4713",
+    "setup_failure_has_measurements": false
+  }
+}

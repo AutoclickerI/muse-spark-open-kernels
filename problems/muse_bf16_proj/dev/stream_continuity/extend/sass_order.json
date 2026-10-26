@@ -1,0 +1,4479 @@
+[
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl8route_clILi2ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "acquires": [
+      {
+        "wait": "0210",
+        "preloads": [
+          [
+            "01c0",
+            "@!P0 LDG.E.128.STRONG.SM R8, desc[UR14][R16.64]"
+          ],
+          [
+            "01e0",
+            "@!P1 LDG.E.128.STRONG.SM R12, desc[UR14][R18.64]"
+          ]
+        ],
+        "count": 2,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl8route_clILi4ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "acquires": [
+      {
+        "wait": "01c0",
+        "preloads": [
+          [
+            "0190",
+            "@!P1 LDG.E.128.STRONG.SM R8, desc[UR10][R12.64]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 3,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl8route_clILi8ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "acquires": [
+      {
+        "wait": "01c0",
+        "preloads": [
+          [
+            "0190",
+            "@!P1 LDG.E.128.STRONG.SM R8, desc[UR10][R12.64]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 3,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl8route_clILi8ELi128EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "acquires": [
+      {
+        "wait": "0180",
+        "preloads": [
+          [
+            "0140",
+            "@!P4 LDG.E.128.STRONG.SM R16, desc[UR10][R6.64]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 3,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl8route_clILi16ELi128EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "acquires": [
+      {
+        "wait": "0180",
+        "preloads": [
+          [
+            "0140",
+            "@!P4 LDG.E.128.STRONG.SM R16, desc[UR10][R6.64]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 3,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi2ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0520",
+        "preloads": [
+          [
+            "02a0",
+            "LDG.E.128.CONSTANT R16, desc[UR6][R118.64]"
+          ],
+          [
+            "0340",
+            "@P0 LDG.E.128.STRONG.SM R4, desc[UR6][R8.64]"
+          ],
+          [
+            "0360",
+            "@P0 LDG.E.128.STRONG.SM R76, desc[UR6][R10.64]"
+          ],
+          [
+            "0380",
+            "@P0 LDG.E.128.STRONG.SM R72, desc[UR6][R12.64]"
+          ],
+          [
+            "03a0",
+            "@P0 LDG.E.128.STRONG.SM R68, desc[UR6][R14.64]"
+          ],
+          [
+            "03e0",
+            "LDG.E.128.STRONG.SM R64, desc[UR6][R64.64]"
+          ]
+        ],
+        "count": 17,
+        "global_loads": 17,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi2ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0350",
+        "preloads": [
+          [
+            "0290",
+            "LDGSTS.E.BYPASS.128 [R13], desc[UR6][R4.64]"
+          ],
+          [
+            "02c0",
+            "LDGSTS.E.BYPASS.128 [R13+0x1000], desc[UR6][R6.64]"
+          ],
+          [
+            "02e0",
+            "LDGSTS.E.BYPASS.128 [R13+0x2000], desc[UR6][R8.64]"
+          ],
+          [
+            "0310",
+            "@P0 LDGSTS.E.BYPASS.128 [R13+0x3000], desc[UR6][R10.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi2ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0530",
+        "preloads": [
+          [
+            "02a0",
+            "LDG.E.128.CONSTANT R16, desc[UR6][R118.64]"
+          ],
+          [
+            "0330",
+            "@P0 LDG.E.128.STRONG.SM R68, desc[UR6][R14.64]"
+          ],
+          [
+            "0350",
+            "@P0 LDG.E.128.STRONG.SM R4, desc[UR6][R8.64]"
+          ],
+          [
+            "0370",
+            "@P0 LDG.E.128.STRONG.SM R76, desc[UR6][R10.64]"
+          ],
+          [
+            "0390",
+            "@P0 LDG.E.128.STRONG.SM R72, desc[UR6][R12.64]"
+          ],
+          [
+            "03d0",
+            "LDG.E.128.STRONG.SM R64, desc[UR6][R64.64]"
+          ]
+        ],
+        "count": 17,
+        "global_loads": 17,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi2ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0360",
+        "preloads": [
+          [
+            "0290",
+            "LDGSTS.E.BYPASS.128 [R13], desc[UR6][R4.64]"
+          ],
+          [
+            "02c0",
+            "LDGSTS.E.BYPASS.128 [R13+0x1000], desc[UR6][R6.64]"
+          ],
+          [
+            "02e0",
+            "LDGSTS.E.BYPASS.128 [R13+0x2000], desc[UR6][R8.64]"
+          ],
+          [
+            "0310",
+            "@P0 LDGSTS.E.BYPASS.128 [R13+0x3000], desc[UR6][R10.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi2ELi512ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0330",
+        "preloads": [
+          [
+            "0200",
+            "LDG.E.128.CONSTANT R36, desc[UR4][R60.64]"
+          ],
+          [
+            "0230",
+            "@P0 LDG.E.128.STRONG.SM R48, desc[UR4][R4.64]"
+          ],
+          [
+            "0260",
+            "@P0 LDG.E.128.STRONG.SM R8, desc[UR4][R6.64]"
+          ],
+          [
+            "02a0",
+            "LDG.E.128.STRONG.SM R12, desc[UR4][R12.64]"
+          ],
+          [
+            "02c0",
+            "LDG.E.128.STRONG.SM R16, desc[UR4][R16.64]"
+          ],
+          [
+            "02e0",
+            "LDG.E.128.STRONG.SM R24, desc[UR4][R24.64]"
+          ]
+        ],
+        "count": 9,
+        "global_loads": 9,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi2ELi512ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "02b0",
+        "preloads": [
+          [
+            "01a0",
+            "LDGSTS.E.BYPASS.128 [R2], desc[UR4][R4.64]"
+          ],
+          [
+            "01e0",
+            "LDGSTS.E.BYPASS.128 [R2+0x2000], desc[UR4][R6.64]"
+          ],
+          [
+            "0220",
+            "LDGSTS.E.BYPASS.128 [R2+0x4000], desc[UR4][R8.64]"
+          ],
+          [
+            "0260",
+            "@P0 LDGSTS.E.BYPASS.128 [R2+0x6000], desc[UR4][R12.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi2ELi512ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0340",
+        "preloads": [
+          [
+            "0200",
+            "LDG.E.128.CONSTANT R36, desc[UR4][R58.64]"
+          ],
+          [
+            "0230",
+            "@P0 LDG.E.128.STRONG.SM R48, desc[UR4][R4.64]"
+          ],
+          [
+            "0260",
+            "@P0 LDG.E.128.STRONG.SM R8, desc[UR4][R6.64]"
+          ],
+          [
+            "02a0",
+            "LDG.E.128.STRONG.SM R12, desc[UR4][R12.64]"
+          ],
+          [
+            "02c0",
+            "LDG.E.128.STRONG.SM R16, desc[UR4][R16.64]"
+          ],
+          [
+            "02e0",
+            "LDG.E.128.STRONG.SM R24, desc[UR4][R24.64]"
+          ]
+        ],
+        "count": 9,
+        "global_loads": 9,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi2ELi512ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "02d0",
+        "preloads": [
+          [
+            "01c0",
+            "LDGSTS.E.BYPASS.128 [R2], desc[UR4][R4.64]"
+          ],
+          [
+            "0200",
+            "LDGSTS.E.BYPASS.128 [R2+0x2000], desc[UR4][R6.64]"
+          ],
+          [
+            "0240",
+            "LDGSTS.E.BYPASS.128 [R2+0x4000], desc[UR4][R8.64]"
+          ],
+          [
+            "0280",
+            "@P0 LDGSTS.E.BYPASS.128 [R2+0x6000], desc[UR4][R12.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi4ELi512ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0230",
+        "preloads": [
+          [
+            "0180",
+            "LDG.E.128.STRONG.SM R24, desc[UR6][R24.64]"
+          ],
+          [
+            "01c0",
+            "LDG.E.128.STRONG.SM R20, desc[UR6][R20.64]"
+          ],
+          [
+            "01f0",
+            "@P0 LDG.E.128.STRONG.SM R28, desc[UR6][R2.64]"
+          ],
+          [
+            "0210",
+            "LDG.E.128.STRONG.SM R16, desc[UR6][R16.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi4ELi512ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0270",
+        "preloads": [
+          [
+            "01a0",
+            "LDGSTS.E.BYPASS.128 [R33], desc[UR6][R4.64]"
+          ],
+          [
+            "01e0",
+            "LDGSTS.E.BYPASS.128 [R33+0x2000], desc[UR6][R6.64]"
+          ],
+          [
+            "0240",
+            "LDGSTS.E.BYPASS.128 [R33+0x4000], desc[UR6][R8.64]"
+          ],
+          [
+            "0250",
+            "@P0 LDGSTS.E.BYPASS.128 [R33+0x6000], desc[UR6][R10.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi4ELi512ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0230",
+        "preloads": [
+          [
+            "0190",
+            "LDG.E.128.STRONG.SM R20, desc[UR6][R20.64]"
+          ],
+          [
+            "01c0",
+            "@P0 LDG.E.128.STRONG.SM R24, desc[UR6][R2.64]"
+          ],
+          [
+            "01f0",
+            "LDG.E.128.STRONG.SM R8, desc[UR6][R8.64]"
+          ],
+          [
+            "0220",
+            "LDG.E.128.STRONG.SM R12, desc[UR6][R12.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi4ELi512ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0280",
+        "preloads": [
+          [
+            "01d0",
+            "LDGSTS.E.BYPASS.128 [R29], desc[UR6][R4.64]"
+          ],
+          [
+            "0240",
+            "LDGSTS.E.BYPASS.128 [R29+0x2000], desc[UR6][R6.64]"
+          ],
+          [
+            "0250",
+            "LDGSTS.E.BYPASS.128 [R29+0x4000], desc[UR6][R8.64]"
+          ],
+          [
+            "0260",
+            "@P0 LDGSTS.E.BYPASS.128 [R29+0x6000], desc[UR6][R10.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi4ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0340",
+        "preloads": [
+          [
+            "0220",
+            "LDG.E.128.CONSTANT R44, desc[UR6][R72.64]"
+          ],
+          [
+            "0230",
+            "@P0 LDG.E.128.STRONG.SM R16, desc[UR6][R14.64]"
+          ],
+          [
+            "0240",
+            "@P0 LDG.E.128.STRONG.SM R4, desc[UR6][R2.64]"
+          ],
+          [
+            "0290",
+            "LDG.E.128.STRONG.SM R20, desc[UR6][R20.64]"
+          ],
+          [
+            "02b0",
+            "LDG.E.128.STRONG.SM R24, desc[UR6][R24.64]"
+          ],
+          [
+            "02d0",
+            "LDG.E.128.STRONG.SM R28, desc[UR6][R28.64]"
+          ]
+        ],
+        "count": 9,
+        "global_loads": 9,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi4ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "02d0",
+        "preloads": [
+          [
+            "01e0",
+            "LDGSTS.E.BYPASS.128 [R13], desc[UR6][R2.64]"
+          ],
+          [
+            "0220",
+            "LDGSTS.E.BYPASS.128 [R13+0x1000], desc[UR6][R4.64]"
+          ],
+          [
+            "0260",
+            "LDGSTS.E.BYPASS.128 [R13+0x2000], desc[UR6][R6.64]"
+          ],
+          [
+            "0290",
+            "@P0 LDGSTS.E.BYPASS.128 [R13+0x3000], desc[UR6][R18.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi4ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0340",
+        "preloads": [
+          [
+            "0220",
+            "LDG.E.128.CONSTANT R44, desc[UR6][R72.64]"
+          ],
+          [
+            "0230",
+            "@P0 LDG.E.128.STRONG.SM R16, desc[UR6][R14.64]"
+          ],
+          [
+            "0240",
+            "@P0 LDG.E.128.STRONG.SM R4, desc[UR6][R2.64]"
+          ],
+          [
+            "0290",
+            "LDG.E.128.STRONG.SM R20, desc[UR6][R20.64]"
+          ],
+          [
+            "02b0",
+            "LDG.E.128.STRONG.SM R24, desc[UR6][R24.64]"
+          ],
+          [
+            "02d0",
+            "LDG.E.128.STRONG.SM R28, desc[UR6][R28.64]"
+          ]
+        ],
+        "count": 9,
+        "global_loads": 9,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi4ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "02d0",
+        "preloads": [
+          [
+            "01c0",
+            "LDGSTS.E.BYPASS.128 [R13], desc[UR6][R2.64]"
+          ],
+          [
+            "0200",
+            "LDGSTS.E.BYPASS.128 [R13+0x1000], desc[UR6][R4.64]"
+          ],
+          [
+            "0240",
+            "LDGSTS.E.BYPASS.128 [R13+0x2000], desc[UR6][R6.64]"
+          ],
+          [
+            "0280",
+            "@P0 LDGSTS.E.BYPASS.128 [R13+0x3000], desc[UR6][R18.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi8ELi128ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0350",
+        "preloads": [
+          [
+            "0210",
+            "@P0 LDG.E.128.STRONG.SM R44, desc[UR12][R4.64]"
+          ],
+          [
+            "0230",
+            "@P0 LDG.E.128.STRONG.SM R40, desc[UR12][R8.64]"
+          ],
+          [
+            "0240",
+            "LDG.E.128.CONSTANT R12, desc[UR12][R66.64]"
+          ],
+          [
+            "0290",
+            "LDG.E.128.STRONG.SM R36, desc[UR12][R36.64]"
+          ],
+          [
+            "02c0",
+            "LDG.E.128.STRONG.SM R32, desc[UR12][R32.64]"
+          ],
+          [
+            "02e0",
+            "LDG.E.128.STRONG.SM R28, desc[UR12][R28.64]"
+          ]
+        ],
+        "count": 9,
+        "global_loads": 9,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi8ELi128ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0290",
+        "preloads": [
+          [
+            "01e0",
+            "LDGSTS.E.BYPASS.128 [R7], desc[UR12][R2.64]"
+          ],
+          [
+            "0210",
+            "LDGSTS.E.BYPASS.128 [R7+0x800], desc[UR12][R4.64]"
+          ],
+          [
+            "0230",
+            "LDGSTS.E.BYPASS.128 [R7+0x1000], desc[UR12][R8.64]"
+          ],
+          [
+            "0250",
+            "@P0 LDGSTS.E.BYPASS.128 [R7+0x1800], desc[UR12][R14.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi8ELi128ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0350",
+        "preloads": [
+          [
+            "0220",
+            "@P0 LDG.E.128.STRONG.SM R44, desc[UR12][R4.64]"
+          ],
+          [
+            "0230",
+            "LDG.E.128.CONSTANT R12, desc[UR12][R66.64]"
+          ],
+          [
+            "0240",
+            "@P0 LDG.E.128.STRONG.SM R40, desc[UR12][R8.64]"
+          ],
+          [
+            "0290",
+            "LDG.E.128.STRONG.SM R36, desc[UR12][R36.64]"
+          ],
+          [
+            "02c0",
+            "LDG.E.128.STRONG.SM R32, desc[UR12][R32.64]"
+          ],
+          [
+            "02e0",
+            "LDG.E.128.STRONG.SM R28, desc[UR12][R28.64]"
+          ]
+        ],
+        "count": 9,
+        "global_loads": 9,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi8ELi128ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "02a0",
+        "preloads": [
+          [
+            "01f0",
+            "LDGSTS.E.BYPASS.128 [R7], desc[UR12][R2.64]"
+          ],
+          [
+            "0210",
+            "LDGSTS.E.BYPASS.128 [R7+0x800], desc[UR12][R4.64]"
+          ],
+          [
+            "0230",
+            "LDGSTS.E.BYPASS.128 [R7+0x1000], desc[UR12][R8.64]"
+          ],
+          [
+            "0260",
+            "@P0 LDGSTS.E.BYPASS.128 [R7+0x1800], desc[UR12][R14.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi8ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0230",
+        "preloads": [
+          [
+            "0180",
+            "LDG.E.128.STRONG.SM R12, desc[UR12][R12.64]"
+          ],
+          [
+            "01c0",
+            "LDG.E.128.STRONG.SM R16, desc[UR12][R16.64]"
+          ],
+          [
+            "01f0",
+            "@P0 LDG.E.128.STRONG.SM R8, desc[UR12][R6.64]"
+          ],
+          [
+            "0210",
+            "LDG.E.128.STRONG.SM R20, desc[UR12][R20.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi8ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0270",
+        "preloads": [
+          [
+            "0220",
+            "LDGSTS.E.BYPASS.128 [R29], desc[UR12][R4.64]"
+          ],
+          [
+            "0230",
+            "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR12][R6.64]"
+          ],
+          [
+            "0240",
+            "LDGSTS.E.BYPASS.128 [R29+0x2000], desc[UR12][R16.64]"
+          ],
+          [
+            "0250",
+            "@P0 LDGSTS.E.BYPASS.128 [R29+0x3000], desc[UR12][R18.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi8ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0240",
+        "preloads": [
+          [
+            "0190",
+            "LDG.E.128.STRONG.SM R20, desc[UR12][R20.64]"
+          ],
+          [
+            "01c0",
+            "@P0 LDG.E.128.STRONG.SM R24, desc[UR12][R6.64]"
+          ],
+          [
+            "01f0",
+            "LDG.E.128.STRONG.SM R12, desc[UR12][R12.64]"
+          ],
+          [
+            "0230",
+            "LDG.E.128.STRONG.SM R8, desc[UR12][R8.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi8ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0280",
+        "preloads": [
+          [
+            "0220",
+            "LDGSTS.E.BYPASS.128 [R29], desc[UR12][R4.64]"
+          ],
+          [
+            "0240",
+            "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR12][R6.64]"
+          ],
+          [
+            "0250",
+            "LDGSTS.E.BYPASS.128 [R29+0x2000], desc[UR12][R8.64]"
+          ],
+          [
+            "0260",
+            "@P0 LDGSTS.E.BYPASS.128 [R29+0x3000], desc[UR12][R10.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi16ELi128ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0230",
+        "preloads": [
+          [
+            "0180",
+            "LDG.E.128.STRONG.SM R12, desc[UR12][R12.64]"
+          ],
+          [
+            "01b0",
+            "LDG.E.128.STRONG.SM R16, desc[UR12][R16.64]"
+          ],
+          [
+            "01e0",
+            "@P0 LDG.E.128.STRONG.SM R8, desc[UR12][R4.64]"
+          ],
+          [
+            "0200",
+            "LDG.E.128.STRONG.SM R20, desc[UR12][R20.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi16ELi128ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0270",
+        "preloads": [
+          [
+            "0210",
+            "LDGSTS.E.BYPASS.128 [R29], desc[UR12][R2.64]"
+          ],
+          [
+            "0230",
+            "LDGSTS.E.BYPASS.128 [R29+0x800], desc[UR12][R4.64]"
+          ],
+          [
+            "0240",
+            "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR12][R6.64]"
+          ],
+          [
+            "0250",
+            "@P0 LDGSTS.E.BYPASS.128 [R29+0x1800], desc[UR12][R16.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi16ELi128ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0240",
+        "preloads": [
+          [
+            "0190",
+            "LDG.E.128.STRONG.SM R16, desc[UR12][R16.64]"
+          ],
+          [
+            "01c0",
+            "@P0 LDG.E.128.STRONG.SM R24, desc[UR12][R20.64]"
+          ],
+          [
+            "01f0",
+            "LDG.E.128.STRONG.SM R8, desc[UR12][R8.64]"
+          ],
+          [
+            "0230",
+            "LDG.E.128.STRONG.SM R4, desc[UR12][R4.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi16ELi128ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0280",
+        "preloads": [
+          [
+            "0220",
+            "LDGSTS.E.BYPASS.128 [R21], desc[UR12][R2.64]"
+          ],
+          [
+            "0240",
+            "LDGSTS.E.BYPASS.128 [R21+0x800], desc[UR12][R4.64]"
+          ],
+          [
+            "0250",
+            "LDGSTS.E.BYPASS.128 [R21+0x1000], desc[UR12][R6.64]"
+          ],
+          [
+            "0260",
+            "@P0 LDGSTS.E.BYPASS.128 [R21+0x1800], desc[UR12][R8.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GP_CUDA",
+    "kernel": "_ZN7glue_cl8route_clILi2ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "acquires": [
+      {
+        "wait": "0210",
+        "preloads": [
+          [
+            "01c0",
+            "@!P0 LDG.E.128.STRONG.SM R8, desc[UR14][R16.64]"
+          ],
+          [
+            "01e0",
+            "@!P1 LDG.E.128.STRONG.SM R12, desc[UR14][R18.64]"
+          ]
+        ],
+        "count": 2,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GP_CUDA",
+    "kernel": "_ZN7glue_cl8route_clILi4ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "acquires": [
+      {
+        "wait": "01c0",
+        "preloads": [
+          [
+            "0190",
+            "@!P1 LDG.E.128.STRONG.SM R8, desc[UR10][R12.64]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 3,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GP_CUDA",
+    "kernel": "_ZN7glue_cl8route_clILi8ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "acquires": [
+      {
+        "wait": "01c0",
+        "preloads": [
+          [
+            "0190",
+            "@!P1 LDG.E.128.STRONG.SM R8, desc[UR10][R12.64]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 3,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GP_CUDA",
+    "kernel": "_ZN7glue_cl8route_clILi8ELi128EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "acquires": [
+      {
+        "wait": "0180",
+        "preloads": [
+          [
+            "0140",
+            "@!P4 LDG.E.128.STRONG.SM R16, desc[UR10][R6.64]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 3,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GP_CUDA",
+    "kernel": "_ZN7glue_cl8route_clILi16ELi128EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "acquires": [
+      {
+        "wait": "0180",
+        "preloads": [
+          [
+            "0140",
+            "@!P4 LDG.E.128.STRONG.SM R16, desc[UR10][R6.64]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 3,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GP_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi2ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0520",
+        "preloads": [
+          [
+            "02a0",
+            "LDG.E.128.CONSTANT R16, desc[UR6][R118.64]"
+          ],
+          [
+            "0340",
+            "@P0 LDG.E.128.STRONG.SM R4, desc[UR6][R8.64]"
+          ],
+          [
+            "0360",
+            "@P0 LDG.E.128.STRONG.SM R76, desc[UR6][R10.64]"
+          ],
+          [
+            "0380",
+            "@P0 LDG.E.128.STRONG.SM R72, desc[UR6][R12.64]"
+          ],
+          [
+            "03a0",
+            "@P0 LDG.E.128.STRONG.SM R68, desc[UR6][R14.64]"
+          ],
+          [
+            "03e0",
+            "LDG.E.128.STRONG.SM R64, desc[UR6][R64.64]"
+          ]
+        ],
+        "count": 17,
+        "global_loads": 17,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GP_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi2ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0530",
+        "preloads": [
+          [
+            "02a0",
+            "LDG.E.128.CONSTANT R16, desc[UR6][R118.64]"
+          ],
+          [
+            "0330",
+            "@P0 LDG.E.128.STRONG.SM R68, desc[UR6][R14.64]"
+          ],
+          [
+            "0350",
+            "@P0 LDG.E.128.STRONG.SM R4, desc[UR6][R8.64]"
+          ],
+          [
+            "0370",
+            "@P0 LDG.E.128.STRONG.SM R76, desc[UR6][R10.64]"
+          ],
+          [
+            "0390",
+            "@P0 LDG.E.128.STRONG.SM R72, desc[UR6][R12.64]"
+          ],
+          [
+            "03d0",
+            "LDG.E.128.STRONG.SM R64, desc[UR6][R64.64]"
+          ]
+        ],
+        "count": 17,
+        "global_loads": 17,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GP_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi2ELi512ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0330",
+        "preloads": [
+          [
+            "0200",
+            "LDG.E.128.CONSTANT R36, desc[UR4][R60.64]"
+          ],
+          [
+            "0230",
+            "@P0 LDG.E.128.STRONG.SM R48, desc[UR4][R4.64]"
+          ],
+          [
+            "0260",
+            "@P0 LDG.E.128.STRONG.SM R8, desc[UR4][R6.64]"
+          ],
+          [
+            "02a0",
+            "LDG.E.128.STRONG.SM R12, desc[UR4][R12.64]"
+          ],
+          [
+            "02c0",
+            "LDG.E.128.STRONG.SM R16, desc[UR4][R16.64]"
+          ],
+          [
+            "02e0",
+            "LDG.E.128.STRONG.SM R24, desc[UR4][R24.64]"
+          ]
+        ],
+        "count": 9,
+        "global_loads": 9,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GP_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi2ELi512ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0340",
+        "preloads": [
+          [
+            "0200",
+            "LDG.E.128.CONSTANT R36, desc[UR4][R58.64]"
+          ],
+          [
+            "0230",
+            "@P0 LDG.E.128.STRONG.SM R48, desc[UR4][R4.64]"
+          ],
+          [
+            "0260",
+            "@P0 LDG.E.128.STRONG.SM R8, desc[UR4][R6.64]"
+          ],
+          [
+            "02a0",
+            "LDG.E.128.STRONG.SM R12, desc[UR4][R12.64]"
+          ],
+          [
+            "02c0",
+            "LDG.E.128.STRONG.SM R16, desc[UR4][R16.64]"
+          ],
+          [
+            "02e0",
+            "LDG.E.128.STRONG.SM R24, desc[UR4][R24.64]"
+          ]
+        ],
+        "count": 9,
+        "global_loads": 9,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GP_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi4ELi512ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0230",
+        "preloads": [
+          [
+            "0180",
+            "LDG.E.128.STRONG.SM R24, desc[UR6][R24.64]"
+          ],
+          [
+            "01c0",
+            "LDG.E.128.STRONG.SM R20, desc[UR6][R20.64]"
+          ],
+          [
+            "01f0",
+            "@P0 LDG.E.128.STRONG.SM R28, desc[UR6][R2.64]"
+          ],
+          [
+            "0210",
+            "LDG.E.128.STRONG.SM R16, desc[UR6][R16.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GP_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi4ELi512ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0230",
+        "preloads": [
+          [
+            "0190",
+            "LDG.E.128.STRONG.SM R20, desc[UR6][R20.64]"
+          ],
+          [
+            "01c0",
+            "@P0 LDG.E.128.STRONG.SM R24, desc[UR6][R2.64]"
+          ],
+          [
+            "01f0",
+            "LDG.E.128.STRONG.SM R8, desc[UR6][R8.64]"
+          ],
+          [
+            "0220",
+            "LDG.E.128.STRONG.SM R12, desc[UR6][R12.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GP_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi4ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0340",
+        "preloads": [
+          [
+            "0220",
+            "LDG.E.128.CONSTANT R44, desc[UR6][R72.64]"
+          ],
+          [
+            "0230",
+            "@P0 LDG.E.128.STRONG.SM R16, desc[UR6][R14.64]"
+          ],
+          [
+            "0240",
+            "@P0 LDG.E.128.STRONG.SM R4, desc[UR6][R2.64]"
+          ],
+          [
+            "0290",
+            "LDG.E.128.STRONG.SM R20, desc[UR6][R20.64]"
+          ],
+          [
+            "02b0",
+            "LDG.E.128.STRONG.SM R24, desc[UR6][R24.64]"
+          ],
+          [
+            "02d0",
+            "LDG.E.128.STRONG.SM R28, desc[UR6][R28.64]"
+          ]
+        ],
+        "count": 9,
+        "global_loads": 9,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GP_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi4ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0340",
+        "preloads": [
+          [
+            "0220",
+            "LDG.E.128.CONSTANT R44, desc[UR6][R72.64]"
+          ],
+          [
+            "0230",
+            "@P0 LDG.E.128.STRONG.SM R16, desc[UR6][R14.64]"
+          ],
+          [
+            "0240",
+            "@P0 LDG.E.128.STRONG.SM R4, desc[UR6][R2.64]"
+          ],
+          [
+            "0290",
+            "LDG.E.128.STRONG.SM R20, desc[UR6][R20.64]"
+          ],
+          [
+            "02b0",
+            "LDG.E.128.STRONG.SM R24, desc[UR6][R24.64]"
+          ],
+          [
+            "02d0",
+            "LDG.E.128.STRONG.SM R28, desc[UR6][R28.64]"
+          ]
+        ],
+        "count": 9,
+        "global_loads": 9,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GP_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi8ELi128ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0350",
+        "preloads": [
+          [
+            "0210",
+            "@P0 LDG.E.128.STRONG.SM R44, desc[UR12][R4.64]"
+          ],
+          [
+            "0230",
+            "@P0 LDG.E.128.STRONG.SM R40, desc[UR12][R8.64]"
+          ],
+          [
+            "0240",
+            "LDG.E.128.CONSTANT R12, desc[UR12][R66.64]"
+          ],
+          [
+            "0290",
+            "LDG.E.128.STRONG.SM R36, desc[UR12][R36.64]"
+          ],
+          [
+            "02c0",
+            "LDG.E.128.STRONG.SM R32, desc[UR12][R32.64]"
+          ],
+          [
+            "02e0",
+            "LDG.E.128.STRONG.SM R28, desc[UR12][R28.64]"
+          ]
+        ],
+        "count": 9,
+        "global_loads": 9,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GP_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi8ELi128ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0350",
+        "preloads": [
+          [
+            "0220",
+            "@P0 LDG.E.128.STRONG.SM R44, desc[UR12][R4.64]"
+          ],
+          [
+            "0230",
+            "LDG.E.128.CONSTANT R12, desc[UR12][R66.64]"
+          ],
+          [
+            "0240",
+            "@P0 LDG.E.128.STRONG.SM R40, desc[UR12][R8.64]"
+          ],
+          [
+            "0290",
+            "LDG.E.128.STRONG.SM R36, desc[UR12][R36.64]"
+          ],
+          [
+            "02c0",
+            "LDG.E.128.STRONG.SM R32, desc[UR12][R32.64]"
+          ],
+          [
+            "02e0",
+            "LDG.E.128.STRONG.SM R28, desc[UR12][R28.64]"
+          ]
+        ],
+        "count": 9,
+        "global_loads": 9,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GP_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi8ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0230",
+        "preloads": [
+          [
+            "0180",
+            "LDG.E.128.STRONG.SM R12, desc[UR12][R12.64]"
+          ],
+          [
+            "01c0",
+            "LDG.E.128.STRONG.SM R16, desc[UR12][R16.64]"
+          ],
+          [
+            "01f0",
+            "@P0 LDG.E.128.STRONG.SM R8, desc[UR12][R6.64]"
+          ],
+          [
+            "0210",
+            "LDG.E.128.STRONG.SM R20, desc[UR12][R20.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GP_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi8ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0240",
+        "preloads": [
+          [
+            "0190",
+            "LDG.E.128.STRONG.SM R20, desc[UR12][R20.64]"
+          ],
+          [
+            "01c0",
+            "@P0 LDG.E.128.STRONG.SM R24, desc[UR12][R6.64]"
+          ],
+          [
+            "01f0",
+            "LDG.E.128.STRONG.SM R12, desc[UR12][R12.64]"
+          ],
+          [
+            "0230",
+            "LDG.E.128.STRONG.SM R8, desc[UR12][R8.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GP_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi16ELi128ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0230",
+        "preloads": [
+          [
+            "0180",
+            "LDG.E.128.STRONG.SM R12, desc[UR12][R12.64]"
+          ],
+          [
+            "01b0",
+            "LDG.E.128.STRONG.SM R16, desc[UR12][R16.64]"
+          ],
+          [
+            "01e0",
+            "@P0 LDG.E.128.STRONG.SM R8, desc[UR12][R4.64]"
+          ],
+          [
+            "0200",
+            "LDG.E.128.STRONG.SM R20, desc[UR12][R20.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_GP_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi16ELi128ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0240",
+        "preloads": [
+          [
+            "0190",
+            "LDG.E.128.STRONG.SM R16, desc[UR12][R16.64]"
+          ],
+          [
+            "01c0",
+            "@P0 LDG.E.128.STRONG.SM R24, desc[UR12][R20.64]"
+          ],
+          [
+            "01f0",
+            "LDG.E.128.STRONG.SM R8, desc[UR12][R8.64]"
+          ],
+          [
+            "0230",
+            "LDG.E.128.STRONG.SM R4, desc[UR12][R4.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_P3B_CUDA",
+    "kernel": "_ZN5chunk6kernelILi4ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i",
+    "acquires": [
+      {
+        "wait": "0a10",
+        "preloads": [
+          [
+            "0920",
+            "@!P0 LDGSTS.E.128 [R0], desc[UR12][R14.64]"
+          ],
+          [
+            "0960",
+            "@!P0 LDGSTS.E.128 [R0+0x100], desc[UR12][R14.64+0x100]"
+          ],
+          [
+            "09b0",
+            "@!P0 LDGSTS.E.128 [R0+0x800], desc[UR12][R14.64+0x200]"
+          ],
+          [
+            "09e0",
+            "@!P0 LDGSTS.E.128 [R0+0x900], desc[UR12][R14.64+0x300]"
+          ],
+          [
+            "09f0",
+            "@!P1 LDGSTS.E.128 [R22+0x7c00], desc[UR12][R16.64]"
+          ]
+        ],
+        "count": 5,
+        "global_loads": 4,
+        "mma": 0
+      },
+      {
+        "wait": "6500",
+        "preloads": [
+          [
+            "0b00",
+            "LDGSTS.E.BYPASS.128 [R2+0x9000], desc[UR12][R8.64], P2"
+          ],
+          [
+            "0b20",
+            "LDGSTS.E.BYPASS.128 [R3], desc[UR12][R14.64], P4"
+          ],
+          [
+            "0b30",
+            "LDGSTS.E.BYPASS.128 [R21], desc[UR12][R16.64], P5"
+          ],
+          [
+            "0b40",
+            "LDGSTS.E.BYPASS.128 [R20], desc[UR12][R18.64], P6"
+          ],
+          [
+            "0b50",
+            "LDGSTS.E.BYPASS.128 [R2+0xb000], desc[UR12][R8.64+0x80], P2"
+          ],
+          [
+            "0b60",
+            "LDGSTS.E.BYPASS.128 [R3+0x2000], desc[UR12][R14.64+0x80], P4"
+          ]
+        ],
+        "count": 91,
+        "global_loads": 33,
+        "mma": 32
+      }
+    ]
+  },
+  {
+    "source": "ALL_P3B_CUDA",
+    "kernel": "_ZN5chunk6kernelILi4ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i",
+    "acquires": [
+      {
+        "wait": "0ae0",
+        "preloads": [
+          [
+            "09d0",
+            "@!P0 LDGSTS.E.128 [R3], desc[UR12][R16.64]"
+          ],
+          [
+            "0a20",
+            "@!P0 LDGSTS.E.128 [R3+0x100], desc[UR12][R16.64+0x100]"
+          ],
+          [
+            "0a60",
+            "@!P0 LDGSTS.E.128 [R3+0x800], desc[UR12][R16.64+0x200]"
+          ],
+          [
+            "0aa0",
+            "@!P0 LDGSTS.E.128 [R3+0x900], desc[UR12][R16.64+0x300]"
+          ],
+          [
+            "0ac0",
+            "@!P1 LDGSTS.E.128 [R106+0x7c00], desc[UR12][R6.64]"
+          ]
+        ],
+        "count": 5,
+        "global_loads": 8,
+        "mma": 0
+      },
+      {
+        "wait": "7290",
+        "preloads": [
+          [
+            "0c40",
+            "LDGSTS.E.BYPASS.128 [R2], desc[UR12][R16.64], P3"
+          ],
+          [
+            "0c50",
+            "LDGSTS.E.BYPASS.128 [R0+0x9000], desc[UR12][R18.64], P4"
+          ],
+          [
+            "0c60",
+            "LDGSTS.E.BYPASS.128 [R105], desc[UR12][R24.64], P5"
+          ],
+          [
+            "0c70",
+            "LDGSTS.E.BYPASS.128 [R104], desc[UR12][R6.64], P6"
+          ],
+          [
+            "0c80",
+            "LDGSTS.E.BYPASS.128 [R2+0x2000], desc[UR12][R16.64+0x80], P3"
+          ],
+          [
+            "0c90",
+            "LDGSTS.E.BYPASS.128 [R0+0xb000], desc[UR12][R18.64+0x80], P4"
+          ]
+        ],
+        "count": 91,
+        "global_loads": 4,
+        "mma": 32
+      }
+    ]
+  },
+  {
+    "source": "ALL_P3B_CUDA",
+    "kernel": "_ZN5chunk6kernelILi3ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i",
+    "acquires": [
+      {
+        "wait": "09e0",
+        "preloads": [
+          [
+            "0910",
+            "@!P0 LDGSTS.E.128 [R4], desc[UR12][R14.64]"
+          ],
+          [
+            "0930",
+            "@!P0 LDGSTS.E.128 [R4+0x100], desc[UR12][R14.64+0x100]"
+          ],
+          [
+            "0970",
+            "@!P0 LDGSTS.E.128 [R4+0x800], desc[UR12][R14.64+0x200]"
+          ],
+          [
+            "09b0",
+            "@!P0 LDGSTS.E.128 [R4+0x900], desc[UR12][R14.64+0x300]"
+          ],
+          [
+            "09c0",
+            "@!P1 LDGSTS.E.128 [R21+0x5c00], desc[UR12][R18.64]"
+          ]
+        ],
+        "count": 5,
+        "global_loads": 4,
+        "mma": 0
+      },
+      {
+        "wait": "5a00",
+        "preloads": [
+          [
+            "0b70",
+            "LDGSTS.E.BYPASS.128 [R3], desc[UR12][R10.64], P6"
+          ],
+          [
+            "0bb0",
+            "LDGSTS.E.BYPASS.128 [R2], desc[UR12][R16.64], P5"
+          ],
+          [
+            "0bd0",
+            "LDGSTS.E.BYPASS.128 [R21+0x6c00], desc[UR12][R14.64], P4"
+          ],
+          [
+            "0be0",
+            "LDGSTS.E.BYPASS.128 [R25+0x6c00], desc[UR12][R18.64], P3"
+          ],
+          [
+            "0bf0",
+            "LDGSTS.E.BYPASS.128 [R3+0x2000], desc[UR12][R10.64+0x80], P6"
+          ],
+          [
+            "0c00",
+            "LDGSTS.E.BYPASS.128 [R2+0x2000], desc[UR12][R16.64+0x80], P5"
+          ]
+        ],
+        "count": 65,
+        "global_loads": 33,
+        "mma": 24
+      }
+    ]
+  },
+  {
+    "source": "ALL_P3B_CUDA",
+    "kernel": "_ZN5chunk6kernelILi3ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i",
+    "acquires": [
+      {
+        "wait": "0a10",
+        "preloads": [
+          [
+            "08a0",
+            "@!P0 LDGSTS.E.128 [R2], desc[UR12][R14.64]"
+          ],
+          [
+            "0920",
+            "@!P0 LDGSTS.E.128 [R2+0x100], desc[UR12][R14.64+0x100]"
+          ],
+          [
+            "0960",
+            "@!P0 LDGSTS.E.128 [R2+0x800], desc[UR12][R14.64+0x200]"
+          ],
+          [
+            "09a0",
+            "@!P0 LDGSTS.E.128 [R2+0x900], desc[UR12][R14.64+0x300]"
+          ],
+          [
+            "09d0",
+            "@!P1 LDGSTS.E.128 [R7+0x5c00], desc[UR12][R16.64]"
+          ]
+        ],
+        "count": 5,
+        "global_loads": 8,
+        "mma": 0
+      },
+      {
+        "wait": "6740",
+        "preloads": [
+          [
+            "0bd0",
+            "LDGSTS.E.BYPASS.128 [R3], desc[UR12][R14.64], P4"
+          ],
+          [
+            "0c00",
+            "LDGSTS.E.BYPASS.128 [R4], desc[UR12][R18.64], P3"
+          ],
+          [
+            "0c50",
+            "LDGSTS.E.BYPASS.128 [R7+0x6c00], desc[UR12][R24.64], P2"
+          ],
+          [
+            "0c60",
+            "LDGSTS.E.BYPASS.128 [R29+0x6c00], desc[UR12][R16.64], P6"
+          ],
+          [
+            "0c70",
+            "LDGSTS.E.BYPASS.128 [R3+0x2000], desc[UR12][R14.64+0x80], P4"
+          ],
+          [
+            "0c80",
+            "LDGSTS.E.BYPASS.128 [R4+0x2000], desc[UR12][R18.64+0x80], P3"
+          ]
+        ],
+        "count": 65,
+        "global_loads": 4,
+        "mma": 24
+      }
+    ]
+  },
+  {
+    "source": "ALL_RVC_NBASE2_CUDA",
+    "kernel": "_ZN55_GLOBAL__N__9228c598_22_ALL_RVC_NBASE2_CUDA_cu_56e15e617moe_varILi2ELi2117EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPmS5_",
+    "acquires": [
+      {
+        "wait": "0830",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 4,
+        "mma": 0
+      },
+      {
+        "wait": "4690",
+        "preloads": [
+          [
+            "2d30",
+            "UBLKCP.S.G [UR6], [UR4], UR10, desc[UR8]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 6,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_RVC_NBASE2_CUDA",
+    "kernel": "_ZN55_GLOBAL__N__9228c598_22_ALL_RVC_NBASE2_CUDA_cu_56e15e617moe_varILi1ELi325EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPmS5_",
+    "acquires": [
+      {
+        "wait": "0930",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 2,
+        "mma": 0
+      },
+      {
+        "wait": "4760",
+        "preloads": [
+          [
+            "2e50",
+            "UBLKCP.S.G [UR6], [UR4], UR14, desc[UR12]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 6,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_RVC_NBASE2_CUDA",
+    "kernel": "_ZN55_GLOBAL__N__9228c598_22_ALL_RVC_NBASE2_CUDA_cu_56e15e617moe_varILi1ELi95EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPmS5_",
+    "acquires": [
+      {
+        "wait": "07e0",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 4,
+        "mma": 0
+      },
+      {
+        "wait": "2000",
+        "preloads": [
+          [
+            "1630",
+            "UBLKCP.S.G [UR6], [UR16], UR4, desc[UR8]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 2,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_RVC_NBASE2_CUDA",
+    "kernel": "_ZN55_GLOBAL__N__9228c598_22_ALL_RVC_NBASE2_CUDA_cu_56e15e617moe_varILi1ELi69EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPmS5_",
+    "acquires": [
+      {
+        "wait": "07d0",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 2,
+        "mma": 0
+      },
+      {
+        "wait": "4550",
+        "preloads": [
+          [
+            "2c20",
+            "UBLKCP.S.G [UR6], [UR4], UR10, desc[UR8]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 6,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_boundary_fast_0_16",
+    "kernel": "_boundary_fast",
+    "acquires": [
+      {
+        "wait": "0260",
+        "preloads": [
+          [
+            "0180",
+            "LDGSTS.E [R19], desc[UR8][R10.64]"
+          ],
+          [
+            "01c0",
+            "LDGSTS.E [R19+0x4], desc[UR8][R12.64]"
+          ],
+          [
+            "0220",
+            "LDGSTS.E [R19+0x8], desc[UR8][R14.64]"
+          ],
+          [
+            "0230",
+            "LDGSTS.E [R19+0xc], desc[UR8][R10.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_boundary_fast_0_4",
+    "kernel": "_boundary_fast",
+    "acquires": [
+      {
+        "wait": "0230",
+        "preloads": [
+          [
+            "0180",
+            "LDGSTS.E [R17], desc[UR8][R2.64]"
+          ],
+          [
+            "01b0",
+            "LDGSTS.E [R17+0x4], desc[UR8][R8.64]"
+          ],
+          [
+            "01f0",
+            "LDGSTS.E [R17+0x8], desc[UR8][R118.64]"
+          ],
+          [
+            "0210",
+            "LDGSTS.E [R17+0xc], desc[UR8][R2.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_boundary_fast_0_8",
+    "kernel": "_boundary_fast",
+    "acquires": [
+      {
+        "wait": "0260",
+        "preloads": [
+          [
+            "0170",
+            "LDGSTS.E [R17], desc[UR8][R8.64]"
+          ],
+          [
+            "01b0",
+            "LDGSTS.E [R17+0x4], desc[UR8][R10.64]"
+          ],
+          [
+            "0220",
+            "LDGSTS.E [R17+0x8], desc[UR8][R12.64]"
+          ],
+          [
+            "0230",
+            "LDGSTS.E [R17+0xc], desc[UR8][R8.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_boundary_fast_1_16",
+    "kernel": "_boundary_fast",
+    "acquires": [
+      {
+        "wait": "0270",
+        "preloads": [
+          [
+            "0170",
+            "LDGSTS.E [R15], desc[UR8][R2.64]"
+          ],
+          [
+            "01a0",
+            "LDGSTS.E [R15+0x4], desc[UR8][R8.64]"
+          ],
+          [
+            "01e0",
+            "LDGSTS.E [R15+0x8], desc[UR8][R10.64]"
+          ],
+          [
+            "0240",
+            "LDGSTS.E [R15+0xc], desc[UR8][R12.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_boundary_fast_1_4",
+    "kernel": "_boundary_fast",
+    "acquires": [
+      {
+        "wait": "0270",
+        "preloads": [
+          [
+            "0190",
+            "LDGSTS.E [R11], desc[UR8][R2.64]"
+          ],
+          [
+            "01c0",
+            "LDGSTS.E [R11+0x4], desc[UR8][R52.64]"
+          ],
+          [
+            "0200",
+            "LDGSTS.E [R11+0x8], desc[UR8][R128.64]"
+          ],
+          [
+            "0250",
+            "LDGSTS.E [R11+0xc], desc[UR8][R62.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_boundary_fast_1_8",
+    "kernel": "_boundary_fast",
+    "acquires": [
+      {
+        "wait": "0240",
+        "preloads": [
+          [
+            "0170",
+            "LDGSTS.E [R27], desc[UR8][R2.64]"
+          ],
+          [
+            "01a0",
+            "LDGSTS.E [R27+0x4], desc[UR8][R10.64]"
+          ],
+          [
+            "01d0",
+            "LDGSTS.E [R27+0x8], desc[UR8][R12.64]"
+          ],
+          [
+            "0200",
+            "LDGSTS.E [R27+0xc], desc[UR8][R14.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_boundary_late_0_16",
+    "kernel": "_boundary_late",
+    "acquires": [
+      {
+        "wait": "0260",
+        "preloads": [
+          [
+            "0170",
+            "LDGSTS.E [R19], desc[UR8][R10.64]"
+          ],
+          [
+            "01b0",
+            "LDGSTS.E [R19+0x4], desc[UR8][R12.64]"
+          ],
+          [
+            "0220",
+            "LDGSTS.E [R19+0x8], desc[UR8][R14.64]"
+          ],
+          [
+            "0230",
+            "LDGSTS.E [R19+0xc], desc[UR8][R10.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_boundary_late_0_4",
+    "kernel": "_boundary_late",
+    "acquires": [
+      {
+        "wait": "0230",
+        "preloads": [
+          [
+            "0180",
+            "LDGSTS.E [R17], desc[UR8][R2.64]"
+          ],
+          [
+            "01b0",
+            "LDGSTS.E [R17+0x4], desc[UR8][R8.64]"
+          ],
+          [
+            "01f0",
+            "LDGSTS.E [R17+0x8], desc[UR8][R120.64]"
+          ],
+          [
+            "0210",
+            "LDGSTS.E [R17+0xc], desc[UR8][R2.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_boundary_late_0_8",
+    "kernel": "_boundary_late",
+    "acquires": [
+      {
+        "wait": "0260",
+        "preloads": [
+          [
+            "0170",
+            "LDGSTS.E [R17], desc[UR8][R8.64]"
+          ],
+          [
+            "01b0",
+            "LDGSTS.E [R17+0x4], desc[UR8][R10.64]"
+          ],
+          [
+            "0220",
+            "LDGSTS.E [R17+0x8], desc[UR8][R12.64]"
+          ],
+          [
+            "0230",
+            "LDGSTS.E [R17+0xc], desc[UR8][R8.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_boundary_late_1_16",
+    "kernel": "_boundary_late",
+    "acquires": [
+      {
+        "wait": "0260",
+        "preloads": [
+          [
+            "0170",
+            "LDGSTS.E [R17], desc[UR8][R2.64]"
+          ],
+          [
+            "01a0",
+            "LDGSTS.E [R17+0x4], desc[UR8][R8.64]"
+          ],
+          [
+            "01e0",
+            "LDGSTS.E [R17+0x8], desc[UR8][R10.64]"
+          ],
+          [
+            "0220",
+            "LDGSTS.E [R17+0xc], desc[UR8][R12.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_boundary_late_1_4",
+    "kernel": "_boundary_late",
+    "acquires": [
+      {
+        "wait": "0270",
+        "preloads": [
+          [
+            "0190",
+            "LDGSTS.E [R11], desc[UR8][R2.64]"
+          ],
+          [
+            "01c0",
+            "LDGSTS.E [R11+0x4], desc[UR8][R54.64]"
+          ],
+          [
+            "0200",
+            "LDGSTS.E [R11+0x8], desc[UR8][R128.64]"
+          ],
+          [
+            "0250",
+            "LDGSTS.E [R11+0xc], desc[UR8][R120.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "ALL_boundary_late_1_8",
+    "kernel": "_boundary_late",
+    "acquires": [
+      {
+        "wait": "0270",
+        "preloads": [
+          [
+            "0170",
+            "LDGSTS.E [R27], desc[UR8][R2.64]"
+          ],
+          [
+            "01a0",
+            "LDGSTS.E [R27+0x4], desc[UR8][R10.64]"
+          ],
+          [
+            "01d0",
+            "LDGSTS.E [R27+0x8], desc[UR8][R12.64]"
+          ],
+          [
+            "0220",
+            "LDGSTS.E [R27+0xc], desc[UR8][R14.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl8route_clILi2ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "acquires": [
+      {
+        "wait": "0220",
+        "preloads": [
+          [
+            "01d0",
+            "@!P0 LDG.E.128.STRONG.SM R8, desc[UR14][R16.64]"
+          ],
+          [
+            "01f0",
+            "@!P1 LDG.E.128.STRONG.SM R12, desc[UR14][R18.64]"
+          ]
+        ],
+        "count": 2,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl8route_clILi4ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "acquires": [
+      {
+        "wait": "01d0",
+        "preloads": [
+          [
+            "01a0",
+            "@!P1 LDG.E.128.STRONG.SM R8, desc[UR10][R12.64]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 3,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl8route_clILi8ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "acquires": [
+      {
+        "wait": "01d0",
+        "preloads": [
+          [
+            "01a0",
+            "@!P1 LDG.E.128.STRONG.SM R8, desc[UR10][R12.64]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 3,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl8route_clILi8ELi128EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "acquires": [
+      {
+        "wait": "0190",
+        "preloads": [
+          [
+            "0150",
+            "@!P4 LDG.E.128.STRONG.SM R16, desc[UR10][R6.64]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 3,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl8route_clILi16ELi128EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "acquires": [
+      {
+        "wait": "0190",
+        "preloads": [
+          [
+            "0150",
+            "@!P3 LDG.E.128.STRONG.SM R16, desc[UR10][R6.64]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 3,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi2ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0520",
+        "preloads": [
+          [
+            "02a0",
+            "LDG.E.128.CONSTANT R16, desc[UR6][R118.64]"
+          ],
+          [
+            "0340",
+            "@P0 LDG.E.128.STRONG.SM R4, desc[UR6][R8.64]"
+          ],
+          [
+            "0360",
+            "@P0 LDG.E.128.STRONG.SM R76, desc[UR6][R10.64]"
+          ],
+          [
+            "0380",
+            "@P0 LDG.E.128.STRONG.SM R72, desc[UR6][R12.64]"
+          ],
+          [
+            "03a0",
+            "@P0 LDG.E.128.STRONG.SM R68, desc[UR6][R14.64]"
+          ],
+          [
+            "03e0",
+            "LDG.E.128.STRONG.SM R64, desc[UR6][R64.64]"
+          ]
+        ],
+        "count": 17,
+        "global_loads": 17,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi2ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0350",
+        "preloads": [
+          [
+            "0290",
+            "LDGSTS.E.BYPASS.128 [R13], desc[UR6][R4.64]"
+          ],
+          [
+            "02c0",
+            "LDGSTS.E.BYPASS.128 [R13+0x1000], desc[UR6][R6.64]"
+          ],
+          [
+            "02e0",
+            "LDGSTS.E.BYPASS.128 [R13+0x2000], desc[UR6][R8.64]"
+          ],
+          [
+            "0310",
+            "@P0 LDGSTS.E.BYPASS.128 [R13+0x3000], desc[UR6][R10.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi2ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0530",
+        "preloads": [
+          [
+            "02a0",
+            "LDG.E.128.CONSTANT R16, desc[UR6][R118.64]"
+          ],
+          [
+            "0330",
+            "@P0 LDG.E.128.STRONG.SM R68, desc[UR6][R14.64]"
+          ],
+          [
+            "0350",
+            "@P0 LDG.E.128.STRONG.SM R4, desc[UR6][R8.64]"
+          ],
+          [
+            "0370",
+            "@P0 LDG.E.128.STRONG.SM R76, desc[UR6][R10.64]"
+          ],
+          [
+            "0390",
+            "@P0 LDG.E.128.STRONG.SM R72, desc[UR6][R12.64]"
+          ],
+          [
+            "03d0",
+            "LDG.E.128.STRONG.SM R64, desc[UR6][R64.64]"
+          ]
+        ],
+        "count": 17,
+        "global_loads": 17,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi2ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0360",
+        "preloads": [
+          [
+            "0290",
+            "LDGSTS.E.BYPASS.128 [R13], desc[UR6][R4.64]"
+          ],
+          [
+            "02c0",
+            "LDGSTS.E.BYPASS.128 [R13+0x1000], desc[UR6][R6.64]"
+          ],
+          [
+            "02e0",
+            "LDGSTS.E.BYPASS.128 [R13+0x2000], desc[UR6][R8.64]"
+          ],
+          [
+            "0310",
+            "@P0 LDGSTS.E.BYPASS.128 [R13+0x3000], desc[UR6][R10.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi2ELi512ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0330",
+        "preloads": [
+          [
+            "0200",
+            "LDG.E.128.CONSTANT R36, desc[UR4][R60.64]"
+          ],
+          [
+            "0230",
+            "@P0 LDG.E.128.STRONG.SM R48, desc[UR4][R4.64]"
+          ],
+          [
+            "0260",
+            "@P0 LDG.E.128.STRONG.SM R8, desc[UR4][R6.64]"
+          ],
+          [
+            "02a0",
+            "LDG.E.128.STRONG.SM R12, desc[UR4][R12.64]"
+          ],
+          [
+            "02c0",
+            "LDG.E.128.STRONG.SM R16, desc[UR4][R16.64]"
+          ],
+          [
+            "02e0",
+            "LDG.E.128.STRONG.SM R24, desc[UR4][R24.64]"
+          ]
+        ],
+        "count": 9,
+        "global_loads": 9,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi2ELi512ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "02b0",
+        "preloads": [
+          [
+            "01a0",
+            "LDGSTS.E.BYPASS.128 [R2], desc[UR4][R4.64]"
+          ],
+          [
+            "01e0",
+            "LDGSTS.E.BYPASS.128 [R2+0x2000], desc[UR4][R6.64]"
+          ],
+          [
+            "0220",
+            "LDGSTS.E.BYPASS.128 [R2+0x4000], desc[UR4][R8.64]"
+          ],
+          [
+            "0260",
+            "@P0 LDGSTS.E.BYPASS.128 [R2+0x6000], desc[UR4][R12.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi2ELi512ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0340",
+        "preloads": [
+          [
+            "0200",
+            "LDG.E.128.CONSTANT R36, desc[UR4][R58.64]"
+          ],
+          [
+            "0230",
+            "@P0 LDG.E.128.STRONG.SM R48, desc[UR4][R4.64]"
+          ],
+          [
+            "0260",
+            "@P0 LDG.E.128.STRONG.SM R8, desc[UR4][R6.64]"
+          ],
+          [
+            "02a0",
+            "LDG.E.128.STRONG.SM R12, desc[UR4][R12.64]"
+          ],
+          [
+            "02c0",
+            "LDG.E.128.STRONG.SM R16, desc[UR4][R16.64]"
+          ],
+          [
+            "02e0",
+            "LDG.E.128.STRONG.SM R24, desc[UR4][R24.64]"
+          ]
+        ],
+        "count": 9,
+        "global_loads": 9,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi2ELi512ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "02d0",
+        "preloads": [
+          [
+            "01c0",
+            "LDGSTS.E.BYPASS.128 [R2], desc[UR4][R4.64]"
+          ],
+          [
+            "0200",
+            "LDGSTS.E.BYPASS.128 [R2+0x2000], desc[UR4][R6.64]"
+          ],
+          [
+            "0240",
+            "LDGSTS.E.BYPASS.128 [R2+0x4000], desc[UR4][R8.64]"
+          ],
+          [
+            "0280",
+            "@P0 LDGSTS.E.BYPASS.128 [R2+0x6000], desc[UR4][R12.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi4ELi512ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0230",
+        "preloads": [
+          [
+            "0180",
+            "LDG.E.128.STRONG.SM R24, desc[UR6][R24.64]"
+          ],
+          [
+            "01c0",
+            "LDG.E.128.STRONG.SM R20, desc[UR6][R20.64]"
+          ],
+          [
+            "01f0",
+            "@P0 LDG.E.128.STRONG.SM R28, desc[UR6][R2.64]"
+          ],
+          [
+            "0210",
+            "LDG.E.128.STRONG.SM R16, desc[UR6][R16.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi4ELi512ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0270",
+        "preloads": [
+          [
+            "01a0",
+            "LDGSTS.E.BYPASS.128 [R33], desc[UR6][R4.64]"
+          ],
+          [
+            "01e0",
+            "LDGSTS.E.BYPASS.128 [R33+0x2000], desc[UR6][R6.64]"
+          ],
+          [
+            "0240",
+            "LDGSTS.E.BYPASS.128 [R33+0x4000], desc[UR6][R8.64]"
+          ],
+          [
+            "0250",
+            "@P0 LDGSTS.E.BYPASS.128 [R33+0x6000], desc[UR6][R10.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi4ELi512ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0230",
+        "preloads": [
+          [
+            "0190",
+            "LDG.E.128.STRONG.SM R20, desc[UR6][R20.64]"
+          ],
+          [
+            "01c0",
+            "@P0 LDG.E.128.STRONG.SM R24, desc[UR6][R2.64]"
+          ],
+          [
+            "01f0",
+            "LDG.E.128.STRONG.SM R8, desc[UR6][R8.64]"
+          ],
+          [
+            "0220",
+            "LDG.E.128.STRONG.SM R12, desc[UR6][R12.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi4ELi512ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0280",
+        "preloads": [
+          [
+            "01d0",
+            "LDGSTS.E.BYPASS.128 [R29], desc[UR6][R4.64]"
+          ],
+          [
+            "0240",
+            "LDGSTS.E.BYPASS.128 [R29+0x2000], desc[UR6][R6.64]"
+          ],
+          [
+            "0250",
+            "LDGSTS.E.BYPASS.128 [R29+0x4000], desc[UR6][R8.64]"
+          ],
+          [
+            "0260",
+            "@P0 LDGSTS.E.BYPASS.128 [R29+0x6000], desc[UR6][R10.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi4ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0340",
+        "preloads": [
+          [
+            "0220",
+            "LDG.E.128.CONSTANT R44, desc[UR6][R72.64]"
+          ],
+          [
+            "0230",
+            "@P0 LDG.E.128.STRONG.SM R16, desc[UR6][R14.64]"
+          ],
+          [
+            "0240",
+            "@P0 LDG.E.128.STRONG.SM R4, desc[UR6][R2.64]"
+          ],
+          [
+            "0290",
+            "LDG.E.128.STRONG.SM R20, desc[UR6][R20.64]"
+          ],
+          [
+            "02b0",
+            "LDG.E.128.STRONG.SM R24, desc[UR6][R24.64]"
+          ],
+          [
+            "02d0",
+            "LDG.E.128.STRONG.SM R28, desc[UR6][R28.64]"
+          ]
+        ],
+        "count": 9,
+        "global_loads": 9,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi4ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "02d0",
+        "preloads": [
+          [
+            "01e0",
+            "LDGSTS.E.BYPASS.128 [R13], desc[UR6][R2.64]"
+          ],
+          [
+            "0220",
+            "LDGSTS.E.BYPASS.128 [R13+0x1000], desc[UR6][R4.64]"
+          ],
+          [
+            "0260",
+            "LDGSTS.E.BYPASS.128 [R13+0x2000], desc[UR6][R6.64]"
+          ],
+          [
+            "0290",
+            "@P0 LDGSTS.E.BYPASS.128 [R13+0x3000], desc[UR6][R18.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi4ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0340",
+        "preloads": [
+          [
+            "0220",
+            "LDG.E.128.CONSTANT R44, desc[UR6][R72.64]"
+          ],
+          [
+            "0230",
+            "@P0 LDG.E.128.STRONG.SM R16, desc[UR6][R14.64]"
+          ],
+          [
+            "0240",
+            "@P0 LDG.E.128.STRONG.SM R4, desc[UR6][R2.64]"
+          ],
+          [
+            "0290",
+            "LDG.E.128.STRONG.SM R20, desc[UR6][R20.64]"
+          ],
+          [
+            "02b0",
+            "LDG.E.128.STRONG.SM R24, desc[UR6][R24.64]"
+          ],
+          [
+            "02d0",
+            "LDG.E.128.STRONG.SM R28, desc[UR6][R28.64]"
+          ]
+        ],
+        "count": 9,
+        "global_loads": 9,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi4ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "02d0",
+        "preloads": [
+          [
+            "01c0",
+            "LDGSTS.E.BYPASS.128 [R13], desc[UR6][R2.64]"
+          ],
+          [
+            "0200",
+            "LDGSTS.E.BYPASS.128 [R13+0x1000], desc[UR6][R4.64]"
+          ],
+          [
+            "0240",
+            "LDGSTS.E.BYPASS.128 [R13+0x2000], desc[UR6][R6.64]"
+          ],
+          [
+            "0280",
+            "@P0 LDGSTS.E.BYPASS.128 [R13+0x3000], desc[UR6][R18.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi8ELi128ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0350",
+        "preloads": [
+          [
+            "0210",
+            "@P0 LDG.E.128.STRONG.SM R44, desc[UR12][R4.64]"
+          ],
+          [
+            "0230",
+            "@P0 LDG.E.128.STRONG.SM R40, desc[UR12][R8.64]"
+          ],
+          [
+            "0240",
+            "LDG.E.128.CONSTANT R12, desc[UR12][R66.64]"
+          ],
+          [
+            "0290",
+            "LDG.E.128.STRONG.SM R36, desc[UR12][R36.64]"
+          ],
+          [
+            "02c0",
+            "LDG.E.128.STRONG.SM R32, desc[UR12][R32.64]"
+          ],
+          [
+            "02e0",
+            "LDG.E.128.STRONG.SM R28, desc[UR12][R28.64]"
+          ]
+        ],
+        "count": 9,
+        "global_loads": 9,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi8ELi128ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0290",
+        "preloads": [
+          [
+            "01e0",
+            "LDGSTS.E.BYPASS.128 [R7], desc[UR12][R2.64]"
+          ],
+          [
+            "0210",
+            "LDGSTS.E.BYPASS.128 [R7+0x800], desc[UR12][R4.64]"
+          ],
+          [
+            "0230",
+            "LDGSTS.E.BYPASS.128 [R7+0x1000], desc[UR12][R8.64]"
+          ],
+          [
+            "0250",
+            "@P0 LDGSTS.E.BYPASS.128 [R7+0x1800], desc[UR12][R14.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi8ELi128ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0350",
+        "preloads": [
+          [
+            "0220",
+            "@P0 LDG.E.128.STRONG.SM R44, desc[UR12][R4.64]"
+          ],
+          [
+            "0230",
+            "LDG.E.128.CONSTANT R12, desc[UR12][R66.64]"
+          ],
+          [
+            "0240",
+            "@P0 LDG.E.128.STRONG.SM R40, desc[UR12][R8.64]"
+          ],
+          [
+            "0290",
+            "LDG.E.128.STRONG.SM R36, desc[UR12][R36.64]"
+          ],
+          [
+            "02c0",
+            "LDG.E.128.STRONG.SM R32, desc[UR12][R32.64]"
+          ],
+          [
+            "02e0",
+            "LDG.E.128.STRONG.SM R28, desc[UR12][R28.64]"
+          ]
+        ],
+        "count": 9,
+        "global_loads": 9,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi8ELi128ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "02a0",
+        "preloads": [
+          [
+            "01f0",
+            "LDGSTS.E.BYPASS.128 [R7], desc[UR12][R2.64]"
+          ],
+          [
+            "0210",
+            "LDGSTS.E.BYPASS.128 [R7+0x800], desc[UR12][R4.64]"
+          ],
+          [
+            "0230",
+            "LDGSTS.E.BYPASS.128 [R7+0x1000], desc[UR12][R8.64]"
+          ],
+          [
+            "0260",
+            "@P0 LDGSTS.E.BYPASS.128 [R7+0x1800], desc[UR12][R14.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi8ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0230",
+        "preloads": [
+          [
+            "0180",
+            "LDG.E.128.STRONG.SM R12, desc[UR12][R12.64]"
+          ],
+          [
+            "01c0",
+            "LDG.E.128.STRONG.SM R16, desc[UR12][R16.64]"
+          ],
+          [
+            "01f0",
+            "@P0 LDG.E.128.STRONG.SM R8, desc[UR12][R6.64]"
+          ],
+          [
+            "0210",
+            "LDG.E.128.STRONG.SM R20, desc[UR12][R20.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi8ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0270",
+        "preloads": [
+          [
+            "0220",
+            "LDGSTS.E.BYPASS.128 [R29], desc[UR12][R4.64]"
+          ],
+          [
+            "0230",
+            "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR12][R6.64]"
+          ],
+          [
+            "0240",
+            "LDGSTS.E.BYPASS.128 [R29+0x2000], desc[UR12][R16.64]"
+          ],
+          [
+            "0250",
+            "@P0 LDGSTS.E.BYPASS.128 [R29+0x3000], desc[UR12][R18.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi8ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0240",
+        "preloads": [
+          [
+            "0190",
+            "LDG.E.128.STRONG.SM R20, desc[UR12][R20.64]"
+          ],
+          [
+            "01c0",
+            "@P0 LDG.E.128.STRONG.SM R24, desc[UR12][R6.64]"
+          ],
+          [
+            "01f0",
+            "LDG.E.128.STRONG.SM R12, desc[UR12][R12.64]"
+          ],
+          [
+            "0230",
+            "LDG.E.128.STRONG.SM R8, desc[UR12][R8.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi8ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0280",
+        "preloads": [
+          [
+            "0220",
+            "LDGSTS.E.BYPASS.128 [R29], desc[UR12][R4.64]"
+          ],
+          [
+            "0240",
+            "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR12][R6.64]"
+          ],
+          [
+            "0250",
+            "LDGSTS.E.BYPASS.128 [R29+0x2000], desc[UR12][R8.64]"
+          ],
+          [
+            "0260",
+            "@P0 LDGSTS.E.BYPASS.128 [R29+0x3000], desc[UR12][R10.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi16ELi128ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0230",
+        "preloads": [
+          [
+            "0180",
+            "LDG.E.128.STRONG.SM R12, desc[UR12][R12.64]"
+          ],
+          [
+            "01b0",
+            "LDG.E.128.STRONG.SM R16, desc[UR12][R16.64]"
+          ],
+          [
+            "01e0",
+            "@P0 LDG.E.128.STRONG.SM R8, desc[UR12][R4.64]"
+          ],
+          [
+            "0200",
+            "LDG.E.128.STRONG.SM R20, desc[UR12][R20.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi16ELi128ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0270",
+        "preloads": [
+          [
+            "0210",
+            "LDGSTS.E.BYPASS.128 [R29], desc[UR12][R2.64]"
+          ],
+          [
+            "0230",
+            "LDGSTS.E.BYPASS.128 [R29+0x800], desc[UR12][R4.64]"
+          ],
+          [
+            "0240",
+            "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR12][R6.64]"
+          ],
+          [
+            "0250",
+            "@P0 LDGSTS.E.BYPASS.128 [R29+0x1800], desc[UR12][R16.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl11boundary_clILi16ELi128ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0240",
+        "preloads": [
+          [
+            "0190",
+            "LDG.E.128.STRONG.SM R16, desc[UR12][R16.64]"
+          ],
+          [
+            "01c0",
+            "@P0 LDG.E.128.STRONG.SM R24, desc[UR12][R20.64]"
+          ],
+          [
+            "01f0",
+            "LDG.E.128.STRONG.SM R8, desc[UR12][R8.64]"
+          ],
+          [
+            "0230",
+            "LDG.E.128.STRONG.SM R4, desc[UR12][R4.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "B1_GLUE_CL_CUDA",
+    "kernel": "_ZN7glue_cl14ew_boundary_clILi16ELi128ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "acquires": [
+      {
+        "wait": "0280",
+        "preloads": [
+          [
+            "0220",
+            "LDGSTS.E.BYPASS.128 [R21], desc[UR12][R2.64]"
+          ],
+          [
+            "0240",
+            "LDGSTS.E.BYPASS.128 [R21+0x800], desc[UR12][R4.64]"
+          ],
+          [
+            "0250",
+            "LDGSTS.E.BYPASS.128 [R21+0x1000], desc[UR12][R6.64]"
+          ],
+          [
+            "0260",
+            "@P0 LDGSTS.E.BYPASS.128 [R21+0x1800], desc[UR12][R8.64]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "GATE",
+    "kernel": "_gate_split_kernel",
+    "acquires": [
+      {
+        "wait": "2d40",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 80,
+        "mma": 8
+      }
+    ]
+  },
+  {
+    "source": "H13_P3B_CUDA",
+    "kernel": "_ZN5chunk6kernelILi4ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i",
+    "acquires": [
+      {
+        "wait": "0ad0",
+        "preloads": [
+          [
+            "09c0",
+            "@!P0 LDGSTS.E.128 [R3], desc[UR12][R16.64]"
+          ],
+          [
+            "0a10",
+            "@!P0 LDGSTS.E.128 [R3+0x100], desc[UR12][R16.64+0x100]"
+          ],
+          [
+            "0a50",
+            "@!P0 LDGSTS.E.128 [R3+0x800], desc[UR12][R16.64+0x200]"
+          ],
+          [
+            "0a90",
+            "@!P0 LDGSTS.E.128 [R3+0x900], desc[UR12][R16.64+0x300]"
+          ],
+          [
+            "0ab0",
+            "@!P1 LDGSTS.E.128 [R106+0x7c00], desc[UR12][R6.64]"
+          ]
+        ],
+        "count": 5,
+        "global_loads": 8,
+        "mma": 0
+      },
+      {
+        "wait": "7280",
+        "preloads": [
+          [
+            "0c30",
+            "LDGSTS.E.BYPASS.128 [R2], desc[UR12][R16.64], P3"
+          ],
+          [
+            "0c40",
+            "LDGSTS.E.BYPASS.128 [R0+0x9000], desc[UR12][R18.64], P4"
+          ],
+          [
+            "0c50",
+            "LDGSTS.E.BYPASS.128 [R105], desc[UR12][R24.64], P5"
+          ],
+          [
+            "0c60",
+            "LDGSTS.E.BYPASS.128 [R104], desc[UR12][R6.64], P6"
+          ],
+          [
+            "0c70",
+            "LDGSTS.E.BYPASS.128 [R2+0x2000], desc[UR12][R16.64+0x80], P3"
+          ],
+          [
+            "0c80",
+            "LDGSTS.E.BYPASS.128 [R0+0xb000], desc[UR12][R18.64+0x80], P4"
+          ]
+        ],
+        "count": 91,
+        "global_loads": 4,
+        "mma": 32
+      }
+    ]
+  },
+  {
+    "source": "H13_P3B_CUDA",
+    "kernel": "_ZN5chunk6kernelILi3ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i",
+    "acquires": [
+      {
+        "wait": "0a00",
+        "preloads": [
+          [
+            "0890",
+            "@!P0 LDGSTS.E.128 [R2], desc[UR12][R14.64]"
+          ],
+          [
+            "0910",
+            "@!P0 LDGSTS.E.128 [R2+0x100], desc[UR12][R14.64+0x100]"
+          ],
+          [
+            "0950",
+            "@!P0 LDGSTS.E.128 [R2+0x800], desc[UR12][R14.64+0x200]"
+          ],
+          [
+            "0990",
+            "@!P0 LDGSTS.E.128 [R2+0x900], desc[UR12][R14.64+0x300]"
+          ],
+          [
+            "09c0",
+            "@!P1 LDGSTS.E.128 [R7+0x5c00], desc[UR12][R16.64]"
+          ]
+        ],
+        "count": 5,
+        "global_loads": 8,
+        "mma": 0
+      },
+      {
+        "wait": "6730",
+        "preloads": [
+          [
+            "0bc0",
+            "LDGSTS.E.BYPASS.128 [R3], desc[UR12][R14.64], P4"
+          ],
+          [
+            "0bf0",
+            "LDGSTS.E.BYPASS.128 [R4], desc[UR12][R18.64], P3"
+          ],
+          [
+            "0c40",
+            "LDGSTS.E.BYPASS.128 [R7+0x6c00], desc[UR12][R24.64], P2"
+          ],
+          [
+            "0c50",
+            "LDGSTS.E.BYPASS.128 [R29+0x6c00], desc[UR12][R16.64], P6"
+          ],
+          [
+            "0c60",
+            "LDGSTS.E.BYPASS.128 [R3+0x2000], desc[UR12][R14.64+0x80], P4"
+          ],
+          [
+            "0c70",
+            "LDGSTS.E.BYPASS.128 [R4+0x2000], desc[UR12][R18.64+0x80], P3"
+          ]
+        ],
+        "count": 65,
+        "global_loads": 4,
+        "mma": 24
+      }
+    ]
+  },
+  {
+    "source": "H2_P3B_CUDA",
+    "kernel": "_ZN5chunk6kernelILi4ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i",
+    "acquires": [
+      {
+        "wait": "0a10",
+        "preloads": [
+          [
+            "0920",
+            "@!P0 LDGSTS.E.128 [R0], desc[UR12][R14.64]"
+          ],
+          [
+            "0960",
+            "@!P0 LDGSTS.E.128 [R0+0x100], desc[UR12][R14.64+0x100]"
+          ],
+          [
+            "09b0",
+            "@!P0 LDGSTS.E.128 [R0+0x800], desc[UR12][R14.64+0x200]"
+          ],
+          [
+            "09e0",
+            "@!P0 LDGSTS.E.128 [R0+0x900], desc[UR12][R14.64+0x300]"
+          ],
+          [
+            "09f0",
+            "@!P1 LDGSTS.E.128 [R22+0x7c00], desc[UR12][R16.64]"
+          ]
+        ],
+        "count": 5,
+        "global_loads": 4,
+        "mma": 0
+      },
+      {
+        "wait": "6500",
+        "preloads": [
+          [
+            "0b00",
+            "LDGSTS.E.BYPASS.128 [R2+0x9000], desc[UR12][R8.64], P2"
+          ],
+          [
+            "0b20",
+            "LDGSTS.E.BYPASS.128 [R3], desc[UR12][R14.64], P4"
+          ],
+          [
+            "0b30",
+            "LDGSTS.E.BYPASS.128 [R21], desc[UR12][R16.64], P5"
+          ],
+          [
+            "0b40",
+            "LDGSTS.E.BYPASS.128 [R20], desc[UR12][R18.64], P6"
+          ],
+          [
+            "0b50",
+            "LDGSTS.E.BYPASS.128 [R2+0xb000], desc[UR12][R8.64+0x80], P2"
+          ],
+          [
+            "0b60",
+            "LDGSTS.E.BYPASS.128 [R3+0x2000], desc[UR12][R14.64+0x80], P4"
+          ]
+        ],
+        "count": 91,
+        "global_loads": 33,
+        "mma": 32
+      }
+    ]
+  },
+  {
+    "source": "H2_P3B_CUDA",
+    "kernel": "_ZN5chunk6kernelILi3ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i",
+    "acquires": [
+      {
+        "wait": "09e0",
+        "preloads": [
+          [
+            "0910",
+            "@!P0 LDGSTS.E.128 [R4], desc[UR12][R14.64]"
+          ],
+          [
+            "0930",
+            "@!P0 LDGSTS.E.128 [R4+0x100], desc[UR12][R14.64+0x100]"
+          ],
+          [
+            "0970",
+            "@!P0 LDGSTS.E.128 [R4+0x800], desc[UR12][R14.64+0x200]"
+          ],
+          [
+            "09b0",
+            "@!P0 LDGSTS.E.128 [R4+0x900], desc[UR12][R14.64+0x300]"
+          ],
+          [
+            "09c0",
+            "@!P1 LDGSTS.E.128 [R21+0x5c00], desc[UR12][R18.64]"
+          ]
+        ],
+        "count": 5,
+        "global_loads": 4,
+        "mma": 0
+      },
+      {
+        "wait": "5a00",
+        "preloads": [
+          [
+            "0b70",
+            "LDGSTS.E.BYPASS.128 [R3], desc[UR12][R10.64], P6"
+          ],
+          [
+            "0bb0",
+            "LDGSTS.E.BYPASS.128 [R2], desc[UR12][R16.64], P5"
+          ],
+          [
+            "0bd0",
+            "LDGSTS.E.BYPASS.128 [R21+0x6c00], desc[UR12][R14.64], P4"
+          ],
+          [
+            "0be0",
+            "LDGSTS.E.BYPASS.128 [R25+0x6c00], desc[UR12][R18.64], P3"
+          ],
+          [
+            "0bf0",
+            "LDGSTS.E.BYPASS.128 [R3+0x2000], desc[UR12][R10.64+0x80], P6"
+          ],
+          [
+            "0c00",
+            "LDGSTS.E.BYPASS.128 [R2+0x2000], desc[UR12][R16.64+0x80], P5"
+          ]
+        ],
+        "count": 65,
+        "global_loads": 33,
+        "mma": 24
+      }
+    ]
+  },
+  {
+    "source": "KV_PARTIAL_CUDA",
+    "kernel": "_ZN51_GLOBAL__N__0dd9f491_18_KV_PARTIAL_CUDA_cu_0e6d075c9attn_mainILi8ELi3EEEvNS_6ParamsE",
+    "acquires": [
+      {
+        "wait": "2110",
+        "preloads": [
+          [
+            "0ff0",
+            "LDGSTS.E.BYPASS.128 [R31+0x2000], desc[UR8][R24.64], P6"
+          ],
+          [
+            "1020",
+            "LDGSTS.E.BYPASS.128 [R31+0x8000], desc[UR8][R18.64], P6"
+          ],
+          [
+            "1130",
+            "LDGSTS.E.BYPASS.128 [R7+0x2000], desc[UR8][R28.64], P6"
+          ],
+          [
+            "1150",
+            "LDGSTS.E.BYPASS.128 [R7+0x8000], desc[UR8][R26.64], P6"
+          ],
+          [
+            "1220",
+            "LDGSTS.E.BYPASS.128 [R7+0x2000], desc[UR8][R32.64], P6"
+          ],
+          [
+            "1250",
+            "LDGSTS.E.BYPASS.128 [R7+0x8000], desc[UR8][R30.64], P6"
+          ]
+        ],
+        "count": 16,
+        "global_loads": 27,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "KV_PARTIAL_CUDA",
+    "kernel": "_ZN51_GLOBAL__N__0dd9f491_18_KV_PARTIAL_CUDA_cu_0e6d075c9attn_mainILi1ELi4EEEvNS_6ParamsE",
+    "acquires": [
+      {
+        "wait": "26d0",
+        "preloads": [
+          [
+            "1060",
+            "LDGSTS.E.BYPASS.128 [R37+0x2000], desc[UR8][R42.64], P6"
+          ],
+          [
+            "1080",
+            "LDGSTS.E.BYPASS.128 [R37+0xa000], desc[UR8][R44.64], P6"
+          ],
+          [
+            "11c0",
+            "LDGSTS.E.BYPASS.128 [R35+0x2000], desc[UR8][R32.64], P6"
+          ],
+          [
+            "11e0",
+            "LDGSTS.E.BYPASS.128 [R35+0xa000], desc[UR8][R40.64], P6"
+          ],
+          [
+            "12c0",
+            "LDGSTS.E.BYPASS.128 [R31+0x2000], desc[UR8][R22.64], P6"
+          ],
+          [
+            "12e0",
+            "LDGSTS.E.BYPASS.128 [R31+0xa000], desc[UR8][R36.64], P6"
+          ]
+        ],
+        "count": 24,
+        "global_loads": 22,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "N13_RVC_NBASE1_CUDA",
+    "kernel": "_ZN55_GLOBAL__N__447e3e92_22_N13_RVC_NBASE1_CUDA_cu_56e15e617moe_varILi2ELi2117EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPmS5_",
+    "acquires": [
+      {
+        "wait": "0830",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 4,
+        "mma": 0
+      },
+      {
+        "wait": "4690",
+        "preloads": [
+          [
+            "2d30",
+            "UBLKCP.S.G [UR6], [UR4], UR10, desc[UR8]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 6,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "N13_RVC_NBASE1_CUDA",
+    "kernel": "_ZN55_GLOBAL__N__447e3e92_22_N13_RVC_NBASE1_CUDA_cu_56e15e617moe_varILi1ELi325EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPmS5_",
+    "acquires": [
+      {
+        "wait": "0930",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 2,
+        "mma": 0
+      },
+      {
+        "wait": "4760",
+        "preloads": [
+          [
+            "2e50",
+            "UBLKCP.S.G [UR6], [UR4], UR14, desc[UR12]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 6,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "N13_RVC_NBASE1_CUDA",
+    "kernel": "_ZN55_GLOBAL__N__447e3e92_22_N13_RVC_NBASE1_CUDA_cu_56e15e617moe_varILi1ELi95EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPmS5_",
+    "acquires": [
+      {
+        "wait": "07e0",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 4,
+        "mma": 0
+      },
+      {
+        "wait": "2000",
+        "preloads": [
+          [
+            "1630",
+            "UBLKCP.S.G [UR6], [UR16], UR4, desc[UR8]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 2,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "N13_RVC_NBASE1_CUDA",
+    "kernel": "_ZN55_GLOBAL__N__447e3e92_22_N13_RVC_NBASE1_CUDA_cu_56e15e617moe_varILi1ELi69EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPmS5_",
+    "acquires": [
+      {
+        "wait": "07d0",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 2,
+        "mma": 0
+      },
+      {
+        "wait": "4550",
+        "preloads": [
+          [
+            "2c20",
+            "UBLKCP.S.G [UR6], [UR4], UR10, desc[UR8]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 6,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "N13_RVC_NBASE2_CUDA",
+    "kernel": "_ZN55_GLOBAL__N__7df30257_22_N13_RVC_NBASE2_CUDA_cu_56e15e617moe_varILi2ELi2117EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPmS5_",
+    "acquires": [
+      {
+        "wait": "0830",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 4,
+        "mma": 0
+      },
+      {
+        "wait": "4690",
+        "preloads": [
+          [
+            "2d30",
+            "UBLKCP.S.G [UR6], [UR4], UR10, desc[UR8]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 6,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "N13_RVC_NBASE2_CUDA",
+    "kernel": "_ZN55_GLOBAL__N__7df30257_22_N13_RVC_NBASE2_CUDA_cu_56e15e617moe_varILi1ELi325EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPmS5_",
+    "acquires": [
+      {
+        "wait": "0930",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 2,
+        "mma": 0
+      },
+      {
+        "wait": "4760",
+        "preloads": [
+          [
+            "2e50",
+            "UBLKCP.S.G [UR6], [UR4], UR14, desc[UR12]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 6,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "N13_RVC_NBASE2_CUDA",
+    "kernel": "_ZN55_GLOBAL__N__7df30257_22_N13_RVC_NBASE2_CUDA_cu_56e15e617moe_varILi1ELi95EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPmS5_",
+    "acquires": [
+      {
+        "wait": "07e0",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 4,
+        "mma": 0
+      },
+      {
+        "wait": "2000",
+        "preloads": [
+          [
+            "1630",
+            "UBLKCP.S.G [UR6], [UR16], UR4, desc[UR8]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 2,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "N13_RVC_NBASE2_CUDA",
+    "kernel": "_ZN55_GLOBAL__N__7df30257_22_N13_RVC_NBASE2_CUDA_cu_56e15e617moe_varILi1ELi69EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPmS5_",
+    "acquires": [
+      {
+        "wait": "07d0",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 2,
+        "mma": 0
+      },
+      {
+        "wait": "4550",
+        "preloads": [
+          [
+            "2c20",
+            "UBLKCP.S.G [UR6], [UR4], UR10, desc[UR8]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 6,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "N13_RVC_NINDEX0_CUDA",
+    "kernel": "_ZN56_GLOBAL__N__7a27f2c3_23_N13_RVC_NINDEX0_CUDA_cu_56e15e617moe_varILi2ELi2117EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPmS5_",
+    "acquires": [
+      {
+        "wait": "0830",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 4,
+        "mma": 0
+      },
+      {
+        "wait": "4690",
+        "preloads": [
+          [
+            "2d30",
+            "UBLKCP.S.G [UR6], [UR4], UR10, desc[UR8]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 6,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "N13_RVC_NINDEX0_CUDA",
+    "kernel": "_ZN56_GLOBAL__N__7a27f2c3_23_N13_RVC_NINDEX0_CUDA_cu_56e15e617moe_varILi1ELi325EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPmS5_",
+    "acquires": [
+      {
+        "wait": "0920",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 2,
+        "mma": 0
+      },
+      {
+        "wait": "4800",
+        "preloads": [
+          [
+            "2ee0",
+            "UBLKCP.S.G [UR8], [UR6], UR4, desc[UR18]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 6,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "N13_RVC_NINDEX0_CUDA",
+    "kernel": "_ZN56_GLOBAL__N__7a27f2c3_23_N13_RVC_NINDEX0_CUDA_cu_56e15e617moe_varILi1ELi95EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPmS5_",
+    "acquires": [
+      {
+        "wait": "07e0",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 4,
+        "mma": 0
+      },
+      {
+        "wait": "2000",
+        "preloads": [
+          [
+            "1630",
+            "UBLKCP.S.G [UR6], [UR16], UR4, desc[UR8]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 2,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "N13_RVC_NINDEX0_CUDA",
+    "kernel": "_ZN56_GLOBAL__N__7a27f2c3_23_N13_RVC_NINDEX0_CUDA_cu_56e15e617moe_varILi1ELi69EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPmS5_",
+    "acquires": [
+      {
+        "wait": "07b0",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 2,
+        "mma": 0
+      },
+      {
+        "wait": "45e0",
+        "preloads": [
+          [
+            "2cd0",
+            "UBLKCP.S.G [UR8], [UR6], UR4, desc[UR16]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 6,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "N2_RVC_NBASE2_CUDA",
+    "kernel": "_ZN54_GLOBAL__N__3ae81cb0_21_N2_RVC_NBASE2_CUDA_cu_56e15e617moe_varILi2ELi2117EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm",
+    "acquires": [
+      {
+        "wait": "0740",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 2,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "N2_RVC_NBASE2_CUDA",
+    "kernel": "_ZN54_GLOBAL__N__3ae81cb0_21_N2_RVC_NBASE2_CUDA_cu_56e15e617moe_varILi1ELi325EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm",
+    "acquires": [
+      {
+        "wait": "0780",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "N2_RVC_NBASE2_CUDA",
+    "kernel": "_ZN54_GLOBAL__N__3ae81cb0_21_N2_RVC_NBASE2_CUDA_cu_56e15e617moe_varILi1ELi95EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm",
+    "acquires": [
+      {
+        "wait": "0640",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 2,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "N2_RVC_NBASE2_CUDA",
+    "kernel": "_ZN54_GLOBAL__N__3ae81cb0_21_N2_RVC_NBASE2_CUDA_cu_56e15e617moe_varILi1ELi69EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm",
+    "acquires": [
+      {
+        "wait": "0670",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "NF_16_o",
+    "kernel": "_Z26m16trace_59fcb5b72994_gemvILi0ELi2ELi1ELi1ELi0ELi0ELi256ELi0ELi8192ELi1024ELi2ELi4ELi4ELi1ELi7ELi1EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj",
+    "acquires": [
+      {
+        "wait": "01f0",
+        "preloads": [
+          [
+            "00f0",
+            "LDG.E.NA.128.CONSTANT R16, desc[UR6][R2.64]"
+          ],
+          [
+            "0100",
+            "LDG.E.NA.128.CONSTANT R12, desc[UR6][R2.64+0x200]"
+          ],
+          [
+            "0110",
+            "LDG.E.NA.128.CONSTANT R8, desc[UR6][R2.64+0x400]"
+          ],
+          [
+            "0120",
+            "LDG.E.NA.128.CONSTANT R4, desc[UR6][R2.64+0x600]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "NF_16_o",
+    "kernel": "_Z26m16trace_59fcb5b72994_gemvILi1ELi2ELi1ELi1ELi0ELi0ELi256ELi0ELi8192ELi1024ELi2ELi4ELi4ELi1ELi7ELi1EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj",
+    "acquires": [
+      {
+        "wait": "0260",
+        "preloads": [
+          [
+            "0180",
+            "LDG.E.NA.128.CONSTANT R4, desc[UR8][R2.64]"
+          ],
+          [
+            "0190",
+            "LDG.E.NA.128.CONSTANT R52, desc[UR8][R2.64+0x200]"
+          ],
+          [
+            "01a0",
+            "LDG.E.NA.128.CONSTANT R48, desc[UR8][R2.64+0x400]"
+          ]
+        ],
+        "count": 3,
+        "global_loads": 6,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "NF_16_unpooler",
+    "kernel": "_Z20dd_cap2_b_cpssm_gemvILi1ELi2ELi1ELi2ELi0ELi0ELi256ELi0ELi8192ELi4096ELi2ELi4ELi16ELi1ELi2EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj",
+    "acquires": [
+      {
+        "wait": "03a0",
+        "preloads": [
+          [
+            "0200",
+            "LDGSTS.E.BYPASS.128 [R89], desc[UR6][R80.64]"
+          ],
+          [
+            "0220",
+            "LDGSTS.E.BYPASS.128 [R89+0x200], desc[UR6][R80.64+0x200]"
+          ],
+          [
+            "0230",
+            "LDGSTS.E.BYPASS.128 [R89+0x400], desc[UR6][R80.64+0x400]"
+          ],
+          [
+            "0250",
+            "LDGSTS.E.BYPASS.128 [R89+0x3000], desc[UR6][R6.64]"
+          ],
+          [
+            "0260",
+            "LDGSTS.E.BYPASS.128 [R89+0x3200], desc[UR6][R6.64+0x200]"
+          ],
+          [
+            "0270",
+            "LDGSTS.E.BYPASS.128 [R89+0x3400], desc[UR6][R6.64+0x400]"
+          ]
+        ],
+        "count": 6,
+        "global_loads": 2,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "NF_1_o",
+    "kernel": "_Z12smallm2_gemvILi1ELi1ELi1ELi2ELi0ELi0ELi1024ELi0ELi8192ELi1024ELi4ELi8ELi2ELi1ELi7EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj",
+    "acquires": [
+      {
+        "wait": "02a0",
+        "preloads": [
+          [
+            "0120",
+            "LDG.E.NA.128.CONSTANT R24, desc[UR6][R36.64]"
+          ],
+          [
+            "0130",
+            "LDG.E.NA.128.CONSTANT R28, desc[UR6][R36.64+0x200]"
+          ],
+          [
+            "0140",
+            "LDG.E.NA.128.CONSTANT R32, desc[UR6][R36.64+0x400]"
+          ]
+        ],
+        "count": 3,
+        "global_loads": 5,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "NF_1_qkv3",
+    "kernel": "_Z16v18d_native_gemvILi1ELi1ELi1ELi2ELi2ELi0ELi256ELi0ELi1280ELi8192ELi1ELi4ELi8ELi4EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj",
+    "acquires": [
+      {
+        "wait": "05e0",
+        "preloads": [
+          [
+            "04f0",
+            "LDG.E.NA.128.CONSTANT R52, desc[UR16][R4.64+0x1e0000]"
+          ],
+          [
+            "0510",
+            "LDG.E.NA.128.CONSTANT R48, desc[UR16][R4.64+0x1e0200]"
+          ],
+          [
+            "0520",
+            "LDG.E.NA.128.CONSTANT R44, desc[UR16][R4.64+0x1e0400]"
+          ],
+          [
+            "0530",
+            "LDG.E.128.CONSTANT R40, desc[UR16][R8.64+0x10]"
+          ],
+          [
+            "0540",
+            "LDG.E.128.CONSTANT R36, desc[UR16][R8.64+0x90]"
+          ],
+          [
+            "0550",
+            "LDG.E.128.CONSTANT R32, desc[UR16][R6.64]"
+          ]
+        ],
+        "count": 10,
+        "global_loads": 9,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "NF_32_qkv_gate",
+    "kernel": "_Z11m32x_q_gemvILi0ELi4ELi1ELi1ELi5ELi0ELi128ELi0ELi0ELi8192ELi1ELi4ELi8ELi4ELi7ELi1ELi0EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj",
+    "acquires": [
+      {
+        "wait": "0330",
+        "preloads": [
+          [
+            "0270",
+            "LDG.E.NA.128.CONSTANT R64, desc[UR6][R88.64]"
+          ],
+          [
+            "0280",
+            "LDG.E.NA.128.CONSTANT R60, desc[UR6][R88.64+0x200]"
+          ],
+          [
+            "0290",
+            "LDG.E.NA.128.CONSTANT R40, desc[UR6][R88.64+0x400]"
+          ],
+          [
+            "02a0",
+            "LDG.E.NA.128.CONSTANT R36, desc[UR6][R88.64+0x600]"
+          ]
+        ],
+        "count": 4,
+        "global_loads": 4,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "NF_32_qkv_gate",
+    "kernel": "_Z11m32x_q_gemvILi1ELi4ELi1ELi1ELi5ELi0ELi128ELi0ELi0ELi8192ELi1ELi4ELi8ELi4ELi7ELi1ELi0EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj",
+    "acquires": [
+      {
+        "wait": "03f0",
+        "preloads": [
+          [
+            "0340",
+            "LDG.E.NA.128.CONSTANT R12, desc[UR8][R4.64]"
+          ],
+          [
+            "0350",
+            "LDG.E.NA.128.CONSTANT R16, desc[UR8][R4.64+0x200]"
+          ],
+          [
+            "0360",
+            "LDG.E.NA.128.CONSTANT R20, desc[UR8][R4.64+0x400]"
+          ]
+        ],
+        "count": 3,
+        "global_loads": 5,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "NF_8_o",
+    "kernel": "_Z9v18s_gemvILi1ELi1ELi1ELi2ELi0ELi0ELi256ELi0ELi8192ELi1024ELi1ELi8ELi2ELi1ELi6EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj",
+    "acquires": [
+      {
+        "wait": "02a0",
+        "preloads": [
+          [
+            "0180",
+            "LDG.E.NA.128.CONSTANT R8, desc[UR8][R46.64]"
+          ],
+          [
+            "0190",
+            "LDG.E.NA.128.CONSTANT R4, desc[UR8][R46.64+0x200]"
+          ],
+          [
+            "01a0",
+            "LDG.E.NA.128.CONSTANT R12, desc[UR8][R46.64+0x400]"
+          ]
+        ],
+        "count": 3,
+        "global_loads": 6,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "NF_MW32",
+    "kernel": "_Z9m32w_gemmILi64ELi64ELi4ELi2ELi2ELb1ELi1EEv14CUtensorMap_stPK5uint4PKjPfiiiijj",
+    "acquires": [
+      {
+        "wait": "0b20",
+        "preloads": [
+          [
+            "09f0",
+            "@P2 LDG.E.NA.128.CONSTANT R4, desc[UR4][R16.64]"
+          ],
+          [
+            "0a00",
+            "@P2 LDG.E.NA.128.CONSTANT R8, desc[UR4][R16.64+0x200]"
+          ],
+          [
+            "0a20",
+            "@P2 LDG.E.NA.128.CONSTANT R12, desc[UR4][R16.64+0x400]"
+          ]
+        ],
+        "count": 3,
+        "global_loads": 6,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "NF_MW32",
+    "kernel": "_Z9m32w_gemmILi32ELi64ELi4ELi2ELi2ELb1ELi1EEv14CUtensorMap_stPK5uint4PKjPfiiiijj",
+    "acquires": [
+      {
+        "wait": "0b50",
+        "preloads": [
+          [
+            "0a10",
+            "@P2 LDG.E.NA.128.CONSTANT R8, desc[UR4][R22.64]"
+          ],
+          [
+            "0a20",
+            "@P2 LDG.E.NA.128.CONSTANT R12, desc[UR4][R22.64+0x200]"
+          ],
+          [
+            "0a40",
+            "@P2 LDG.E.NA.128.CONSTANT R16, desc[UR4][R22.64+0x400]"
+          ]
+        ],
+        "count": 3,
+        "global_loads": 6,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "NF_OLAYER_CUDA",
+    "kernel": "_Z16ol_projection_ewILi128ELi128ELi4ELi3ELi1ELi1ELi1EEv14CUtensorMap_stS0_PKhP13__nv_bfloat16i",
+    "acquires": [
+      {
+        "wait": "0340",
+        "preloads": [
+          [
+            "0270",
+            "UBLKCP.S.G [UR8], [UR6], UR10, desc[UR4]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "NF_b2o_OLAYER_CUDA",
+    "kernel": "_Z34r3_o32_o_direct_a_ol_projection_ewILi32ELi128ELi8ELi1ELi1ELi1ELi1EEv14CUtensorMap_stS0_PKhP13__nv_bfloat16i",
+    "acquires": [
+      {
+        "wait": "0350",
+        "preloads": [
+          [
+            "0270",
+            "UBLKCP.S.G [UR8], [UR4], UR10, desc[UR6]"
+          ]
+        ],
+        "count": 1,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "P10_pool",
+    "kernel": "_Z9v18s_gemvILi1ELi2ELi1ELi1ELi0ELi0ELi256ELi0ELi4608ELi8192ELi1ELi8ELi16ELi1ELi6EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj",
+    "acquires": [
+      {
+        "wait": "02a0",
+        "preloads": [
+          [
+            "0180",
+            "LDG.E.NA.128.CONSTANT R12, desc[UR6][R64.64]"
+          ],
+          [
+            "0190",
+            "LDG.E.NA.128.CONSTANT R16, desc[UR6][R64.64+0x200]"
+          ],
+          [
+            "01a0",
+            "LDG.E.NA.128.CONSTANT R20, desc[UR6][R64.64+0x400]"
+          ]
+        ],
+        "count": 3,
+        "global_loads": 6,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "P10_pool",
+    "kernel": "_Z9v18s_gemvILi1ELi1ELi1ELi1ELi0ELi0ELi256ELi0ELi4608ELi8192ELi1ELi8ELi16ELi1ELi6EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj",
+    "acquires": [
+      {
+        "wait": "0280",
+        "preloads": [
+          [
+            "0180",
+            "LDG.E.NA.128.CONSTANT R8, desc[UR6][R52.64]"
+          ],
+          [
+            "0190",
+            "LDG.E.NA.128.CONSTANT R12, desc[UR6][R52.64+0x200]"
+          ],
+          [
+            "01a0",
+            "LDG.E.NA.128.CONSTANT R16, desc[UR6][R52.64+0x400]"
+          ]
+        ],
+        "count": 3,
+        "global_loads": 6,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "dense",
+    "kernel": "_ZN8ew_dense3runILi16ELb0EEEvPK13__nv_bfloat16S3_Pfiii",
+    "acquires": [
+      {
+        "wait": "00b0",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "dense",
+    "kernel": "_ZN8ew_dense3runILi16ELb1EEEvPK13__nv_bfloat16S3_Pfiii",
+    "acquires": [
+      {
+        "wait": "08d0",
+        "preloads": [
+          [
+            "0350",
+            "LDGSTS.E.BYPASS.128 [R7], desc[UR10][R8.64], !P1"
+          ],
+          [
+            "0810",
+            "LDGSTS.E.BYPASS.128 [R13], desc[UR10][R16.64], !P4"
+          ],
+          [
+            "0820",
+            "LDGSTS.E.BYPASS.128 [R13+0x800], desc[UR10][R10.64], !P3"
+          ],
+          [
+            "0830",
+            "LDGSTS.E.BYPASS.128 [R13+0x1000], desc[UR10][R6.64], !P2"
+          ],
+          [
+            "0840",
+            "LDGSTS.E.BYPASS.128 [R13+0x1800], desc[UR10][R8.64], !P1"
+          ]
+        ],
+        "count": 5,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "dense",
+    "kernel": "_ZN8ew_dense3runILi64ELb0EEEvPK13__nv_bfloat16S3_Pfiii",
+    "acquires": [
+      {
+        "wait": "00b0",
+        "preloads": [],
+        "count": 0,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  },
+  {
+    "source": "dense",
+    "kernel": "_ZN8ew_dense3runILi64ELb1EEEvPK13__nv_bfloat16S3_Pfiii",
+    "acquires": [
+      {
+        "wait": "08d0",
+        "preloads": [
+          [
+            "0360",
+            "LDGSTS.E.BYPASS.128 [R3], desc[UR10][R4.64], !P1"
+          ],
+          [
+            "0820",
+            "LDGSTS.E.BYPASS.128 [R9], desc[UR10][R12.64], !P4"
+          ],
+          [
+            "0830",
+            "LDGSTS.E.BYPASS.128 [R9+0x800], desc[UR10][R4.64], !P3"
+          ],
+          [
+            "0840",
+            "LDGSTS.E.BYPASS.128 [R9+0x1000], desc[UR10][R2.64], !P2"
+          ],
+          [
+            "0850",
+            "LDGSTS.E.BYPASS.128 [R9+0x1800], desc[UR10][R10.64], !P1"
+          ]
+        ],
+        "count": 5,
+        "global_loads": 0,
+        "mma": 0
+      }
+    ]
+  }
+]

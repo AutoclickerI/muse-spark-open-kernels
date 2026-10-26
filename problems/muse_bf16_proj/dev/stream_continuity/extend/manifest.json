@@ -1,0 +1,162 @@
+{
+  "base_sha256": "95df42fe7b3a31e66d60bc769bae15412c952ad77753b7d15b3beea3d89b3af4",
+  "base": "S18",
+  "arms": {
+    "Q": {
+      "sha256": "11e2cc9806ee70e984b768b40e66ede3e2929b5d7bff8a6ac88c723e549b780d",
+      "config": {
+        "roles": [
+          "qkv_gate",
+          "qkv3"
+        ]
+      }
+    },
+    "G": {
+      "sha256": "69deac5827d5409f51c9cd7d3cf38dd4481320546134f18fe47933d54ed2310c",
+      "config": {}
+    },
+    "O": {
+      "sha256": "09ad59c475c190650d8ada1a551418a648b249c836984719bca4038f06f7b12d",
+      "config": {
+        "roles": [
+          "o"
+        ]
+      }
+    },
+    "P": {
+      "sha256": "c9943528c9ba130b81cbf1f536de53872c38e19dd459002437656b2b9d5845af",
+      "config": {
+        "roles": [
+          "pool_router"
+        ]
+      }
+    },
+    "U": {
+      "sha256": "21e1352778252779478e2d04a5559361a8d45a0eabc6163a71011bdd8c7fe80a",
+      "config": {
+        "roles": [
+          "unpooler",
+          "unpooler_slice"
+        ]
+      }
+    },
+    "N13": {
+      "sha256": "c214e9f020a112cace48fba95c1b46053240e71b2115c40366dc7968076c5049",
+      "config": {
+        "n13": true
+      }
+    },
+    "N2": {
+      "sha256": "c03dbf05a5e10f050c12f1aa72835ca608c3afe1ed309fcc96ed27bba1179119",
+      "config": {
+        "n2": true
+      }
+    },
+    "H13": {
+      "sha256": "c9cf26d01cc35cc1ee2807f22607f72527375f65bc6b4edd78e9fc3219aec3e8",
+      "config": {
+        "h13": true
+      }
+    },
+    "H2": {
+      "sha256": "d5eb52fe518366d08824a142cd148b330defd95bf9c6435a7c5df69ffacf7f59",
+      "config": {
+        "h2": true
+      }
+    },
+    "B1": {
+      "sha256": "70e14e792cb895f82b97cc27ad60fca85eef421b3c2df89b0ea19e14b2b16df1",
+      "config": {
+        "boundaries": [
+          "b1"
+        ]
+      }
+    },
+    "B2": {
+      "sha256": "ab75c7abbfa6607b8dd6124fc710b729ba835206d5ba64cf221a995d96adaeb5",
+      "config": {
+        "boundaries": [
+          "b2"
+        ]
+      }
+    },
+    "KV": {
+      "sha256": "6af94959b2c29b673a3714e5895344906deefa74c98b6f3d11e35069962ddbe9",
+      "config": {
+        "kv": true
+      }
+    },
+    "ALL": {
+      "sha256": "1a87b0260a7086761d02d7b47a6d82a189adfd87b5f40d0b2e22ae97bc1f57eb",
+      "config": {
+        "roles": [
+          "qkv_gate",
+          "qkv3",
+          "o",
+          "pool_router",
+          "unpooler",
+          "unpooler_slice"
+        ],
+        "boundaries": [
+          "b1",
+          "b2"
+        ],
+        "n13": true,
+        "n2": true,
+        "h13": true,
+        "h2": true,
+        "kv": true
+      }
+    },
+    "KV_LATE": {
+      "sha256": "ddb9cfea821e5e3b131a77066de8d9bb68ff9006bdf58e546b9db6e3bfbebd6f",
+      "config": {
+        "kv": true,
+        "early": false
+      }
+    },
+    "LATE": {
+      "sha256": "bf97e0f80be90d929fb506c7b685f6ebfee2d9c9d58c655fcb5fc97e3f61afe8",
+      "config": {
+        "roles": [
+          "qkv_gate",
+          "qkv3",
+          "o",
+          "pool_router",
+          "unpooler",
+          "unpooler_slice"
+        ],
+        "kv": true,
+        "early": false
+      }
+    },
+    "EDITABLE": {
+      "sha256": "6d6b60c581af8ed0cc742edfada4e397db1788fd9b11f25c62ac3310a75410d2",
+      "config": {
+        "roles": [
+          "qkv_gate",
+          "qkv3",
+          "o",
+          "pool_router",
+          "unpooler",
+          "unpooler_slice"
+        ],
+        "boundaries": [
+          "b1",
+          "b2"
+        ],
+        "n13": true,
+        "n2": true,
+        "h13": true,
+        "h2": true,
+        "kv": true,
+        "native_only": true
+      }
+    }
+  },
+  "coverage": {
+    "G": "gate already computes its full GEMV before waiting for attention",
+    "H13": "incoming route fork event cannot overlap; native own-stage placement tested",
+    "KV": "native histories already early at d1S/v1/v16F/v32F; remaining partial first stage moves; FA3 opaque at v16S/v32S"
+  }
+}

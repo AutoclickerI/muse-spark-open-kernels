@@ -1,0 +1,113 @@
+{
+  "basis": "sm90 resource calculation:65536 registers,8-register/thread allocation quantum,2048threads,233472shared bytes. Does not measure achieved runtime occupancy; native CUDA comparisons in native_validation.json.",
+  "triton": [
+    {
+      "kernel": "ALL_boundary_fast_0_4",
+      "old_cta_resource_ceiling": 2,
+      "new_cta_resource_ceiling": 2,
+      "old_registers": 255,
+      "new_registers": 255,
+      "old_shared": 1024,
+      "new_shared": 9216
+    },
+    {
+      "kernel": "ALL_boundary_fast_0_8",
+      "old_cta_resource_ceiling": 1,
+      "new_cta_resource_ceiling": 1,
+      "old_registers": 192,
+      "new_registers": 187,
+      "old_shared": 1024,
+      "new_shared": 9216
+    },
+    {
+      "kernel": "ALL_boundary_fast_0_16",
+      "old_cta_resource_ceiling": 1,
+      "new_cta_resource_ceiling": 1,
+      "old_registers": 106,
+      "new_registers": 114,
+      "old_shared": 1024,
+      "new_shared": 9216
+    },
+    {
+      "kernel": "ALL_boundary_fast_1_4",
+      "old_cta_resource_ceiling": 2,
+      "new_cta_resource_ceiling": 2,
+      "old_registers": 255,
+      "new_registers": 255,
+      "old_shared": 1024,
+      "new_shared": 9216
+    },
+    {
+      "kernel": "ALL_boundary_fast_1_8",
+      "old_cta_resource_ceiling": 1,
+      "new_cta_resource_ceiling": 1,
+      "old_registers": 192,
+      "new_registers": 194,
+      "old_shared": 1024,
+      "new_shared": 9216
+    },
+    {
+      "kernel": "ALL_boundary_fast_1_16",
+      "old_cta_resource_ceiling": 1,
+      "new_cta_resource_ceiling": 1,
+      "old_registers": 116,
+      "new_registers": 109,
+      "old_shared": 1024,
+      "new_shared": 9216
+    },
+    {
+      "kernel": "ALL_boundary_late_0_4",
+      "old_cta_resource_ceiling": 2,
+      "new_cta_resource_ceiling": 2,
+      "old_registers": 255,
+      "new_registers": 255,
+      "old_shared": 1024,
+      "new_shared": 9216
+    },
+    {
+      "kernel": "ALL_boundary_late_0_8",
+      "old_cta_resource_ceiling": 1,
+      "new_cta_resource_ceiling": 1,
+      "old_registers": 194,
+      "new_registers": 187,
+      "old_shared": 1024,
+      "new_shared": 9216
+    },
+    {
+      "kernel": "ALL_boundary_late_0_16",
+      "old_cta_resource_ceiling": 1,
+      "new_cta_resource_ceiling": 1,
+      "old_registers": 106,
+      "new_registers": 116,
+      "old_shared": 1024,
+      "new_shared": 9216
+    },
+    {
+      "kernel": "ALL_boundary_late_1_4",
+      "old_cta_resource_ceiling": 2,
+      "new_cta_resource_ceiling": 2,
+      "old_registers": 255,
+      "new_registers": 255,
+      "old_shared": 1024,
+      "new_shared": 9216
+    },
+    {
+      "kernel": "ALL_boundary_late_1_8",
+      "old_cta_resource_ceiling": 1,
+      "new_cta_resource_ceiling": 1,
+      "old_registers": 183,
+      "new_registers": 194,
+      "old_shared": 1024,
+      "new_shared": 9216
+    },
+    {
+      "kernel": "ALL_boundary_late_1_16",
+      "old_cta_resource_ceiling": 1,
+      "new_cta_resource_ceiling": 1,
+      "old_registers": 116,
+      "new_registers": 108,
+      "old_shared": 1024,
+      "new_shared": 9216
+    }
+  ]
+}

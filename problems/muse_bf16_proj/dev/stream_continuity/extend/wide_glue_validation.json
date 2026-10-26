@@ -1,0 +1,24 @@
+[
+  {
+    "arm": "base",
+    "source_sha256": "3bed407e2d3442cb1257053b90a048fcd57fe0c63c4c74a5fbf630628e938f9b",
+    "eager": true,
+    "capture": true,
+    "marker": 1,
+    "max_dynamic_smem": 65536
+  },
+  {
+    "arm": "unrenamed",
+    "returncode": 1,
+    "max_dynamic_smem": 49152,
+    "marker": 0.0
+  },
+  {
+    "arm": "changed",
+    "source_sha256": "05f51d921a2adc374b9e8b5c9f69836faabcd9635e84b791235a14e5fa04f010",
+    "eager": true,
+    "capture": true,
+    "marker": 3,
+    "max_dynamic_smem": 65536
+  }
+]

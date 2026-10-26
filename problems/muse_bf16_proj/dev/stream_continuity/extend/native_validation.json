@@ -1,0 +1,693 @@
+[
+  {
+    "name": "N13_RVC_NINDEX0_CUDA",
+    "sha256": "fd127df3cdd6ea9f1bfb1e620a8cfb1a56a68dcb18f268b411aba5056dc8dfb7",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      203,
+      122,
+      126,
+      119,
+      122
+    ],
+    "spills": false,
+    "acquires": 8,
+    "async_copies": 0
+  },
+  {
+    "name": "N13_RVC_NBASE1_CUDA",
+    "sha256": "90d3d1ecd55be609d76a9fc73549894cb195b3ab1a4fa3018ef53e23b582d4ae",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      205,
+      126,
+      124,
+      119,
+      126
+    ],
+    "spills": false,
+    "acquires": 8,
+    "async_copies": 0
+  },
+  {
+    "name": "N13_RVC_NBASE2_CUDA",
+    "sha256": "ff3dfff17cd980b45d89d0005b52edc5a245f8bb0852a8751df88015b29adda5",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      205,
+      126,
+      124,
+      119,
+      126
+    ],
+    "spills": false,
+    "acquires": 8,
+    "async_copies": 0
+  },
+  {
+    "name": "N2_RVC_NBASE2_CUDA",
+    "sha256": "7ce2c11ce879f1250c982dcfc34682a2e20bb737d3514366063dc1ffaa12aca0",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      204,
+      125,
+      125,
+      119,
+      125
+    ],
+    "spills": false,
+    "acquires": 4,
+    "async_copies": 0
+  },
+  {
+    "name": "H13_P3B_CUDA",
+    "sha256": "a0c34e320760ae06c7c5a835a58a69ebf6cd0b8eb9cc2ad54cc002e0e4bfc5dd",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      128,
+      128,
+      128,
+      128,
+      109,
+      109,
+      112,
+      112,
+      32,
+      32,
+      32,
+      32,
+      32,
+      27,
+      30,
+      82,
+      80,
+      96,
+      95
+    ],
+    "spills": true,
+    "acquires": 4,
+    "async_copies": 752
+  },
+  {
+    "name": "H2_P3B_CUDA",
+    "sha256": "dbef0a8eac81afcdfa2a5770d1af2654a6dd4aae951bfee611c5dadf6e5b9531",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      128,
+      128,
+      128,
+      128,
+      109,
+      109,
+      112,
+      112,
+      32,
+      32,
+      32,
+      32,
+      32,
+      27,
+      30,
+      82,
+      80,
+      96,
+      95
+    ],
+    "spills": true,
+    "acquires": 4,
+    "async_copies": 752
+  },
+  {
+    "name": "B1_GLUE_CL_CUDA",
+    "sha256": "df9bf06e787bf38f3dfc7d8bbdd6b5432c6be26e3075e5462578d6ffdaedc166",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      64,
+      64,
+      64,
+      56,
+      56,
+      128,
+      128,
+      128,
+      128,
+      64,
+      64,
+      64,
+      64,
+      64,
+      64,
+      64,
+      64,
+      80,
+      80,
+      80,
+      80,
+      72,
+      72,
+      72,
+      72,
+      55,
+      55,
+      57,
+      57,
+      56,
+      56,
+      62,
+      62
+    ],
+    "spills": false,
+    "acquires": 33,
+    "async_copies": 56
+  },
+  {
+    "name": "KV_PARTIAL_CUDA",
+    "sha256": "6753b1befd966845356dfcb4b6f0477fcb148a67d7a501a1b554d9deccdddcbe",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      250,
+      126
+    ],
+    "spills": false,
+    "acquires": 2,
+    "async_copies": 56
+  },
+  {
+    "name": "ALL_GLUE_CL_CUDA",
+    "sha256": "46dc7b947fc220126e8e0352a0eb33ad1fd0e202f0dfa82aaed2c002bbff23ac",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      64,
+      64,
+      64,
+      56,
+      56,
+      128,
+      128,
+      128,
+      128,
+      64,
+      64,
+      64,
+      64,
+      64,
+      64,
+      64,
+      64,
+      80,
+      80,
+      80,
+      80,
+      72,
+      72,
+      72,
+      72,
+      55,
+      55,
+      57,
+      57,
+      56,
+      56,
+      62,
+      62
+    ],
+    "spills": false,
+    "acquires": 33,
+    "async_copies": 56
+  },
+  {
+    "name": "ALL_P3B_CUDA",
+    "sha256": "6ae860db1132721ea90631ae62a4e7cc2a8a1241450488b53193ffafcc820b15",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      128,
+      128,
+      128,
+      128,
+      109,
+      109,
+      112,
+      112,
+      32,
+      32,
+      32,
+      32,
+      32,
+      27,
+      30,
+      82,
+      80,
+      96,
+      95
+    ],
+    "spills": true,
+    "acquires": 8,
+    "async_copies": 752
+  },
+  {
+    "name": "ALL_RVC_NBASE2_CUDA",
+    "sha256": "9fc61a4f0dfd368cb3525f32492492c6b6091ba34aa0e2185b408c67fdb9771a",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      204,
+      125,
+      125,
+      119,
+      125
+    ],
+    "spills": false,
+    "acquires": 8,
+    "async_copies": 0
+  },
+  {
+    "name": "ALL_GP_CUDA",
+    "sha256": "dc184483fbe127efb50932509855cbc80572b48dfa309b0702ba9d7f7a0bd340",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      64,
+      64,
+      64,
+      56,
+      56,
+      128,
+      128,
+      64,
+      64,
+      64,
+      64,
+      80,
+      80,
+      72,
+      72,
+      55,
+      57,
+      56,
+      62
+    ],
+    "spills": false,
+    "acquires": 19,
+    "async_copies": 0
+  },
+  {
+    "name": "dense",
+    "sha256": "405307ce8f0e3de8c6ae2fb1ed23b8fe4ae71d421effd9cd3288064b346d724f",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      70,
+      70,
+      136,
+      136
+    ],
+    "spills": false,
+    "acquires": 4,
+    "async_copies": 96
+  },
+  {
+    "name": "NF_1_o",
+    "sha256": "c2d8c9d0b0f2083a081dd1b6abf8718859789edbcb8a640bcbe85bac7805bc58",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      56,
+      32
+    ],
+    "spills": false,
+    "acquires": 1,
+    "async_copies": 0
+  },
+  {
+    "name": "NF_8_o",
+    "sha256": "21148f87455787bc4c754c8a0efe52e665e010240f58dd2c25e5c104192a8de5",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      50,
+      32
+    ],
+    "spills": false,
+    "acquires": 1,
+    "async_copies": 0
+  },
+  {
+    "name": "NF_1_qkv3",
+    "sha256": "4ad58d9d48bba5e176a5c654f36602a32391c2b100a23edd773350b350edced5",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      79
+    ],
+    "spills": false,
+    "acquires": 1,
+    "async_copies": 3
+  },
+  {
+    "name": "NF_16_unpooler",
+    "sha256": "903bffc036bdafe1fca02949e44bc2a4efa88f2ae637bf9133dfc018952ae00c",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      96
+    ],
+    "spills": false,
+    "acquires": 1,
+    "async_copies": 12
+  },
+  {
+    "name": "NF_32_qkv_gate",
+    "sha256": "b9378fd14bed687484a8c17392fb5f23ccad3afc8d165d6890d088a595df4e02",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      94,
+      95
+    ],
+    "spills": false,
+    "acquires": 2,
+    "async_copies": 0
+  },
+  {
+    "name": "NF_b2o_OLAYER_CUDA",
+    "sha256": "ebccda0c185e734b518844eda5c3c915afc99898ffc144bff1e6cb3d876a8388",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      42
+    ],
+    "spills": false,
+    "acquires": 1,
+    "async_copies": 9
+  },
+  {
+    "name": "NF_OLAYER_CUDA",
+    "sha256": "8c957cf57b78157998099b5aab5897442642e9f82ad1f93a3410aa37d1455852",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      90
+    ],
+    "spills": false,
+    "acquires": 1,
+    "async_copies": 5
+  },
+  {
+    "name": "NF_MW32",
+    "sha256": "aad21c0a656f189087fb6c3cb6e700bb6f41ce8e9dfd4c39c2f18b3a83dea8f4",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      110,
+      93
+    ],
+    "spills": false,
+    "acquires": 2,
+    "async_copies": 8
+  },
+  {
+    "name": "NF_16_o",
+    "sha256": "1e19db1ce105a9fc9a31bb01eac973f142bc8b1b4b031858a514d7aaefafe7e4",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      68,
+      72
+    ],
+    "spills": false,
+    "acquires": 2,
+    "async_copies": 0
+  },
+  {
+    "name": "P10_pool",
+    "sha256": "b6a1087767a9508d6d7cbf43501e07dfafef323a865558129104fa7a16693ac3",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      76,
+      64,
+      32
+    ],
+    "spills": false,
+    "acquires": 2,
+    "async_copies": 0
+  },
+  {
+    "name": "BASE_GLUE_CL_CUDA",
+    "sha256": "1832a60d299f8cc6f78f7ac076d401342dff45da97d7359b732c742a28fda7e9",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      64,
+      64,
+      64,
+      56,
+      56,
+      128,
+      128,
+      64,
+      64,
+      64,
+      64,
+      80,
+      80,
+      72,
+      72,
+      55,
+      57,
+      56,
+      62
+    ],
+    "spills": false,
+    "acquires": 19,
+    "async_copies": 0
+  },
+  {
+    "name": "BASE_PARTIAL_CUDA",
+    "sha256": "8260df4d77059106824dc862e9133d88340fc49a848fe73fd75aca51eb559181",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      254,
+      126
+    ],
+    "spills": false,
+    "acquires": 2,
+    "async_copies": 56
+  },
+  {
+    "name": "BASE_P3B_CUDA",
+    "sha256": "051ccd1f2e429b1d5478a809ae1c30141638c168d092e946fe44390860f53883",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      128,
+      128,
+      128,
+      128,
+      109,
+      109,
+      112,
+      112,
+      32,
+      32,
+      32,
+      32,
+      32,
+      27,
+      30,
+      82,
+      80,
+      96,
+      95
+    ],
+    "spills": true,
+    "acquires": 0,
+    "async_copies": 752
+  },
+  {
+    "name": "BASE_RVC_NINDEX0_CUDA",
+    "sha256": "cfd1f3864d76ce2535c3d083d1ed9ba23b7a0254c30e9cc7c94a2d4911e45477",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      203,
+      122,
+      126,
+      119,
+      122
+    ],
+    "spills": false,
+    "acquires": 4,
+    "async_copies": 0
+  },
+  {
+    "name": "BASE_RVC_NBASE1_CUDA",
+    "sha256": "5b6ae2c3611b71e102238719c69cbed6cd6b1d3566bbcf3765788fc787619fb6",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      205,
+      126,
+      125,
+      119,
+      126
+    ],
+    "spills": false,
+    "acquires": 4,
+    "async_copies": 0
+  },
+  {
+    "name": "BASE_RVC_NBASE2_CUDA",
+    "sha256": "2e382eda4a71ba46c2a89183414fb7285785e238a3e75c53c26f24aba0282fd2",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      205,
+      126,
+      125,
+      119,
+      126
+    ],
+    "spills": false,
+    "acquires": 4,
+    "async_copies": 0
+  },
+  {
+    "name": "BASE_NF_1_o",
+    "sha256": "58b5edee3e1bb4386dfd6fa28eccf73c8aac5d372f326f9a7ec5ad5a728e9578",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      57,
+      32
+    ],
+    "spills": false,
+    "acquires": 1,
+    "async_copies": 0
+  },
+  {
+    "name": "BASE_NF_8_o",
+    "sha256": "392b32610fe08f9c0f12d49cfe8c0cd9197c5f6e97f9523ed0d7c2bc0a4436e5",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      50,
+      32
+    ],
+    "spills": false,
+    "acquires": 1,
+    "async_copies": 0
+  },
+  {
+    "name": "BASE_NF_1_qkv3",
+    "sha256": "e27211be084330c35f62c229a4e5027b05377a1a52316935f33954f7251b807c",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      79
+    ],
+    "spills": false,
+    "acquires": 1,
+    "async_copies": 0
+  },
+  {
+    "name": "BASE_NF_16_unpooler",
+    "sha256": "c2be8200d803dd9308766d3bb235a89a1c2c8c16ba6a4f876c199b98bcf21e11",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      96
+    ],
+    "spills": false,
+    "acquires": 1,
+    "async_copies": 12
+  },
+  {
+    "name": "BASE_NF_32_qkv_gate",
+    "sha256": "3c87e0b8d14b190bb76e3c7bbbd9ecdb6f9f17a6831f822c2b2448cd1b4711e6",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      94,
+      95
+    ],
+    "spills": false,
+    "acquires": 2,
+    "async_copies": 0
+  },
+  {
+    "name": "BASE_NF_b2o_OLAYER_CUDA",
+    "sha256": "c12b33d14db8e79358380b139b174f16e3ba6fcf8395ee01ee3ef02bbf890854",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      42
+    ],
+    "spills": false,
+    "acquires": 1,
+    "async_copies": 9
+  },
+  {
+    "name": "BASE_NF_OLAYER_CUDA",
+    "sha256": "e038df407c2194f7b7ae39a1f9771bdd718ce0ae5e54ccd824d7def59b27b380",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      90
+    ],
+    "spills": false,
+    "acquires": 1,
+    "async_copies": 5
+  },
+  {
+    "name": "BASE_NF_MW32",
+    "sha256": "dd7c97923df56fae9b1b02b4fa63fa3584cbd097e24f9eb3a8a7138d691bc21c",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      108,
+      91
+    ],
+    "spills": false,
+    "acquires": 2,
+    "async_copies": 8
+  },
+  {
+    "name": "BASE_NF_16_o",
+    "sha256": "c967f866419f4d061ad74e40be7aafecba7a29695c75c55268742088917fd661",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      68,
+      72
+    ],
+    "spills": false,
+    "acquires": 2,
+    "async_copies": 0
+  },
+  {
+    "name": "BASE_P10_pool",
+    "sha256": "449d54430fef1aa528c3bfdc549d4427335318cdca2a57fceb85a34dae713383",
+    "ok": true,
+    "errors": [],
+    "registers": [
+      76,
+      64,
+      32
+    ],
+    "spills": false,
+    "acquires": 2,
+    "async_copies": 0
+  }
+]

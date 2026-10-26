@@ -1,0 +1,32 @@
+--- a/boundary_jit
++++ b/boundary_jit
+@@ -8,3 +8,11 @@
+-    alpha=_pa_f32(ALPHA+j);beta=_pa_f32(BETA+j);prew=_pa_f32(PREW+j)
+-    if HAS_POSTW:postw=_pa_f32(POSTW+j)
+-    _pdl_wait(USE_PDL)
++    if not HAS_POSTW:
++        ew_a,ew_b,ew_c,ew_d=_ew_immutable_stage(ALPHA,BETA,PREW,POSTW if HAS_POSTW else ALPHA)
++        ew_idx=tl.minimum(j,127)
++        alpha=tl.where(j<128,tl.gather(ew_a,ew_idx,0),tl.load(ALPHA+j,j>=128,0.))
++        beta=tl.where(j<128,tl.gather(ew_b,ew_idx,0),tl.load(BETA+j,j>=128,0.))
++        prew=tl.where(j<128,tl.gather(ew_c,ew_idx,0),tl.load(PREW+j,j>=128,0.))
++        if HAS_POSTW:postw=tl.where(j<128,tl.gather(ew_d,ew_idx,0),tl.load(POSTW+j,j>=128,0.))
++    else:
++        alpha=_pa_f32(ALPHA+j);beta=_pa_f32(BETA+j);prew=_pa_f32(PREW+j)
++        if HAS_POSTW:postw=_pa_f32(POSTW+j)
++        _pdl_wait(USE_PDL)
+@@ -29,3 +37,11 @@
+-    alpha=_pa_f32(ALPHA+j);beta=_pa_f32(BETA+j);prew=_pa_f32(PREW+j)
+-    if HAS_POSTW:postw=_pa_f32(POSTW+j)
+-    _pdl_wait(USE_PDL)
++    if not HAS_POSTW:
++        ew_a,ew_b,ew_c,ew_d=_ew_immutable_stage(ALPHA,BETA,PREW,POSTW if HAS_POSTW else ALPHA)
++        ew_idx=tl.minimum(j,127)
++        alpha=tl.where(j<128,tl.gather(ew_a,ew_idx,0),tl.load(ALPHA+j,j>=128,0.))
++        beta=tl.where(j<128,tl.gather(ew_b,ew_idx,0),tl.load(BETA+j,j>=128,0.))
++        prew=tl.where(j<128,tl.gather(ew_c,ew_idx,0),tl.load(PREW+j,j>=128,0.))
++        if HAS_POSTW:postw=tl.where(j<128,tl.gather(ew_d,ew_idx,0),tl.load(POSTW+j,j>=128,0.))
++    else:
++        alpha=_pa_f32(ALPHA+j);beta=_pa_f32(BETA+j);prew=_pa_f32(PREW+j)
++        if HAS_POSTW:postw=_pa_f32(POSTW+j)
++        _pdl_wait(USE_PDL)

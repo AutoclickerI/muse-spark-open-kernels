@@ -1754,3 +1754,65 @@ achieved. P/F/B/L/X close only these prefetch schedules; E's whole-arm interval 
 HBM/issue contention and the extra prefetch launches are plausible costs, not isolated causes.
 No family-wide continuity or retained-operand conclusion follows. Larger open MoE/attention/
 coding levers take priority over another standalone sub1% follow-up; S18 composition remains P4.
+
+### S18 consumer-owned first-stage extension (P7)
+
+**Measured:** prefill import-time check `73d2d80dd74848b7`,16 fresh paired seeds x8
+rotated cold rounds,18 arms x12 shapes =3,456 unchanged TASK checks, all pass; A:A
+native kernel/resource/stream/DAG fingerprints agree. Frozen S18 `95df42fe`, not
+S19; elapsed555.0s. An earlier setup-only failure `724e9b8d` has no timing verdict.
+
+| Consumer boundary | R | 95% CI |
+|---|---:|---|
+| qkv/qkv3 (Q) | 0.666395 | [0.664339, 0.668457] |
+| gate, already covered (G) | 1.001344 | [1.000094, 1.002596] |
+| O | 0.970939 | [0.969130, 0.972751] |
+| pool_router (P) | 0.613680 | [0.611303, 0.616067] |
+| unpooler/slice (U) | 0.710344 | [0.707545, 0.713154] |
+| NT1 W13 (N13) | 0.987878 | [0.986632, 0.989126] |
+| NT1 W2 landing (N2) | 0.999361 | [0.997670, 1.001056] |
+| heavy W13 (H13) | 1.000721 | [0.999565, 1.001879] |
+| heavy W2 (H2) | 1.001504 | [1.000124, 1.002887] |
+| b1 (B1) | 1.001355 | [1.000064, 1.002647] |
+| b2 (B2) | 0.997603 | [0.996006, 0.999203] |
+| first KV pages (KV) | 0.995181 | [0.993115, 0.997252] |
+| all boundaries (ALL) | 0.382568 | [0.379952, 0.385202] |
+| editable composition | 0.991852 | [0.990393, 0.993313] |
+
+H2 heavy-W2 and B1 pass raw G0 (lower CI >1, also after a0.5ppm archive-rounding
+guard). G is an unchanged GPU coverage control and also has CI >1; paired H2/G
+1.000160[.998620,1.001702] and B1/G1.000011[.999125,1.000897] are inconclusive.
+A:A1.000122[.998463,1.001783]. Retain raw gate results and this control evidence;
+these are marginal P4 nominees, not a demonstrated causal gain or a S19 verdict.
+H2 acts at v16/v32 (v16R1.006394[1.003615,1.009180]); B1 wins d1/v1 but loses v32.
+No per-load veto or A:A correction was introduced.
+
+ALL includes native substitutes for opaque projection/attention consumers; their
+inner-loop cost dominates. LATE .373568[.371663,.375482]; ALL/LATE1.024093
+[1.020797,1.027399] improves that schedule package but remains far below S18.
+EDITABLE keeps incumbent cuBLAS/Lt/FA3 and still loses. KV_LATE .994803
+[.992684,.996927], KV/KV_LATE1.000380[.998779,1.001983]. These controls prevent
+calling the native-reader replacement cost a preload-only result.
+
+**Static/local:**39 exact sm90a CUDA and25 sm90 Triton builds pass,146 acquire
+placement witnesses. QKV3's register prologue79->90 would lower residency; its
+smem first stage restores79. Native glue consumes its copied smem first group,
+with B1/B2 isolated; selected resource ceilings retain occupancy. The original
+OL source injected GDC but launched with `<<<>>>`; changed OL enables actual PDL.
+Two DSOs also shared a GNU-unique `configured` guard: a native local ABI stand-in
+reproduces error1/49,152-byte default, then private guards pass64KiB eager+graph.
+Final regular local_eval passes13 TASK cases and12 captures; forced full-arm lab
+passes3,456. Small native KV/gate and NT1 W2 already issue early. NT1 W13 addresses
+need route IDs; delaying route admission until publication avoids an ALL-chain
+spin deadlock. The heavy W13 fork event remains serial. These are code exposure
+limits, not counter evidence for bandwidth contention.
+
+**Bound/standing:** retain the S15 scenario R1.08557 (per-load13.45/13.59/12.89/
+12.15/17.25/17.66us); it is broader than first-stage scheduling and is not physical
+HBM utilization. ALL recovers0% positive share; H2/B1 raw gains recover1.83%/1.65%
+of its log bound. No general continuity or P11 retention ceiling follows. Larger
+MoE/attention/coding levers stay ahead of further standalone prefetch schedules.
+[P4_HANDOFF.json](../problems/muse_bf16_proj/dev/stream_continuity/extend/P4_HANDOFF.json)
+contains H2/B1 exact sources and readable patches, all controls/losers and the OL
+launch fix; fresh S19 composition belongs to P4. P4's S19 already dropped old W.
+[Full result, per-load CIs, evidence and reproduction](../problems/muse_bf16_proj/dev/stream_continuity/extend/README.md).

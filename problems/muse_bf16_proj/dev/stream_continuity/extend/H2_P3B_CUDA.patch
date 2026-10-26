@@ -1,0 +1,133 @@
+--- a/P3B_CUDA
++++ b/P3B_CUDA
+@@ -945,0 +946,120 @@
++template<int NT,bool F,int CS,int S>__device__ __forceinline__ void ew_tile(
++ const int*Q,const unsigned char*SC,const float*GS,const __nv_bfloat16*X,
++ const int*C,const int*OFF,const int*SLOTS,int M,const __nv_bfloat16*PNW,__nv_bfloat16*ACT,float*Y,float*SS,
++ int e,int row,int mt,uint64_t*bar,const CUtensorMap*map,unsigned scale_base,float*red){
++ constexpr int N=F?8192:4096,NJ=NT/16,BS=(S*WG*(QB+SB)+1023)&~1023;
++ extern __shared__ __align__(1024) unsigned char ocsm[];
++ auto*qs=ocsm;auto*ss=qs+S*WG*QB;auto*bs=(__nv_bfloat16*)(ocsm+BS);
++ int t=threadIdx.x&127,w=t>>5,l=t&31,wg=threadIdx.x>>7,count=C[e],offset=OFF[e];
++ int rank=blockIdx.x%CS;
++#if BR_HOPPER
++
++#endif
++ const int*qg=Q;const unsigned char*sg=SC;
++ if(t<64)qg=Q+((unsigned)e*(N/16)+mt*4+(t>>4))*128*64+(t&15)*4;
++ if(t>=64&&t<96){unsigned i=t-64;sg=SC+(((unsigned)e*(N/16)+mt*4+i/8)*128*32+(i%8)*16);}
++ unsigned qd=smaddr(qs+wg*QB+(t>>4)*512+(t&15)*16),sd=smaddr(ss+wg*SB+(t-64)*16);
++ int direct_src[NJ]={};
++ if constexpr(F){
++  [&]<int...J>(std::integer_sequence<int,J...>){
++   ((direct_src[J]=(row+t/8+J*16<count)?SLOTS[e*M+row+t/8+J*16]/8:0),...);
++  }(std::make_integer_sequence<int,NJ>{});
++ }
++ const __nv_bfloat16*copy_root=F?X+(t&7)*8:X+(size_t)(offset+row+t/8)*4096+(t&7)*8;
++ auto issuex=[&](int k,int st){
++  if(wg==0)[&]<int...J>(std::integer_sequence<int,J...>){
++   if constexpr(F){
++    (directx<NT,J,0>(bs,copy_root,st,count-row-t/8,direct_src[J]),...);
++    (directx<NT,J,1>(bs,copy_root,st,count-row-t/8,direct_src[J]),...);
++   }else{
++    (copyx<NT,J,0>(bs,copy_root,st,count-row-t/8),...);
++    (copyx<NT,J,1>(bs,copy_root,st,count-row-t/8),...);
++   }
++  }(std::make_integer_sequence<int,NJ>{});
++  copy_root+=128;
++
++ };
++ auto issuew=[&](int k,int st){
++  if(t<64){
++   #pragma unroll
++   for(int g=0;g<4;++g)asm volatile("cp.async.ca.shared.global [%0],[%1],16;"::"r"(qd+st*WG*QB+(g>>1)*2048+(g&1)*256),"l"(qg+g*64):"memory");
++   qg+=256;
++  }
++  if(t>=64&&t<96){asm volatile("cp.async.ca.shared.global [%0],[%1],16;"::"r"(sd+st*WG*SB),"l"(sg):"memory");sg+=128;}
++ };
++ auto issue=[&](int k,int st){issuex(k,st);issuew(k,st);asm volatile("cp.async.commit_group;":::"memory");};
++ float acc[NT/2]={};unsigned af[2][16]={};
++ uint64_t desc0=((uint64_t)(smaddr(bs)&0x3ffff)>>4)|((uint64_t)64<<32)|((uint64_t)1<<62);
++ #pragma unroll
++ if constexpr(!F){
++  issuew(0,0);asm volatile("cp.async.commit_group;":::"memory");
++  asm volatile("griddepcontrol.wait;":::"memory");
++  issuex(0,0);asm volatile("cp.async.commit_group;":::"memory");
++  for(int p=1;p<(S>1?S-1:1);++p)issue(p,p);
++ }else{for(int p=0;p<(S>1?S-1:1);++p)issue(p,p);}
++ for(int k0=0;k0<32;k0+=S){
++  #pragma unroll
++  for(int st=0;st<S;++st){int k=k0+st;if(k>=32)continue;
++  asm volatile("cp.async.wait_group %0;"::"n"(S>1?S-2:0):"memory");
++  __syncthreads();
++#if BR_HOPPER
++  asm volatile("fence.proxy.async.shared::cta;":::"memory");
++#endif
++  uint4 sv=*(const uint4*)(ss+(st*WG+wg)*SB+(w*8+(l>>2))*16);
++  #pragma unroll
++  for(int sub=0;sub<2;++sub){uint4 q=*(const uint4*)(qs+(st*WG+wg)*QB+sub*2048+t*16);
++   dq(q.x,q.y,sub?sv.z:sv.x,af[sub],scale_base);dq(q.z,q.w,sub?sv.w:sv.y,af[sub]+8,scale_base);keep(af[sub]);
++#if BR_HOPPER
++   asm volatile("wgmma.fence.sync.aligned;":::"memory");
++#endif
++   #pragma unroll
++   for(int b=0;b<4;++b){if constexpr(NT==16)mwbr::mma<16>(acc,af[sub]+b*4,bs+st*NT*KT+sub*NT*64,b,desc0+(st*NT*KT+sub*NT*64)/8);else mm<NT>(acc,af[sub]+b*4,bs+st*NT*KT+sub*NT*64,b,desc0+(st*NT*KT+sub*NT*64)/8);}
++#if BR_HOPPER
++   asm volatile("wgmma.commit_group.sync.aligned;wgmma.wait_group.sync.aligned 1;":::"memory");
++#endif
++   keep(af[sub^1]);
++   if constexpr(S>1)if(sub==0){__syncthreads();if(k+S-1<32)issue(k+S-1,(st+S-1)%S);else asm volatile("cp.async.commit_group;":::"memory");}
++  }
++#if BR_HOPPER
++  if constexpr(S==1)asm volatile("wgmma.wait_group.sync.aligned 0;":::"memory");
++#endif
++  if constexpr(S==1){__syncthreads();if(k+1<32)issue(k+1,(st+1)%S);}
++  }
++ }
++#if BR_HOPPER
++ asm volatile("wgmma.wait_group.sync.aligned 0;":::"memory");
++#endif
++ keep(af[0]);keep(af[1]);
++ if constexpr(F){float gg=GS[e]*256.f,gu=GS[e+32]*256.f;int ch=mt*32+w*8+(l>>2);
++  #pragma unroll
++  for(int j=0;j<NT/2;++j)if(((j>>1)&1)==0){int r=(l&3)*2+(j&1)+(j>>2)*8;
++   float g=__bfloat162float(__float2bfloat16_rn(acc[j]*gg)),u=__bfloat162float(__float2bfloat16_rn(acc[j+2]*gu));
++   if(row+r<count)ACT[(size_t)(offset+row+r)*4096+ch]=__float2bfloat16_rn(g/(1.f+__expf(-g))*u);
++  }
++ }else{float gs=GS[e]*256.f;
++  #pragma unroll
++  for(int j=0;j<NT/2;++j){int r=row+(l&3)*2+(j&1)+(j>>2)*8,cc=mt*64+w*16+(l>>2)+((j>>1)&1)*8;
++   float z=acc[j]*gs*(1.f+__bfloat162float(PNW[cc]));acc[j]=z;if(r<count)Y[(size_t)(offset+r)*4096+cc]=z;
++  }
++  #pragma unroll
++  for(int i=0;i<NT/8;++i){float a=acc[4*i]*acc[4*i]+acc[4*i+2]*acc[4*i+2],b=acc[4*i+1]*acc[4*i+1]+acc[4*i+3]*acc[4*i+3];
++   #pragma unroll
++   for(int d=4;d<=16;d*=2){a+=__shfl_xor_sync(~0u,a,d);b+=__shfl_xor_sync(~0u,b,d);}
++   if(l<4){red[w*NT+i*8+2*l]=a;red[w*NT+i*8+2*l+1]=b;}
++  }
++  __syncthreads();
++  for(int r=t;r<NT;r+=128)if(row+r<count){float sum=0;
++   #pragma unroll
++   for(int z=0;z<4;++z)sum+=red[z*NT+r];
++   SS[(size_t)(offset+row+r)*64+mt]=sum;
++  }
++ }
++ __syncthreads();
++}
++
++
++template<int NT,bool F,int CS,int S>__device__ __forceinline__ void ew_dispatch(
++ const int*Q,const unsigned char*SC,const float*GS,const __nv_bfloat16*X,const int*C,const int*OFF,const int*SLOTS,int M,const __nv_bfloat16*PNW,__nv_bfloat16*ACT,float*Y,float*SS,int e,int row,int mt,uint64_t*bar,const CUtensorMap*map,unsigned scale_base,float*red){
++ if constexpr(!F)ew_tile<NT,F,CS,S>(Q,SC,GS,X,C,OFF,SLOTS,M,PNW,ACT,Y,SS,e,row,mt,bar,map,scale_base,red);
++ else tile<NT,F,CS,S>(Q,SC,GS,X,C,OFF,SLOTS,M,PNW,ACT,Y,SS,e,row,mt,bar,map,scale_base,red);
++}
+@@ -948,0 +1069 @@
++ if constexpr(F)asm volatile("griddepcontrol.launch_dependents;":::"memory");
+@@ -953 +1074 @@
+-#define CH_TILE(NT) tile<NT,F,1,S>(Q,SC,GS,X,C,OFF,SLOTS,M,PNW,ACT,Y,SS,e,row,mt*2+(threadIdx.x>>7),nullptr,nullptr,0x70007000u,red)
++#define CH_TILE(NT) ew_dispatch<NT,F,1,S>(Q,SC,GS,X,C,OFF,SLOTS,M,PNW,ACT,Y,SS,e,row,mt*2+(threadIdx.x>>7),nullptr,nullptr,0x70007000u,red)
+@@ -963 +1084,3 @@
+-#define CH_GO(S,F) chunk::kernel<S,F><<<grid,256,bytes,(cudaStream_t)stream>>>(BR_ARGS(v),(int)M)
++cudaLaunchConfig_t ec{};ec.gridDim=dim3(grid);ec.blockDim=dim3(256);ec.dynamicSmemBytes=bytes;ec.stream=(cudaStream_t)stream;
++ cudaLaunchAttribute ea{};ea.id=cudaLaunchAttributeProgrammaticStreamSerialization;ea.val.programmaticStreamSerializationAllowed=(first?0:1);ec.attrs=&ea;ec.numAttrs=1;
++#define CH_GO(S,F) BR_CUDA_CHECK(cudaLaunchKernelEx(&ec,chunk::kernel<S,F>,BR_ARGS(v),(int)M))

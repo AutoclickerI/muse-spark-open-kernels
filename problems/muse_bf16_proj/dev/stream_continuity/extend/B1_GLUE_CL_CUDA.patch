@@ -1,0 +1,96 @@
+--- a/GLUE_CL_CUDA
++++ b/GLUE_CL_CUDA
+@@ -138,0 +139,90 @@
++  float4 s[G], br[G];
++#pragma unroll
++  for (int g = 0; g < G; ++g) {
++    const int j = (rank * NT * G + g * NT + tid) * 4;
++    s[g] = *reinterpret_cast<const float4*>(stream + (long long)t * HID + j);
++    br[g] = j < NB ? sum_splits(P, pf32, S, ps, (long long)t * rs + j) : make_float4(0.f, 0.f, 0.f, 0.f);
++    br[g].x *= q[g].x; br[g].y *= q[g].y; br[g].z *= q[g].z; br[g].w *= q[g].w;
++  }
++  float inv_br, inv;
++  if (ROUNDS == 1) {
++    float v[4] = {0.f, 0.f, 0.f, 0.f};  // sum br^2, (a s)^2, (a s)(b br), (b br)^2
++#pragma unroll
++    for (int g = 0; g < G; ++g) {
++      const float bb[4] = {br[g].x, br[g].y, br[g].z, br[g].w}, ss[4] = {s[g].x, s[g].y, s[g].z, s[g].w};
++      const float aa[4] = {a[g].x, a[g].y, a[g].z, a[g].w}, be[4] = {b[g].x, b[g].y, b[g].z, b[g].w};
++#pragma unroll
++      for (int k = 0; k < 4; ++k) {
++        const float x = aa[k] * ss[k], y = be[k] * bb[k];
++        v[0] += bb[k] * bb[k]; v[1] += x * x; v[2] += x * y; v[3] += y * y;
++      }
++    }
++    block_sum<4, NT>(v, red);
++    cluster_sum<4, C>(cl, v, slots[0]);
++    inv_br = rsqrtf(v[0] / HID + 1e-8f);
++    inv = rsqrtf((v[1] + 2.f * inv_br * v[2] + inv_br * inv_br * v[3]) / HID + 1e-5f);
++#pragma unroll
++    for (int g = 0; g < G; ++g) {
++      s[g].x = a[g].x * s[g].x + b[g].x * (br[g].x * inv_br); s[g].y = a[g].y * s[g].y + b[g].y * (br[g].y * inv_br);
++      s[g].z = a[g].z * s[g].z + b[g].z * (br[g].z * inv_br); s[g].w = a[g].w * s[g].w + b[g].w * (br[g].w * inv_br);
++    }
++  } else {
++    float v[1] = {0.f};
++#pragma unroll
++    for (int g = 0; g < G; ++g) v[0] += br[g].x * br[g].x + br[g].y * br[g].y + br[g].z * br[g].z + br[g].w * br[g].w;
++    block_sum<1, NT>(v, red);
++    cluster_sum<1, C>(cl, v, slots[0]);
++    inv_br = rsqrtf(v[0] / HID + 1e-8f);
++    float u[1] = {0.f};
++#pragma unroll
++    for (int g = 0; g < G; ++g) {
++      s[g].x = a[g].x * s[g].x + b[g].x * (br[g].x * inv_br); s[g].y = a[g].y * s[g].y + b[g].y * (br[g].y * inv_br);
++      s[g].z = a[g].z * s[g].z + b[g].z * (br[g].z * inv_br); s[g].w = a[g].w * s[g].w + b[g].w * (br[g].w * inv_br);
++      u[0] += s[g].x * s[g].x + s[g].y * s[g].y + s[g].z * s[g].z + s[g].w * s[g].w;
++    }
++    __syncthreads();  // red reuse
++    block_sum<1, NT>(u, red);
++    cluster_sum<1, C>(cl, u, slots[1]);
++    inv = rsqrtf(u[0] / HID + 1e-5f);
++  }
++#pragma unroll
++  for (int g = 0; g < G; ++g) {
++    const int j = (rank * NT * G + g * NT + tid) * 4;
++    *reinterpret_cast<float4*>(sout + (long long)t * HID + j) = s[g];
++    __nv_bfloat162 o0 = __floats2bfloat162_rn(s[g].x * inv * w[g].x, s[g].y * inv * w[g].y);
++    __nv_bfloat162 o1 = __floats2bfloat162_rn(s[g].z * inv * w[g].z, s[g].w * inv * w[g].w);
++    uint2 ov = make_uint2(*reinterpret_cast<uint32_t*>(&o0), *reinterpret_cast<uint32_t*>(&o1));
++    *reinterpret_cast<uint2*>(out + (long long)t * HID + j) = ov;
++  }
++}
++
++template <int C, int NT, int ROUNDS>
++__global__ void __launch_bounds__(NT) ew_boundary_cl(const void* __restrict__ P, int pf32, int S, long long ps, long long rs,
++                                                  int NB, const float* __restrict__ stream, float* __restrict__ sout,
++                                                  __nv_bfloat16* __restrict__ out, const float* __restrict__ postw,
++                                                  const float* __restrict__ alpha, const float* __restrict__ beta,
++                                                  const float* __restrict__ prew) {
++  constexpr int G = HID / (4 * C * NT);  // float4 groups per thread
++  static_assert(G >= 1 && HID % (4 * C * NT) == 0, "slice");
++  __shared__ float red[(NT / 32) * 4];
++  __shared__ float slots[2][C * 4];
++  pdl_release();
++  cg::cluster_group cl = cg::this_cluster();
++  const int rank = (int)cl.block_rank(), t = blockIdx.y, tid = threadIdx.x;
++  __shared__ __align__(16) float4 ew_stage[4][NT];
++  const int ew_j=(rank*NT*G+tid)*4;
++  auto ew_cp=[&](int slot,const float* p){asm volatile("cp.async.cg.shared.global [%0],[%1],16;"::"r"((unsigned)__cvta_generic_to_shared(&ew_stage[slot][tid])),"l"(p):"memory");};
++  ew_cp(0,alpha+ew_j);ew_cp(1,beta+ew_j);ew_cp(2,prew+ew_j);
++  if(postw)ew_cp(3,postw+ew_j);
++  asm volatile("cp.async.commit_group;":::"memory");
++  pdl_wait();
++  asm volatile("cp.async.wait_group 0;":::"memory");__syncthreads();
++  float4 a[G], b[G], w[G], q[G];
++#pragma unroll
++  for (int g = 0; g < G; ++g) {
++    const int j = (rank * NT * G + g * NT + tid) * 4;
++    a[g] = (g==0?ew_stage[0][tid]:gp_load4(alpha+j));
++    b[g] = (g==0?ew_stage[1][tid]:gp_load4(beta+j));
++    w[g] = (g==0?ew_stage[2][tid]:gp_load4(prew+j));
++    q[g] = postw ? (g==0?ew_stage[3][tid]:gp_load4(postw+j)) : make_float4(1.f, 1.f, 1.f, 1.f);
++  }
+@@ -424 +514 @@
+-    auto k = glue_cl::boundary_cl<C_, NT_, R_>;                                                              \
++    auto k = ((!postw) ? glue_cl::ew_boundary_cl<C_, NT_, R_> : glue_cl::boundary_cl<C_, NT_, R_>);                                                              \
