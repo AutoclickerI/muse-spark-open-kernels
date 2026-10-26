@@ -1,0 +1,7 @@
+{
+  "tested_wrapper_sha256": "5241875622837fc24226838349b85a38dbfa487a4f13fccee2c82196e1735531",
+  "sent_wrapper_sha256": "81c9bbd04d5f9b1ac1cfedcb8a3cd967fbbb84144b2c69a473a0211d1bd24789",
+  "payload_sha256": "a1c5ef681e46d81d77ef1cd054b28aede0de875ba7505523bfcb025d89c25e8a",
+  "equal_payloads": true,
+  "only_difference": "CLI float parsing changes import_budget820 to820.0 in config and deadline literal. Full source equality proven after those two replacements; compiled payload is identical."
+}

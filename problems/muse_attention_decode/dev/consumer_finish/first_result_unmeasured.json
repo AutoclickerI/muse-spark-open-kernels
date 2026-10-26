@@ -1,0 +1,17 @@
+{
+  "job": "510d394fdc604eba",
+  "receipt": "runs/muse_prefill_layer/20261026T110013Z_check_510d394fdc604eba.json",
+  "status": "unmeasured",
+  "reasons": [
+    "Wrapper schema rejects missing identities/seeds fields and marks the packet incomplete.",
+    "Native DEL same-fixture TASK fails8/8 verify32 sliding: oracle zeroed KN/VN while RAW2 uses that storage for live prefetched history."
+  ],
+  "checks": {
+    "BASE": 96,
+    "AA": 96,
+    "DEL_fixture_pass": 88,
+    "DEL_fixture_fail": 8
+  },
+  "repair": "Added required identity/seed fields; RAW2 only initializes new-token storage after history drain; six source-boundary proofs and changed native compile pass. New seeds85000121+104729*i; repair jobca022370c1f34adc. DEL additionally excludes current FA3 scheduler setup.",
+  "no_timing_verdict": true
+}

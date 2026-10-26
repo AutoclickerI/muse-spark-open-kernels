@@ -130,5 +130,12 @@ work models+0.563% six-load for sliding, +0.760% if blindly extended to all
 62 layers, d1/v1 unchanged. Neither is a six-load upper bound. A future
 joint design needs head-local readiness while other heads still stream,
 plus a real ready-consumer oracle across all six S/F paths before sizing
-it above1%. P5 proposes parking independent builds pending that concrete
-mechanism; this does not close P10 producer fusion generally.
+it above1%. The four-cell parking rationale is withdrawn: it did not size all six-load
+completion. Consumer-side oracleca022370c1f34adc now measures that lever,
+including current FA3 metadata and actual native prologues: six-load
+R1.015900[1.010938,1.020887], eight fresh seeds and192BASE/AA+96prepared-
+fixture TASK pass. Its lower bound is below this decision's1.015 build
+threshold, so no further consumer fusion or P10 patch was built. Most
+native attention CTAs already finish their heads; the standalone tails
+were not additive critical-path costs. See the consumer_finish handoff;
+producer fusion and broader attention mechanisms are not closed.

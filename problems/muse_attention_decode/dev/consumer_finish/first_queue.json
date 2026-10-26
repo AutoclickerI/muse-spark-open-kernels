@@ -1,0 +1,21 @@
+{
+  "utc": "20261026T110013Z",
+  "problem": "muse_prefill_layer",
+  "mode": "check",
+  "job": "510d394fdc604eba",
+  "sha256": "f2b6ee56d569a6a81af7cd6e26a2faaf3b1d0ef8850e277169566a0c5f21a589",
+  "file": "problems/muse_prefill_layer/lab/lab_deletion.py",
+  "source": "runs/muse_prefill_layer/20261026T110013Z_check_510d394fdc604eba.py",
+  "git": "b973af9+dirty",
+  "note": "h200_lab problems/muse_attention_decode/dev/consumer_finish/out/deletion.py: Exact S19 62ea5bf4, all12 S/F shapes;8 fresh75000091+104729*i seeds;6 symmetric cold rounds (complete3-arm forward/reverse cycle), every round and block telemetry losslessly retained. DEL excluded-work ready-QKV oracle only. Six native sm90a families compile; forced24BASE+12ready-fixture TASK, static6 pass. Producer and attention math/merge remain timed; S/F deletion sized from same pairs.",
+  "snapshot": "runs/sent/f2b6ee56d569a6a8/lab_deletion.py",
+  "lane": "P5",
+  "decision": "finish-deletion oracle sizes consumer-prologue fusion",
+  "priority": 5,
+  "priority_override": false,
+  "state": "done_unmeasured",
+  "sender_pid": 2324691,
+  "payload_sha256": "474194835d214d961c603b88a9e62ae5a33ba04bc2f86ca4e4abc5c9eba680e6",
+  "receipt": "runs/muse_prefill_layer/20261026T110013Z_check_510d394fdc604eba.json",
+  "reason": "Missing required packet identities/seeds fields; native RAW2 oracle cleared live history storage. No timing verdict."
+}

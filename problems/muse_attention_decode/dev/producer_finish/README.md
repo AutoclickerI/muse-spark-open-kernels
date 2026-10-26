@@ -157,16 +157,21 @@ exceed roughly2.94% of each entire load to buy1% six-load R, before accounting
 for the fraction occupied by attention. No tested current arm reaches that
 score size. The remaining theoretical attention gap is much larger.
 
-**Propose parking independent P5 builds by current decision value.** There
-is no supported >1% six-load build in this batch: the global-tail overlap
-premise fails, the four-cell free-prep scenario is below1%, and the tested
-broadcast/tree/page-map alternatives did not expose a large gain. This is
-a resource recommendation, not proof that attention or all producer fusion
-is exhausted. Reopen with a concrete P10 head-local layout/scheduling design
-and a real ready-consumer deletion oracle across all six S/F paths; d1/v1
-and full contributions could change the ranking. Do not spend another lab
-confirming a subpercent point. Existing d32 page-map nomination remains
-with P4; this stage hands P4/P10 the sizing evidence and no new speed nominee.
+**The four-cell parking rationale is withdrawn.** The actual consumer-side
+oracle now decides the family: [consumer_finish](../consumer_finish/README.md),
+repaired jobca022370c1f34adc, all six S/F loads/eight fresh seeds, six-load
+**R1.015900[1.010938,1.020887]**. Its lower bound1.010938 is below the
+prescribed1.015 build threshold, so the consumer finish family is parked
+with that measured result. No new candidate or producer patch was built.
+The initial510d394f oracle was unmeasured and repaired, not used for closure.
+
+Most native paths already perform reduction/RMS/RoPE/packing inside their
+head-owning attention prologues. Removing that internal work, plus full-
+decode sumcast and FA3 prep/scheduler, buys less than the standalone paid-
+tail model. There is no standalone finish launch on those native paths.
+The new oracle needs no P10 head-local producer schedule. Broader attention
+and producer fusion remain open; this supersedes the previous sizing-based
+recommendation while retaining every measured paid-tail result above.
 
 Rebuild/analyze:
 

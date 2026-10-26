@@ -1092,13 +1092,36 @@ v32 uses cuBLASLt. No production fused patch or candidate ratio is measured.
 
 The four supplied RAW2 deletion cells, d1/v1 unchanged, modelR1.005628 for
 46sliding layers or1.007604 if extended to62, at zero added producer/ready
-load cost. These are scenarios, **not six-load upper bounds or promotion**;
-CI in JSON covers baseline variation only. d1/v1/full actual deletion costs
-were not measured. Propose parking independent P5 builds by decision value:
-no supported >1% six-load concrete build remains in this batch. Reopen for a
-P10 head-local schedule plus real six-load ready-consumer oracle; this does
-not rule out producer fusion/attention generally. Prior d32 page-map point
-remains with P4. [Evidence, controls and handoff](../problems/muse_attention_decode/dev/producer_finish/README.md).
+load cost. These are scenarios, **not six-load upper bounds or promotion**.
+The parking proposal based on them is withdrawn: it did not size the lever.
+The requested consumer-side deletion oracle below replaces that rationale.
+
+### P5 consumer finish-deletion oracle on S19
+
+R is BASE/DEL, larger is faster. Eight fresh seeds85000121+104729*i,
+six complete palindromic cold rounds; all1728 round times and384 device
+telemetry reads retained losslessly. Exact S19 62ea5bf4, all six S/F loads,
+192 BASE/A:A public TASK+96 prepared-fixture TASK pass. DEL deliberately
+prepares ready current Q/K/V/gate and FA3 metadata outside timing; it is
+never a candidate, even with correct frozen-fixture numerics. Producer,
+gate GEMV, all-key attention, merge and downstream work remain timed.
+
+| Recipe | Ratio vs control | Mechanism | Leaves open | Receipt |
+|---|---|---|---|---|
+| Initial consumer deletion oracle | **Unmeasured**: missing required identities/seeds packet fields; RAW2 DEL cleared live history,8/8 v32S fixture failures. BASE/AA192 and otherDEL88 pass; all samples/source retained | Wrapper flags incomplete evidence; same-fixture sanity detects native implementation fault | No timing verdict/closure. Required schema and RAW2 storage lifetime fixed, exact wrapper/schema/tail/codec rehearsed, new seeds used | `510d394fdc604eba` |
+| All-path DEL, exact-S19 whole-layer oracle | **Six-load R1.015900[1.010938,1.020887]**, paired-logSE.002071,AASE.001800. d1/d16/d32/v1/v16/v32 **1.025467[.998939,1.052700]/1.009522[1.006028,1.013028]/1.004511[1.001571,1.007460]/1.032477[1.012810,1.052527]/1.014188[1.010295,1.018097]/1.009520[1.001272,1.017836]**. Six-load A:A1.000336[.996087,1.004602] | Delete native head prologues/QKV wait, full-decode sumcast and FA3 prep+metadata; packed ready transport remains. Six source-boundary proofs, original partitions pinned, native execution and all prepared-fixture TASK pass; wire8162B/completeness/checksum valid | **Park consumer finish family per prescribed LB1.015 decision**: actualLB1.010938. No build/P4 nominee. This does not close all sliding or producer mechanisms. Most native paths already fused the finish, so standalone paid tails were not additive deletion costs | `ca022370c1f34adc` |
+| Sliding-only /full-only derived deletion, same seed pairs | Six-load **DEL_S1.011513[1.006474,1.016578] /DEL_F1.004287[1.000021,1.008570]** | Combine measured changed path with same fixture's unchanged BASE path; no separately timed duplicate calls | Both optimistic exclusions, never correct nominees or additive stage timings. Prior d32 page-map point remains with P4 | `ca022370c1f34adc` |
+
+Controls retain d1's wide CI and v1 A:A+0.967% directional drift, with no
+per-load veto, trimming or selective rerun. SM1980MHz/memory3201MHz fixed,
+32–39C; worst archived round/median1.09869. No clock counter identifies a
+cause for the remaining variation. Native counts confirm full d16/d32
+sumcast removed (10→9/11→10), FA3v1F/v16S prep+metadata removed (13→11/20→18),
+math/merge retained. **v1S is native R2 DSM QT4/C16**, not FA3, by source,
+actual selections and nodes. Most native paths already reduce partials,
+roundBF16, RMS/RoPE and pack within head-owning attention prologues.
+Half-deletion point illustrates only~0.79% six-load, not a measured recovery
+or a universal bound. [All CIs/seeds/controls and evidence-only P4 handoff](../problems/muse_attention_decode/dev/consumer_finish/README.md).
 
 
 ### Our kernels (losses in "Closed recipes")

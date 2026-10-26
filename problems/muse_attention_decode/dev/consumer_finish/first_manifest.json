@@ -1,0 +1,38 @@
+{
+  "base_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+  "payload_sha256": "474194835d214d961c603b88a9e62ae5a33ba04bc2f86ca4e4abc5c9eba680e6",
+  "body_sha256": "a03eeca9519653d23c2656bb06932de05c0084924cda5819f8249c0a4913dc71",
+  "sources": {
+    "_s16_global_C128_cs_CUDA": "7b1a8ac89b32fd81789a2e3b33ae65812ec88a7931ff5fb49f1b38f4b8eccc21",
+    "PARTIAL_CUDA": "c35af511ef68c0a7dbad772a77ab1fbdcedb5c667e9bb8c873781ab5298cbdb6",
+    "ATTN_PORT_CUDA_SRC": "2ca801b66106c4f628ab4f4de4ef950ba27950cda13c41791c218810433a1195",
+    "VQ8_CUDA": "b855db6d3f45ad7b65f7f8cd10348704d7fa9cf7f95c8ecaee929a460bc635a6",
+    "r2_KERNELS": {
+      "dsm": "878db401260253ad6ea5e4b7156444bc77679e2e5b1c0b59f07bf82d9bf06127"
+    },
+    "wr_KERNELS": {
+      "STREAM2": "7b1f16774fbc37de633cb5a5458c32e3ff00b81b04899c8f96ae60d00b1fad5b"
+    }
+  },
+  "scope": "oracle only; not a correct candidate",
+  "weight_seed": 74000033,
+  "router_seed": 74000039,
+  "seeds": [
+    75000091,
+    75104820,
+    75209549,
+    75314278,
+    75419007,
+    75523736,
+    75628465,
+    75733194
+  ],
+  "measurement_protocol": {
+    "name": "palindromic-cohort-v1",
+    "rounds": 6,
+    "seed_count": 8,
+    "aggregation": "arithmetic-mean-all-rounds",
+    "selective_retiming": false
+  },
+  "per_path": "DEL_S/DEL_F synthesized from the measured DEL path and the unchanged BASE path, not separately timed duplicate calls."
+}

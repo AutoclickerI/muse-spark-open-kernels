@@ -1,0 +1,116 @@
+[
+  {
+    "name": "_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA",
+    "sha256": "7b1a8ac89b32fd81789a2e3b33ae65812ec88a7931ff5fb49f1b38f4b8eccc21",
+    "resources": "\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN85_GLOBAL__N__68096254_52__s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA_cu_ab5716f012sliding_mainILi1ELi1ELi128EEEvNS_2VPE:\n  REG:143 STACK:0 SHARED:2048 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN85_GLOBAL__N__68096254_52__s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA_cu_ab5716f012sliding_mainILi1ELi1ELi64EEEvNS_2VPE:\n  REG:98 STACK:0 SHARED:2048 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN85_GLOBAL__N__68096254_52__s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA_cu_ab5716f012sliding_mainILi1ELi4ELi128EEEvNS_2VPE:\n  REG:143 STACK:0 SHARED:2048 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN85_GLOBAL__N__68096254_52__s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA_cu_ab5716f012sliding_mainILi1ELi4ELi64EEEvNS_2VPE:\n  REG:98 STACK:0 SHARED:2048 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "compile_warnings": [
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA.cu(38): warning #177-D: variable \"<unnamed>::NSMAX\" was declared but never referenced",
+      "Remark: The warnings can be suppressed with \"-diag-suppress <warning-number>\"",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA.cu(39): warning #177-D: variable \"<unnamed>::PR\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA.cu(40): warning #177-D: variable \"<unnamed>::SCHED\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA.cu(59): warning #177-D: function \"<unnamed>::cp4\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA.cu(63): warning #177-D: variable \"<unnamed>::CLKPAD\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA.cu(88): warning #177-D: function \"<unnamed>::wsum_i\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA.cu(106): warning #177-D: function \"<unnamed>::word\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA.cu(112): warning #177-D: function \"<unnamed>::mb_init\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA.cu(113): warning #177-D: function \"<unnamed>::mb_arrive\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA.cu(114): warning #177-D: function \"<unnamed>::mb_wait\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA.cu(133): warning #177-D: function \"<unnamed>::wg_bar\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA.cu(156): warning #177-D: function \"<unnamed>::protect(uint32_t (&)[8])\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA.cu(160): warning #177-D: function \"<unnamed>::mma8\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA.cu(184): warning #177-D: function \"<unnamed>::qk\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA.cu(207): warning #177-D: function \"<unnamed>::pv\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA.cu(260): warning #177-D: function \"<unnamed>::rope_cs\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA.cu(265): warning #177-D: function \"<unnamed>::rot\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA.cu(349): warning #177-D: function \"<unnamed>::cload\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA.cu(350): warning #177-D: function \"<unnamed>::cbar\" was declared but never referenced"
+    ]
+  },
+  {
+    "name": "PARTIAL_CUDA_PARTIAL_CUDA",
+    "sha256": "c35af511ef68c0a7dbad772a77ab1fbdcedb5c667e9bb8c873781ab5298cbdb6",
+    "resources": "\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN61_GLOBAL__N__e94389c7_28_PARTIAL_CUDA_PARTIAL_CUDA_cu_0e6d075c9attn_mainILi8ELi3EEEvNS_6ParamsE:\n  REG:231 STACK:0 SHARED:1152 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN61_GLOBAL__N__e94389c7_28_PARTIAL_CUDA_PARTIAL_CUDA_cu_0e6d075c9attn_mainILi1ELi4EEEvNS_6ParamsE:\n  REG:126 STACK:0 SHARED:1152 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "compile_warnings": [
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/PARTIAL_CUDA_PARTIAL_CUDA.cu(107): warning #177-D: function \"<unnamed>::ld_cluster_f32\" was declared but never referenced",
+      "Remark: The warnings can be suppressed with \"-diag-suppress <warning-number>\""
+    ]
+  },
+  {
+    "name": "ATTN_PORT_CUDA_SRC_ATTN_PORT_CUDA_SRC",
+    "sha256": "2ca801b66106c4f628ab4f4de4ef950ba27950cda13c41791c218810433a1195",
+    "resources": "\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN73_GLOBAL__N__b085000b_40_ATTN_PORT_CUDA_SRC_ATTN_PORT_CUDA_SRC_cu_7c2dbf149attn_mainILi8ELi3EEEvNS_6ParamsE:\n  REG:231 STACK:0 SHARED:1152 LOCAL:0 CONSTANT[0]:712 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN73_GLOBAL__N__b085000b_40_ATTN_PORT_CUDA_SRC_ATTN_PORT_CUDA_SRC_cu_7c2dbf149attn_mainILi1ELi4EEEvNS_6ParamsE:\n  REG:116 STACK:0 SHARED:3200 LOCAL:0 CONSTANT[0]:712 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "compile_warnings": [
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/ATTN_PORT_CUDA_SRC_ATTN_PORT_CUDA_SRC.cu(334): warning #177-D: variable \"ksc\" was declared but never referenced",
+      "Remark: The warnings can be suppressed with \"-diag-suppress <warning-number>\"",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/ATTN_PORT_CUDA_SRC_ATTN_PORT_CUDA_SRC.cu(334): warning #177-D: variable \"vsc\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/ATTN_PORT_CUDA_SRC_ATTN_PORT_CUDA_SRC.cu(92): warning #177-D: function \"<unnamed>::ld_cluster_f32\" was declared but never referenced"
+    ]
+  },
+  {
+    "name": "VQ8_CUDA_VQ8_CUDA",
+    "sha256": "b855db6d3f45ad7b65f7f8cd10348704d7fa9cf7f95c8ecaee929a460bc635a6",
+    "resources": "\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN53_GLOBAL__N__a3facfc9_20_VQ8_CUDA_VQ8_CUDA_cu_7c053c9e8vq8_mainILi3EEEvNS_2VPE:\n  REG:168 STACK:0 SHARED:5120 LOCAL:0 CONSTANT[0]:696 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN53_GLOBAL__N__a3facfc9_20_VQ8_CUDA_VQ8_CUDA_cu_7c053c9e8vq8_mainILi4EEEvNS_2VPE:\n  REG:168 STACK:0 SHARED:5120 LOCAL:0 CONSTANT[0]:696 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN53_GLOBAL__N__a3facfc9_20_VQ8_CUDA_VQ8_CUDA_cu_7c053c9e8vq8_mainILi2EEEvNS_2VPE:\n  REG:168 STACK:0 SHARED:5120 LOCAL:0 CONSTANT[0]:696 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN53_GLOBAL__N__a3facfc9_20_VQ8_CUDA_VQ8_CUDA_cu_7c053c9e11vq8_combineENS_2VPE:\n  REG:64 STACK:8 SHARED:5120 LOCAL:0 CONSTANT[0]:696 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "compile_warnings": [
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/VQ8_CUDA_VQ8_CUDA.cu(551): warning #20058-D: the #pragma unroll must precede a loop",
+      "Remark: The warnings can be suppressed with \"-diag-suppress <warning-number>\"",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/VQ8_CUDA_VQ8_CUDA.cu(123): warning #177-D: function \"<unnamed>::word\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/VQ8_CUDA_VQ8_CUDA.cu(177): warning #177-D: function \"<unnamed>::mma8\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/VQ8_CUDA_VQ8_CUDA.cu(350): warning #177-D: function \"<unnamed>::rope_cs\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/VQ8_CUDA_VQ8_CUDA.cu(355): warning #177-D: function \"<unnamed>::rot\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/VQ8_CUDA_VQ8_CUDA.cu(359): warning #177-D: function \"<unnamed>::clock_rows\" was declared but never referenced"
+    ]
+  },
+  {
+    "name": "r2_KERNELS_dsm",
+    "sha256": "878db401260253ad6ea5e4b7156444bc77679e2e5b1c0b59f07bf82d9bf06127",
+    "resources": "\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN50_GLOBAL__N__260571ff_17_r2_KERNELS_dsm_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:164 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN50_GLOBAL__N__260571ff_17_r2_KERNELS_dsm_cu_ab5716f012sliding_mainILi8ELi2ELi128EEEvNS_2VPE:\n  REG:162 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN50_GLOBAL__N__260571ff_17_r2_KERNELS_dsm_cu_ab5716f012sliding_mainILi8ELi4ELi128EEEvNS_2VPE:\n  REG:161 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN50_GLOBAL__N__260571ff_17_r2_KERNELS_dsm_cu_ab5716f012sliding_mainILi8ELi8ELi128EEEvNS_2VPE:\n  REG:139 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN50_GLOBAL__N__260571ff_17_r2_KERNELS_dsm_cu_ab5716f012sliding_mainILi1ELi1ELi128EEEvNS_2VPE:\n  REG:138 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN50_GLOBAL__N__260571ff_17_r2_KERNELS_dsm_cu_ab5716f012sliding_mainILi1ELi2ELi128EEEvNS_2VPE:\n  REG:138 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN50_GLOBAL__N__260571ff_17_r2_KERNELS_dsm_cu_ab5716f012sliding_mainILi1ELi4ELi128EEEvNS_2VPE:\n  REG:138 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN50_GLOBAL__N__260571ff_17_r2_KERNELS_dsm_cu_ab5716f012sliding_mainILi1ELi8ELi128EEEvNS_2VPE:\n  REG:139 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "compile_warnings": [
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/r2_KERNELS_dsm.cu(38): warning #177-D: variable \"<unnamed>::NSMAX\" was declared but never referenced",
+      "Remark: The warnings can be suppressed with \"-diag-suppress <warning-number>\"",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/r2_KERNELS_dsm.cu(39): warning #177-D: variable \"<unnamed>::PR\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/r2_KERNELS_dsm.cu(40): warning #177-D: variable \"<unnamed>::SCHED\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/r2_KERNELS_dsm.cu(59): warning #177-D: function \"<unnamed>::cp4\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/r2_KERNELS_dsm.cu(63): warning #177-D: variable \"<unnamed>::CLKPAD\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/r2_KERNELS_dsm.cu(88): warning #177-D: function \"<unnamed>::wsum_i\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/r2_KERNELS_dsm.cu(106): warning #177-D: function \"<unnamed>::word\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/r2_KERNELS_dsm.cu(112): warning #177-D: function \"<unnamed>::mb_init\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/r2_KERNELS_dsm.cu(113): warning #177-D: function \"<unnamed>::mb_arrive\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/r2_KERNELS_dsm.cu(114): warning #177-D: function \"<unnamed>::mb_wait\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/r2_KERNELS_dsm.cu(133): warning #177-D: function \"<unnamed>::wg_bar\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/r2_KERNELS_dsm.cu(156): warning #177-D: function \"<unnamed>::protect(uint32_t (&)[8])\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/r2_KERNELS_dsm.cu(160): warning #177-D: function \"<unnamed>::mma8\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/r2_KERNELS_dsm.cu(184): warning #177-D: function \"<unnamed>::qk\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/r2_KERNELS_dsm.cu(207): warning #177-D: function \"<unnamed>::pv\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/r2_KERNELS_dsm.cu(260): warning #177-D: function \"<unnamed>::rope_cs\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/r2_KERNELS_dsm.cu(265): warning #177-D: function \"<unnamed>::rot\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/r2_KERNELS_dsm.cu(298): warning #177-D: function \"<unnamed>::qk64\" was declared but never referenced"
+    ]
+  },
+  {
+    "name": "wr_KERNELS_STREAM2",
+    "sha256": "dc4188f634fa61eb3d45b89489b7f1efbf5d365f362a3a08bb06002b68fc007f",
+    "resources": "\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN54_GLOBAL__N__d94b1389_21_wr_KERNELS_STREAM2_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:202 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:744 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "compile_warnings": [
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/wr_KERNELS_STREAM2.cu(142): warning #177-D: function \"<unnamed>::wg_bar(int)\" was declared but never referenced",
+      "Remark: The warnings can be suppressed with \"-diag-suppress <warning-number>\"",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/wr_KERNELS_STREAM2.cu(40): warning #177-D: variable \"<unnamed>::CAP\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/wr_KERNELS_STREAM2.cu(42): warning #177-D: variable \"<unnamed>::NSMAX\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/wr_KERNELS_STREAM2.cu(43): warning #177-D: variable \"<unnamed>::PR\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/wr_KERNELS_STREAM2.cu(44): warning #177-D: variable \"<unnamed>::SCHED\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/wr_KERNELS_STREAM2.cu(68): warning #177-D: function \"<unnamed>::cp4\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/wr_KERNELS_STREAM2.cu(72): warning #177-D: variable \"<unnamed>::CLKPAD\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/wr_KERNELS_STREAM2.cu(97): warning #177-D: function \"<unnamed>::wsum_i\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/wr_KERNELS_STREAM2.cu(115): warning #177-D: function \"<unnamed>::word\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/wr_KERNELS_STREAM2.cu(121): warning #177-D: function \"<unnamed>::mb_init\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/wr_KERNELS_STREAM2.cu(122): warning #177-D: function \"<unnamed>::mb_arrive\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/wr_KERNELS_STREAM2.cu(123): warning #177-D: function \"<unnamed>::mb_wait\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/wr_KERNELS_STREAM2.cu(165): warning #177-D: function \"<unnamed>::protect(uint32_t (&)[8])\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/wr_KERNELS_STREAM2.cu(169): warning #177-D: function \"<unnamed>::mma8\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/wr_KERNELS_STREAM2.cu(193): warning #177-D: function \"<unnamed>::qk\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/wr_KERNELS_STREAM2.cu(216): warning #177-D: function \"<unnamed>::pv\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/wr_KERNELS_STREAM2.cu(269): warning #177-D: function \"<unnamed>::rope_cs\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/wr_KERNELS_STREAM2.cu(274): warning #177-D: function \"<unnamed>::rot\" was declared but never referenced",
+      "/data2/jihoon/worktrees/muse_kernel/p5-consumer-finish/problems/muse_attention_decode/dev/consumer_finish/out/wr_KERNELS_STREAM2.cu(307): warning #177-D: function \"<unnamed>::qk64\" was declared but never referenced"
+    ]
+  }
+]

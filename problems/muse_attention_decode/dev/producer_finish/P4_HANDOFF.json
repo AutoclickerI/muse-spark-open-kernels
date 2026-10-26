@@ -402,8 +402,8 @@
       }
     }
   },
-  "decision": "Propose parking independent P5 builds; reopen for a concrete P10 head-local scheduling design and actual ready-consumer oracle across six loads, including d1/v1/full.",
-  "reason": "Global last-CTA finish follows the stream. Logical bandwidth/static SASS do not establish ALU slack. Coded tiles own16of64columns; v32 uses Lt. Four-load RAW2 free-prep scenario is below1% but is not a universal bound.",
+  "decision": "Consumer finish-deletion oracleca022370c1f34adc complete: six-loadR1.015900[1.010938,1.020887]; lower bound below prescribed1.015 build threshold, park this consumer family. Four-cell RAW2 parking rationale withdrawn. No new candidate.",
+  "reason": "Actual all-six S/F consumer deletion now measured, including native prologues, full sumcast and FA3 prep/metadata. Native paths mostly already fuse the finish; paid standalone tails are not additive critical-path savings. Other attention/producer mechanisms remain open.",
   "producer_patch": null,
   "limitations": [
     "SASS/static throughput do not establish dynamic ALU idle.",
@@ -411,5 +411,6 @@
     "CUPTI critical increments have profiling perturbation and are not guaranteed recoverable savings.",
     "RAW2 altered-work preparation estimates are not actual S19 FA3 timings or a bound on unmeasured d1/v1/full fusion."
   ],
-  "prior_nomination": "../setup_tree/P4_HANDOFF.json"
+  "prior_nomination": "../setup_tree/P4_HANDOFF.json",
+  "next_handoff": "../consumer_finish/P4_HANDOFF.json"
 }

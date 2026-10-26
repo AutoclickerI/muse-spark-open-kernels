@@ -1,0 +1,38 @@
+[
+  {
+    "name": "_s16_global_C128_cs_CUDA__s16_global_C128_cs_CUDA",
+    "original_sha256": "35c257f89740f59ece3502f7ee88582ed3b2554c4eb850938dce7b73f950fe77",
+    "oracle_sha256": "7b1a8ac89b32fd81789a2e3b33ae65812ec88a7931ff5fb49f1b38f4b8eccc21",
+    "retained": "All source except input-preparation bodies and new ready-byte helper; math, tile loops, virtual-key attention and DSM merge unchanged."
+  },
+  {
+    "name": "PARTIAL_CUDA_PARTIAL_CUDA",
+    "original_sha256": "8260df4d77059106824dc862e9133d88340fc49a848fe73fd75aca51eb559181",
+    "oracle_sha256": "c35af511ef68c0a7dbad772a77ab1fbdcedb5c667e9bb8c873781ab5298cbdb6",
+    "retained": "Exact source prefix/suffix outside main input prologue, including full history issue loop, tensor math, softmax and merge."
+  },
+  {
+    "name": "ATTN_PORT_CUDA_SRC_ATTN_PORT_CUDA_SRC",
+    "original_sha256": "5de7a696264fff0afdadd2fef92690a359de437c78262ca3d7183670f9ae30a0",
+    "oracle_sha256": "2ca801b66106c4f628ab4f4de4ef950ba27950cda13c41791c218810433a1195",
+    "retained": "Exact source prefix/suffix outside main input prologue, including full history issue loop, tensor math, softmax and merge."
+  },
+  {
+    "name": "VQ8_CUDA_VQ8_CUDA",
+    "original_sha256": "36b40412cb5a4d79b1d0afb5f9437dc7d40e66249b1380294c7ee7f4a6ac4d04",
+    "oracle_sha256": "b855db6d3f45ad7b65f7f8cd10348704d7fa9cf7f95c8ecaee929a460bc635a6",
+    "retained": "All source except head prologue and first/main input PDL wait; combine wait is retained."
+  },
+  {
+    "name": "r2_KERNELS_dsm",
+    "original_sha256": "0f250847cd8dbc3cbc8583425f4fef9e441e538c340b90d91448dccc125ab4a9",
+    "oracle_sha256": "878db401260253ad6ea5e4b7156444bc77679e2e5b1c0b59f07bf82d9bf06127",
+    "retained": "All source except input-preparation bodies and new ready-byte helper; math, tile loops, virtual-key attention and DSM merge unchanged."
+  },
+  {
+    "name": "wr_KERNELS_STREAM2",
+    "original_sha256": "f755216970a712469304811466226233f9df78e9de93d96fe2259c57a991d80e",
+    "oracle_sha256": "dc4188f634fa61eb3d45b89489b7f1efbf5d365f362a3a08bb06002b68fc007f",
+    "retained": "All source except input-preparation bodies and new ready-byte helper; math, tile loops, virtual-key attention and DSM merge unchanged."
+  }
+]
