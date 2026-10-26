@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "records": [
+    {
+      "mode": "normal",
+      "sha256": "99ce520147fb46dd2b268959a39d29c14d93d64052430cc86c73a8cf4f0d618d",
+      "TASK": 13,
+      "graphs": 12,
+      "static": 6
+    },
+    {
+      "mode": "forced",
+      "sha256": "99ce520147fb46dd2b268959a39d29c14d93d64052430cc86c73a8cf4f0d618d",
+      "TASK": 13,
+      "graphs": 12,
+      "static": 6
+    }
+  ],
+  "selection": "all15parentpoints+parentpoolstress+all7newgroups",
+  "limits": "Explicit local arithmetic stand-ins; native compile admission separate, no native speed claim"
+}

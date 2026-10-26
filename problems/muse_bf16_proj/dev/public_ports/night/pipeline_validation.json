@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "reader_cases": 12,
+  "all_rounds_exact": true,
+  "incomplete_packet_rejected": true,
+  "mean_positive_CI_unresolved_retained": true,
+  "negative_point_dropped": true,
+  "pool_shape_dispatch_priced_next": true,
+  "seeds_disjoint": true,
+  "limits": "Synthetic selection fixtures and local reader transport only. No fixture or local timing is native performance evidence.",
+  "pidfd_completion_event_test": true,
+  "filesystem_completion_event_test": true,
+  "host_event_API": "Direct Linux x86_64 SYS_pidfd_open434; named Python/libc wrappers absent. Actual child-exit and file-close events passed, no polling.",
+  "normal_h200_wrapper_build": true,
+  "wrapper_static_rejections": [],
+  "wrapper_bytes": 472802,
+  "template_wrapper_sha256": "7bbe1c4cfbfb7cdc16706943f75d1490c07a32415c8c54efb4ca248962a4d52e"
+}

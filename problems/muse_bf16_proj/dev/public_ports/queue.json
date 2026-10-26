@@ -1,13 +1,13 @@
 {
-  "status": "waiting on real quota reset",
+  "status": "Corrected parent waiting on actual quota reset;3347492 source was never submitted",
   "sender": {
-    "pid": 3347492,
+    "pid": 3966799,
     "priority": 5,
-    "t": 1793020258.8867154,
+    "t": 1793024859.0341039,
     "problem": "muse_bf16_proj",
     "file": "problems/muse_bf16_proj/lab/lab_public_whole.py",
-    "sha256": "9654f02caefc30147fdd214deb0c270cf533e92541b7e6bcef6b81636650bcc8",
-    "note": "h200_lab problems/muse_bf16_proj/dev/public_ports/out/public_whole.py: Fresh S21 snapshot;8newseeds8symmetric retained rounds,all848layer+640strictprojection/router TASK;15individual port points plus portfolio;coded pool first-weights-before-PDL-wait WK4/8 ST1/2 and donor tiled-TMA occupancy/early issue atT16/32",
+    "sha256": "5a8ae27c764a6f9b67ab526adfa106ee09fa3e4136731f4e1195420f5be758c2",
+    "note": "h200_lab problems/muse_bf16_proj/dev/public_ports/out/public_whole.py: Correct own queued3347492 before quota: first W tile peeled; all X descriptor coordinates depend on post-GDC opaque zero to prevent Triton hoisting. Same S21eacc/15individual ports+portfolio/10poolarms/8seeds8symmetric rounds;848layer+640strict local TASK and all8 sm90TMA activation-order proofs. No quota spent on superseded source.",
     "not_before": 0,
     "lane": "P10",
     "decision": "rank public port nominees and coded pool prefetch in S21 whole graph",
@@ -36,8 +36,23 @@
       0
     ]
   },
-  "payload_sha256": "5f896935ee8f4c77ba2daf61e2d73adc2e81a288f9d2022f104c7e3b800b7801",
+  "payload_sha256": "65c9f087c1021e131c8589d13648f12275c3d0975cfd2d24766249ed656960a1",
   "wrapper": "problems/muse_bf16_proj/lab/lab_public_whole.py",
   "local_validation": "whole_validation.json",
-  "reset": "2026-10-27T09:01:00+09:00"
+  "reset": "2026-10-27T09:01:00+09:00",
+  "supersedes": {
+    "pid": 3347492,
+    "priority": 5,
+    "t": 1793020258.8867154,
+    "problem": "muse_bf16_proj",
+    "file": "problems/muse_bf16_proj/lab/lab_public_whole.py",
+    "sha256": "9654f02caefc30147fdd214deb0c270cf533e92541b7e6bcef6b81636650bcc8",
+    "note": "h200_lab problems/muse_bf16_proj/dev/public_ports/out/public_whole.py: Fresh S21 snapshot;8newseeds8symmetric retained rounds,all848layer+640strictprojection/router TASK;15individual port points plus portfolio;coded pool first-weights-before-PDL-wait WK4/8 ST1/2 and donor tiled-TMA occupancy/early issue atT16/32",
+    "not_before": 0,
+    "lane": "P10",
+    "decision": "rank public port nominees and coded pool prefetch in S21 whole graph",
+    "priority_override": false,
+    "until": 1793059260.0
+  },
+  "correction": "All activation TMA coordinates depend on a post-wait opaque zero. Arms/seeds/timing protocol unchanged."
 }

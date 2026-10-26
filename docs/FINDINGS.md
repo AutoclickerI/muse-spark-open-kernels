@@ -2110,16 +2110,48 @@ still unmeasured. Exact MIT-noticed patches and all15 point specs are in `public
 Built the next small-M test with S19's existing exact12 NF reader: WK4/8, ST1/2, first weights before
 PDL activation wait; and donor tiled TMA BK128/256 ST2/3 to admit more CTAs, with matched early-issue
 controls. Local full S21 rehearsal passes848layer+640strict projection/router TASK; all8changed
-sm90 TMA schedules compile at61–98KB shared and PTX verifies weights-before-wait only in early arms.
+sm90 TMA schedules compile at61–148KB shared and PTX verifies weights-before-wait only in early arms.
 Twelve NF sm90a kernels also compile with72–128regs/zero spills and intended PTX load/wait order.
 Exact P4 patch normal/forced screens pass13TASK/12graphs/6static each.
 The native follow-up is **unmeasured**: all five hosts exhausted0scored+0checks after the port run.
-Sender3347492 (`9654f02c`) automatically waits the real10-27 09:01KST reset. It freezes S21eacc087b
-and batches all15port points individually/portfolio plus10pool variants on8disjoint fresh seeds and
-8symmetric rounds. No second duplicate queued. `queue.json`, `whole_manifest.json`, and
-`whole_validation.json` preserve the exact ready work. Read its receipt with `whole_read.py`, then
-P4 must apply the surviving portfolio on S21/S22 and pass its own held-out six-load G0. No new G0
-winner, native pool-prefetch result, selected prepare, or private leader residual is claimed.
+Corrected sender3966799 (`5a8ae27c`) supersedes unsubmitted3347492 (`9654f02c`) before reset:
+sm90 PTX exposed both W and X TMA hoisting before GDC in two early-TMA schedules. Peeling the first
+W tile and feeding an opaque post-GDC zero into **every X descriptor coordinate** repairs activation
+readiness; all8verify X-after and the early arms verify W-before. Same arms/seeds/rounds/TASK,
+no quota spent on old source. `night/parent_repair.json` preserves old/new identities. The corrected
+parent still freezes S21eacc087b and tests15points individually/portfolio +10pool schedules on8fresh
+seeds/8symmetric rounds. Its native receipt, selected prepare and G0 remain unmeasured.
+
+**Night small-M carrier build, `dev/public_ports/night/`:** exact reaggregation ofe70024b1 gives
+weighted d16 pool/router11.580011us [11.388716,11.771306], unpool.918463, O.477709, QKV.301681;
+d32 QKV2.999935, pool2.848397, unpool2.536113, O.008758us. Gate has no positive exposed surplus.
+S19 timeline9c16c850 independently has d16 pool27.06critical/15.84roofus and d32 QKV11.99/6.38,
+unpool15.75/10.87. It uses byte/tensor roofs without the fitted intercept, so those excesses differ.
+Pool32 is **dense BF16,S6,75.497472MB**, not coded. The R1.032884 scenario targets current selected
+bytes; new exact coding can lower that target too. Complete site/shape sampling CIs: `night/SIZING.md`.
+
+Built seven groups: NF12 S4/WK4/ST1 DSM RED3 at Q16/Q32/P16; NF12 S2/WK4/ST1 at U16/U32;
+NF12 S1/WK4/ST2 at O16; tiled TMA BN64/BK128/ST2/S3 DSM at P32. First codewords issue before the
+activation wait, outputs stay FP32 S1 with native consumers. CODED_P32 adds the same NF S4 schedule
+at MT4, sharing the P16 stream bank (one extra specialization, no extra weight bank). It is paired
+against raw P32 inside the full layer. Nine NF kernels sm90a-compile at64–96regs/zero spills; the TMA
+launcher explicitly enables PDL and the peeled-weight/address dependency prevents X hoisting.
+Local primary and parent-pool stress rehearsals each pass512layer+208original projection/router TASK,
+all5distinct stream/body/escape/origin inverses, and full-tail packet guards; exact production patch
+normal/forced13TASK+12graphs+6static each. These are glue/encoding/admission proofs, not H200 speed.
+
+One-shot dispatcher4088520 waits on corrected parent3966799's exact completion event. It validates
+that receipt, runs `whole_read.py`, drops mean-negative in-graph points, hands remaining points/pool
+schedules to P4 as an exact patch, then sends the admitted next batch at P10 PLAN priority. Only
+validated parent-selection constants can change; all kernels/source/seeds are pinned. The next lab
+uses8disjoint seeds/fresh weights/router, S21+that native portfolio, INC/A/AA/FULL,7leave-outs and the
+coded P32 alternative. All cyclic positions and exact reverses:16rounds at T16/T32,8elsewhere; every
+round retained, same official TASK. It prices the selected parent's composition and each new group
+inside one whole-graph boundary. New native ratios/prepare/G0 remain unmeasured. P4 must confirm
+any selected S2x composition with new held-out six-load G0. No physical/private-leader split is inferred.
+Host named pidfd wrappers were missing; direct Linux syscall434 and actual process/file completion
+events now pass. Failed startup workers sent nothing; `startup_failure.json` retains them. No polling,
+fixed delay, background git writes or repeated advice; worker exits after one send.
 
 Transport failures `f304369a` (222bytes over) and `24b58b2d` (156bytes over) are unmeasured, not
 kernel losses. Successful repeats keep all scoped observations/arms/seeds/rounds. `send.py` calls the

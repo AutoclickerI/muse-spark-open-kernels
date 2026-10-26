@@ -1,0 +1,88 @@
+{
+  "passed": true,
+  "payload_sha256": "599f4d70053dee16d3e943de32109c7ec053ddffb8bfcbfb1d7423cdbf3c26fb",
+  "layer_TASK": 512,
+  "strict_TASK": 208,
+  "rows": 12,
+  "round_counts": [
+    8,
+    8,
+    16,
+    16,
+    16,
+    16,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8
+  ],
+  "host_launches": 300,
+  "codec_inverses": [
+    {
+      "role": "o",
+      "cfg": [
+        1,
+        4,
+        4,
+        1
+      ],
+      "weights": 8388608,
+      "escaped": 962,
+      "bytes": 12861440
+    },
+    {
+      "role": "pool_router",
+      "cfg": [
+        1,
+        4,
+        8,
+        4
+      ],
+      "weights": 37748736,
+      "escaped": 5993,
+      "bytes": 57249792
+    },
+    {
+      "role": "qkv3",
+      "cfg": [
+        1,
+        4,
+        8,
+        4
+      ],
+      "weights": 10485760,
+      "escaped": 1453,
+      "bytes": 15902720
+    },
+    {
+      "role": "qkv_gate",
+      "cfg": [
+        1,
+        4,
+        8,
+        4
+      ],
+      "weights": 18874368,
+      "escaped": 2587,
+      "bytes": 28624896
+    },
+    {
+      "role": "unpooler",
+      "cfg": [
+        1,
+        4,
+        8,
+        2
+      ],
+      "weights": 33554432,
+      "escaped": 3240,
+      "bytes": 50888704
+    }
+  ],
+  "wire_bytes": 11364,
+  "two_k_suffix_guard": true,
+  "limits": "Hopper NF/DSM/TMA body uses explicit arithmetic stand-ins. Exact raw-pointer/cluster/PDL launch glue and packed weights/escape/table inverses exercised; native cross-compile separate, no H200 timing claim.",
+  "code_template_sha256": "028aec3cadb6d8d256cbcf443505da5fb65deea8bab6f20cebbedfc1eda44ad4"
+}

@@ -1,0 +1,238 @@
+{
+  "passed": true,
+  "NF": [
+    {
+      "inst": [
+        1,
+        2,
+        1,
+        1,
+        3,
+        0,
+        128,
+        0,
+        2304,
+        8192,
+        1,
+        4,
+        8,
+        4,
+        6
+      ],
+      "regs": 64,
+      "zero_spill": true,
+      "first_global_load_before_wait": true,
+      "source": "NVCCsm90a"
+    },
+    {
+      "inst": [
+        1,
+        2,
+        1,
+        1,
+        3,
+        0,
+        128,
+        0,
+        1280,
+        8192,
+        1,
+        4,
+        8,
+        4,
+        6
+      ],
+      "regs": 64,
+      "zero_spill": true,
+      "first_global_load_before_wait": true,
+      "source": "NVCCsm90a"
+    },
+    {
+      "inst": [
+        1,
+        4,
+        1,
+        1,
+        3,
+        0,
+        128,
+        0,
+        2304,
+        8192,
+        1,
+        4,
+        8,
+        4,
+        6
+      ],
+      "regs": 96,
+      "zero_spill": true,
+      "first_global_load_before_wait": true,
+      "source": "NVCCsm90a"
+    },
+    {
+      "inst": [
+        1,
+        4,
+        1,
+        1,
+        3,
+        0,
+        128,
+        0,
+        1280,
+        8192,
+        1,
+        4,
+        8,
+        4,
+        6
+      ],
+      "regs": 96,
+      "zero_spill": true,
+      "first_global_load_before_wait": true,
+      "source": "NVCCsm90a"
+    },
+    {
+      "inst": [
+        1,
+        2,
+        1,
+        2,
+        0,
+        0,
+        128,
+        0,
+        8192,
+        1024,
+        1,
+        4,
+        4,
+        1,
+        6
+      ],
+      "regs": 96,
+      "zero_spill": true,
+      "first_global_load_before_wait": true,
+      "source": "NVCCsm90a"
+    },
+    {
+      "inst": [
+        1,
+        2,
+        1,
+        1,
+        3,
+        0,
+        128,
+        0,
+        4608,
+        8192,
+        1,
+        4,
+        8,
+        4,
+        6
+      ],
+      "regs": 64,
+      "zero_spill": true,
+      "first_global_load_before_wait": true,
+      "source": "NVCCsm90a"
+    },
+    {
+      "inst": [
+        1,
+        4,
+        1,
+        1,
+        3,
+        0,
+        128,
+        0,
+        4608,
+        8192,
+        1,
+        4,
+        8,
+        4,
+        6
+      ],
+      "regs": 96,
+      "zero_spill": true,
+      "first_global_load_before_wait": true,
+      "source": "NVCCsm90a"
+    },
+    {
+      "inst": [
+        1,
+        2,
+        1,
+        1,
+        3,
+        0,
+        128,
+        0,
+        8192,
+        4096,
+        1,
+        4,
+        8,
+        2,
+        6
+      ],
+      "regs": 64,
+      "zero_spill": true,
+      "first_global_load_before_wait": true,
+      "source": "NVCCsm90a"
+    },
+    {
+      "inst": [
+        1,
+        4,
+        1,
+        1,
+        3,
+        0,
+        128,
+        0,
+        8192,
+        4096,
+        1,
+        4,
+        8,
+        2,
+        6
+      ],
+      "regs": 96,
+      "zero_spill": true,
+      "first_global_load_before_wait": true,
+      "source": "NVCCsm90a"
+    }
+  ],
+  "cluster": [
+    {
+      "shared": 73744,
+      "launch_pdl": true,
+      "constants": {
+        "BLOCK_M": 32,
+        "BLOCK_N": 64,
+        "BLOCK_K": 128,
+        "SPLIT_K": 3,
+        "SLOT_KB": 16
+      },
+      "weight_TMA_before_wait": true,
+      "activation_TMA_after_wait": true,
+      "prewait_TMA_descriptors": [
+        "%rd2"
+      ],
+      "all_TMA_descriptors": [
+        "%rd2",
+        "%rd3"
+      ],
+      "cubin_sha256": "3d7d67e0a84edf85a5c45f622818c86f7ecf6dbecf8c184098832b8058e51ed6"
+    }
+  ],
+  "NF_source_sha256": "0a5c870889375abe582d410d95ba3281f4599d26e028eb2c97ee832c2f4d30f8",
+  "NF_cubin_sha256": "0fe11e7e3de2e24e3914d690b5cca7c9e95541c85aee71f3dddcb5784a651826",
+  "limits": "Actual sm90a compile/admission and PTX issue order; native H200 arithmetic, performance and prepare remain unmeasured."
+}

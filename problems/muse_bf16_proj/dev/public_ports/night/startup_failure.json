@@ -1,0 +1,25 @@
+{
+  "resolved": true,
+  "cause": "Host Python/glibc lack named pidfd wrappers; Linux6.8 kernel supports syscall434.",
+  "failures": [
+    {
+      "status": "FAILED; no silent alternate send",
+      "parent_sender": 3966799,
+      "parent_lineage": 3347492,
+      "one_shot": true,
+      "worker_pid": 4035771,
+      "error": "AttributeError(\"module 'os' has no attribute 'pidfd_open'\")",
+      "traceback": "Traceback (most recent call last):\n  File \"/home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/public_ports/night/dispatch.py\", line 57, in <module>\n    try:work()\n        ^^^^^^\n  File \"/home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/public_ports/night/dispatch.py\", line 25, in work\n    fd=os.pidfd_open(parent['pid'])\n       ^^^^^^^^^^^^^\nAttributeError: module 'os' has no attribute 'pidfd_open'\n"
+    },
+    {
+      "status": "FAILED; no silent alternate send",
+      "parent_sender": 3966799,
+      "parent_lineage": 3347492,
+      "one_shot": true,
+      "worker_pid": 4069429,
+      "error": "AttributeError('/home/jihoon/anaconda3/envs/comp_kv/bin/python3: undefined symbol: pidfd_open')",
+      "traceback": "Traceback (most recent call last):\n  File \"/home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/public_ports/night/dispatch.py\", line 78, in <module>\n    try:work()\n        ^^^^^^\n  File \"/home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/public_ports/night/dispatch.py\", line 46, in work\n    fd=pidfd_open(parent['pid'])\n       ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/public_ports/night/dispatch.py\", line 14, in pidfd_open\n    fn=ctypes.CDLL(None,use_errno=True).pidfd_open;fn.argtypes=[ctypes.c_int,ctypes.c_uint];fn.restype=ctypes.c_int;fd=fn(pid,0)\n       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/jihoon/anaconda3/envs/comp_kv/lib/python3.12/ctypes/__init__.py\", line 392, in __getattr__\n    func = self.__getitem__(name)\n           ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/jihoon/anaconda3/envs/comp_kv/lib/python3.12/ctypes/__init__.py\", line 397, in __getitem__\n    func = self._FuncPtr((name_or_ordinal, self))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: /home/jihoon/anaconda3/envs/comp_kv/bin/python3: undefined symbol: pidfd_open\n"
+    }
+  ],
+  "fix": "Direct SYS_pidfd_open434; actual event tests in pipeline_validation.json. No h200 sends were made by failed workers."
+}

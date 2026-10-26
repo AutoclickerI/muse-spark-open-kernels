@@ -7,15 +7,29 @@
       "shared": 81952,
       "first_TMA_before_wait": false,
       "requested_early": false,
+      "activation_TMA_after_wait": true,
+      "prewait_descriptors": [],
+      "all_descriptors": [
+        "%rd2",
+        "%rd39"
+      ],
       "cubin_sha256": "bdd4b10ed121083babe963b86a3b4f8f1c1e5032fc5087830077267915e242f0"
     },
     {
       "t": 16,
       "arm": "TW256_S2_E",
-      "shared": 81936,
+      "shared": 122896,
       "first_TMA_before_wait": true,
       "requested_early": true,
-      "cubin_sha256": "d50a28f3cc039967c9ba0ba2ba0d2c40530b61126f20e8e9b960712f21953d8b"
+      "activation_TMA_after_wait": true,
+      "prewait_descriptors": [
+        "%rd2"
+      ],
+      "all_descriptors": [
+        "%rd2",
+        "%rd3"
+      ],
+      "cubin_sha256": "f3be68a27cef03daec93dd1f0217547bbf1f22bf1eabaed14c9f3888fcd5d6bd"
     },
     {
       "t": 16,
@@ -23,15 +37,29 @@
       "shared": 61496,
       "first_TMA_before_wait": false,
       "requested_early": false,
+      "activation_TMA_after_wait": true,
+      "prewait_descriptors": [],
+      "all_descriptors": [
+        "%rd2",
+        "%rd3"
+      ],
       "cubin_sha256": "e11114ca6122c9b7b62728544266b8781b9c51a4a8399c7c19d27e887b4fa7a5"
     },
     {
       "t": 16,
       "arm": "TW128_S3_E",
-      "shared": 61464,
+      "shared": 81944,
       "first_TMA_before_wait": true,
       "requested_early": true,
-      "cubin_sha256": "a72b4e0f30b4860538956db05e9f1e8d703d7bc5566036fae367246ff15b1e79"
+      "activation_TMA_after_wait": true,
+      "prewait_descriptors": [
+        "%rd2"
+      ],
+      "all_descriptors": [
+        "%rd2",
+        "%rd3"
+      ],
+      "cubin_sha256": "da70136e77e538b81b81c36a83cc373df17e7041392de32dabe7f0447fefea50"
     },
     {
       "t": 32,
@@ -39,15 +67,29 @@
       "shared": 98336,
       "first_TMA_before_wait": false,
       "requested_early": false,
+      "activation_TMA_after_wait": true,
+      "prewait_descriptors": [],
+      "all_descriptors": [
+        "%rd2",
+        "%rd39"
+      ],
       "cubin_sha256": "4f6eba7985f022f43cbbd737b362748dcb323b6ad8ecf23af59bb53f67628739"
     },
     {
       "t": 32,
       "arm": "TW256_S2_E",
-      "shared": 98320,
+      "shared": 147472,
       "first_TMA_before_wait": true,
       "requested_early": true,
-      "cubin_sha256": "f5e32dde9bb72f87b8a4ebfe3a957e91fea5f821b911c46df3688a6788d94980"
+      "activation_TMA_after_wait": true,
+      "prewait_descriptors": [
+        "%rd2"
+      ],
+      "all_descriptors": [
+        "%rd2",
+        "%rd3"
+      ],
+      "cubin_sha256": "61eea284a870eeef6ec4fc5d9c23edc050593edc366235200c5633c0d83794dc"
     },
     {
       "t": 32,
@@ -55,15 +97,29 @@
       "shared": 73784,
       "first_TMA_before_wait": false,
       "requested_early": false,
+      "activation_TMA_after_wait": true,
+      "prewait_descriptors": [],
+      "all_descriptors": [
+        "%rd2",
+        "%rd3"
+      ],
       "cubin_sha256": "32baae2ef524c0b0803934ebeca1457fbc0c8f2a1623e31bc2bb3ee6fdc4960b"
     },
     {
       "t": 32,
       "arm": "TW128_S3_E",
-      "shared": 73752,
+      "shared": 98328,
       "first_TMA_before_wait": true,
       "requested_early": true,
-      "cubin_sha256": "1a5475941791fdbc5d64424621af96600ebe3a5d628219335161082d62da83d2"
+      "activation_TMA_after_wait": true,
+      "prewait_descriptors": [
+        "%rd2"
+      ],
+      "all_descriptors": [
+        "%rd2",
+        "%rd3"
+      ],
+      "cubin_sha256": "2a54e5978b8ee3c2c9d17d0d4b996b05aa1cc4bcd7f54e6e52da80a68e331c1b"
     }
   ],
   "limits": "sm90 cross-compile, issue-order inspection; actual native correctness/timing remain remote."

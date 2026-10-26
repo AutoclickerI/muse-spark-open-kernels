@@ -14,11 +14,18 @@ def _pp_pool_tma_early(x_desc, w_desc, w2_desc, out_ptr, part_ptr, cnt_ptr, M, N
     n0 = pid_n * BLOCK_N
     m0 = pid_m * BLOCK_M
     k = kb0 * BLOCK_K
-    acc = tl.zeros((BLOCK_N, BLOCK_M), dtype=tl.float32)
-    for kb in range(kb0, kb1):
+    wt0 = w_desc.load([(pid_n * kb_total + kb0) * BLOCK_N, 0])
+    first = tl.gather(tl.reshape(wt0.to(tl.uint16,bitcast=True),(BLOCK_N*BLOCK_K,)),tl.full((1,),0,tl.int32),axis=0)
+    witness = tl.sum(first.to(tl.int32),0)
+    ready = tl.inline_asm_elementwise("griddepcontrol.wait; and.b32 $0, $1, 0;", "=r,r", [witness], dtype=tl.int32, is_pure=False, pack=1)
+    xm = tl.multiple_of(m0 + ready, BLOCK_M)
+    xt0 = x_desc.load([xm, k]).T
+    acc = tl.dot(wt0, xt0, tl.zeros((BLOCK_N,BLOCK_M),dtype=tl.float32))
+    if HILO:acc = tl.dot(w2_desc.load([n0,k]),xt0,acc)
+    k += BLOCK_K
+    for kb in range(kb0+1, kb1):
         wt = w_desc.load([(pid_n * kb_total + kb) * BLOCK_N, 0])
-        if kb == kb0:tl.extra.cuda.gdc_wait()
-        xt = x_desc.load([m0, k]).T
+        xt = x_desc.load([xm, k]).T
         acc = tl.dot(wt, xt, acc)
         if HILO:
             acc = tl.dot(w2_desc.load([n0, k]), xt, acc)

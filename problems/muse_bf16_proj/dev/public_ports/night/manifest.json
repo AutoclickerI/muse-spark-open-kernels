@@ -1,0 +1,169 @@
+{
+  "payload_sha256": "599f4d70053dee16d3e943de32109c7ec053ddffb8bfcbfb1d7423cdbf3c26fb",
+  "source_sha256": "f89895b842ded5bfc24ea15177e8b6a4cbcd3c726912f746f97a3382cdfb16a8",
+  "body_sha256": "19ae1e4e618313adfc591e84bb17382217b070f8f37fa7eb81c8255556854438",
+  "frozen_parent_source_sha256": "31cc4a7fef205354c0050f35e760b328afbae2c615d386778c827830df616673",
+  "S21_sha256": "eacc087bd59b3cd58ee6b7690913868d86a8deb2ad1ff50040329ece62f7c8a4",
+  "selection": {
+    "parent": "3347492 pending: stress all15 port points",
+    "points": [
+      [
+        1,
+        "qkv3",
+        "O"
+      ],
+      [
+        1,
+        "gate",
+        "P"
+      ],
+      [
+        1,
+        "unpooler_slice",
+        "P"
+      ],
+      [
+        8,
+        "unpooler_slice",
+        "N"
+      ],
+      [
+        16,
+        "qkv_gate",
+        "N"
+      ],
+      [
+        16,
+        "qkv3",
+        "N"
+      ],
+      [
+        16,
+        "gate",
+        "P"
+      ],
+      [
+        32,
+        "gate",
+        "N"
+      ],
+      [
+        32,
+        "o",
+        "P"
+      ],
+      [
+        32,
+        "pool_router",
+        "P"
+      ],
+      [
+        128,
+        "unpooler",
+        "N"
+      ],
+      [
+        256,
+        "qkv_gate",
+        "N"
+      ],
+      [
+        256,
+        "o",
+        "P"
+      ],
+      [
+        256,
+        "pool_router",
+        "O"
+      ],
+      [
+        256,
+        "unpooler",
+        "N"
+      ]
+    ],
+    "pool": {}
+  },
+  "groups": [
+    "Q16",
+    "Q32",
+    "O16",
+    "P16",
+    "P32",
+    "U16",
+    "U32"
+  ],
+  "keys": [
+    [
+      16,
+      "qkv_gate"
+    ],
+    [
+      16,
+      "qkv3"
+    ],
+    [
+      32,
+      "qkv_gate"
+    ],
+    [
+      32,
+      "qkv3"
+    ],
+    [
+      16,
+      "o"
+    ],
+    [
+      16,
+      "pool_router"
+    ],
+    [
+      32,
+      "pool_router"
+    ],
+    [
+      16,
+      "unpooler"
+    ],
+    [
+      32,
+      "unpooler"
+    ]
+  ],
+  "seeds": [
+    33000319,
+    33105048,
+    33209777,
+    33314506,
+    33419235,
+    33523964,
+    33628693,
+    33733422
+  ],
+  "weight_seed": 33000311,
+  "router_seed": 33000313,
+  "protocol": "all cyclic positions and exact reverse;2N rounds per case, arithmetic mean all samples",
+  "rounds": {
+    "T16": 16,
+    "T32": 16,
+    "other": 8
+  },
+  "arms": [
+    "INC:S21",
+    "A:parent portfolio",
+    "AA:parent portfolio",
+    "FULL:parent+all7new",
+    "CODED_P32:exact12 alternative/no extra bank",
+    "NO_Q16",
+    "NO_Q32",
+    "NO_O16",
+    "NO_P16",
+    "NO_P32",
+    "NO_U16",
+    "NO_U32"
+  ],
+  "parent_sender": 3966799,
+  "parent_lineage": 3347492
+}

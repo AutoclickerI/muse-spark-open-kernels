@@ -278,15 +278,15 @@
       ]
     },
     "new_build": "Original S19 NF exact12 payload/reader, six WK4/WK8 stage1/2 wait/early-weight variants; donor TMA four BK128/256 stage2/3 wait/early variants. No new exact12 format selected.",
-    "native_status": "UNMEASURED: all five hosts have0scored+0checks. Queued sender3347492 auto-runs at09:01 KST10-27.",
+    "native_status": "UNMEASURED; corrected sender3966799 supersedes3347492 before reset due activation-TMA hoist. Same seeds/arms/protocol, no quota spent.",
     "queue": {
-      "pid": 3347492,
+      "pid": 3966799,
       "priority": 5,
-      "t": 1793020258.8867154,
+      "t": 1793024859.0341039,
       "problem": "muse_bf16_proj",
       "file": "problems/muse_bf16_proj/lab/lab_public_whole.py",
-      "sha256": "9654f02caefc30147fdd214deb0c270cf533e92541b7e6bcef6b81636650bcc8",
-      "note": "h200_lab problems/muse_bf16_proj/dev/public_ports/out/public_whole.py: Fresh S21 snapshot;8newseeds8symmetric retained rounds,all848layer+640strictprojection/router TASK;15individual port points plus portfolio;coded pool first-weights-before-PDL-wait WK4/8 ST1/2 and donor tiled-TMA occupancy/early issue atT16/32",
+      "sha256": "5a8ae27c764a6f9b67ab526adfa106ee09fa3e4136731f4e1195420f5be758c2",
+      "note": "h200_lab problems/muse_bf16_proj/dev/public_ports/out/public_whole.py: Correct own queued3347492 before quota: first W tile peeled; all X descriptor coordinates depend on post-GDC opaque zero to prevent Triton hoisting. Same S21eacc/15individual ports+portfolio/10poolarms/8seeds8symmetric rounds;848layer+640strict local TASK and all8 sm90TMA activation-order proofs. No quota spent on superseded source.",
       "not_before": 0,
       "lane": "P10",
       "decision": "rank public port nominees and coded pool prefetch in S21 whole graph",
@@ -294,7 +294,7 @@
       "until": 1793059260.0
     },
     "local_checks": 1488,
-    "sm90_TMA_issue_order": "pool_native_validation.json: requested early variants actually issue TMA before griddepcontrol.wait, ordinary variants wait first;61\u201398KB shared vs donor4stage164\u2013196KB.",
+    "sm90_TMA_issue_order": "pool_native_validation.json: early schedules have only the W descriptor before GDC; every X descriptor after GDC. Corrected first-tile storage is priced by the native parent batch; original61\u201398KB claim applies only to ordinary variants.",
     "NF_native_compile": "pool_nf_native_validation.json:12sm90a kernels72\u2013128regs,zero spills,intended PTX ordering; no runtime effect inferred"
   },
   "license": {
@@ -311,7 +311,7 @@
   ],
   "report": "problems/muse_bf16_proj/dev/public_ports/PORTS.md",
   "full_rounds": "problems/muse_bf16_proj/dev/public_ports/results.json",
-  "next": "After real reset completion: python3 problems/muse_bf16_proj/dev/public_ports/whole_read.py RECEIPT; hand only native portfolio nominees to P4 and retain every sample. Do not spend a duplicate host check for the already queued snapshot.",
+  "next": "One-shot night dispatcher4088520 waits corrected parent3966799 (3347492 lineage), runs whole_read.py, drops in-graph losers, updates this handoff with exact native portfolio.py patch, then queues seven-carrier/leaveout plus codedP32 batch at P10 PLAN priority. No native night/G0 result claimed.",
   "validation": {
     "passed": true,
     "records": [
@@ -340,5 +340,54 @@
     "screened_sha256": "7f066b9c3ceb8fb2b01fe971951c2e1707f612230b3646e269f4187dbba395c4",
     "shipped_sha256": "7702c6cb9a5e98b8e3fc6ffb5cea58b316e5733de0008a4a52a8213058ec04bb",
     "AST_sha256": "cd46d4b464ebc4832a56de2c678c761130f63dcdcc3778135178d638f2869217"
+  },
+  "night": {
+    "path": "problems/muse_bf16_proj/dev/public_ports/night/README.md",
+    "queue": {
+      "status": "waiting on parent sender completion event",
+      "parent_sender": 3966799,
+      "parent_lineage": 3347492,
+      "one_shot": true,
+      "worker_pid": 4088520,
+      "dependency": {
+        "pid": 3966799,
+        "priority": 5,
+        "t": 1793024859.0341039,
+        "problem": "muse_bf16_proj",
+        "file": "problems/muse_bf16_proj/lab/lab_public_whole.py",
+        "sha256": "5a8ae27c764a6f9b67ab526adfa106ee09fa3e4136731f4e1195420f5be758c2",
+        "note": "h200_lab problems/muse_bf16_proj/dev/public_ports/out/public_whole.py: Correct own queued3347492 before quota: first W tile peeled; all X descriptor coordinates depend on post-GDC opaque zero to prevent Triton hoisting. Same S21eacc/15individual ports+portfolio/10poolarms/8seeds8symmetric rounds;848layer+640strict local TASK and all8 sm90TMA activation-order proofs. No quota spent on superseded source.",
+        "not_before": 0,
+        "lane": "P10",
+        "decision": "rank public port nominees and coded pool prefetch in S21 whole graph",
+        "priority_override": false,
+        "until": 1793059260.0
+      },
+      "send_via": "tools/h200_lab.py normal sender; --lane P10; PLAN rank",
+      "fixed_code_sha256": "028aec3cadb6d8d256cbcf443505da5fb65deea8bab6f20cebbedfc1eda44ad4"
+    },
+    "groups": [
+      "Q16",
+      "Q32",
+      "O16",
+      "P16",
+      "P32",
+      "U16",
+      "U32"
+    ],
+    "extra": "CODED_P32 shares exact12 P16 bank",
+    "local_TASK": {
+      "layer": 512,
+      "strict": 208,
+      "normal": 13,
+      "forced": 13
+    },
+    "native_compile": {
+      "NF": 9,
+      "registers": "64\u201396",
+      "zero_spills": true,
+      "TMA": "Explicit PDL; first W before GDC, all X coordinates depend on post-GDC zero"
+    },
+    "limits": "In-graph parent results and night results have not landed; P4 still judges the composed new S2x by held-out six-load G0."
   }
 }

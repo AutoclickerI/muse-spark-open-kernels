@@ -1,0 +1,430 @@
+{
+  "passed": true,
+  "code_template_sha256": "028aec3cadb6d8d256cbcf443505da5fb65deea8bab6f20cebbedfc1eda44ad4",
+  "source_sha256": "f89895b842ded5bfc24ea15177e8b6a4cbcd3c726912f746f97a3382cdfb16a8",
+  "S21_git_blob": "d49f369427cdacfd335a0c0638c7b030135054a3",
+  "body_sha256": "19ae1e4e618313adfc591e84bb17382217b070f8f37fa7eb81c8255556854438",
+  "mutable_constants": [
+    "NG_PARENT_ID",
+    "NG_PARENT_POINTS",
+    "NG_PARENT_POOL"
+  ],
+  "parent_membership": "Must be a subset of exact frozen whole_manifest PORTS points and pool arms; validated before dispatch.",
+  "proofs": {
+    "primary": {
+      "passed": true,
+      "payload_sha256": "599f4d70053dee16d3e943de32109c7ec053ddffb8bfcbfb1d7423cdbf3c26fb",
+      "layer_TASK": 512,
+      "strict_TASK": 208,
+      "rows": 12,
+      "round_counts": [
+        8,
+        8,
+        16,
+        16,
+        16,
+        16,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8
+      ],
+      "host_launches": 300,
+      "codec_inverses": [
+        {
+          "role": "o",
+          "cfg": [
+            1,
+            4,
+            4,
+            1
+          ],
+          "weights": 8388608,
+          "escaped": 962,
+          "bytes": 12861440
+        },
+        {
+          "role": "pool_router",
+          "cfg": [
+            1,
+            4,
+            8,
+            4
+          ],
+          "weights": 37748736,
+          "escaped": 5993,
+          "bytes": 57249792
+        },
+        {
+          "role": "qkv3",
+          "cfg": [
+            1,
+            4,
+            8,
+            4
+          ],
+          "weights": 10485760,
+          "escaped": 1453,
+          "bytes": 15902720
+        },
+        {
+          "role": "qkv_gate",
+          "cfg": [
+            1,
+            4,
+            8,
+            4
+          ],
+          "weights": 18874368,
+          "escaped": 2587,
+          "bytes": 28624896
+        },
+        {
+          "role": "unpooler",
+          "cfg": [
+            1,
+            4,
+            8,
+            2
+          ],
+          "weights": 33554432,
+          "escaped": 3240,
+          "bytes": 50888704
+        }
+      ],
+      "wire_bytes": 11364,
+      "two_k_suffix_guard": true,
+      "limits": "Hopper NF/DSM/TMA body uses explicit arithmetic stand-ins. Exact raw-pointer/cluster/PDL launch glue and packed weights/escape/table inverses exercised; native cross-compile separate, no H200 timing claim.",
+      "code_template_sha256": "028aec3cadb6d8d256cbcf443505da5fb65deea8bab6f20cebbedfc1eda44ad4"
+    },
+    "stress": {
+      "passed": true,
+      "payload_sha256": "457cb3f6c5c72e013377b079c28b0d959cd8fe70aea3cbba67b3f198a06f109b",
+      "layer_TASK": 512,
+      "strict_TASK": 208,
+      "rows": 12,
+      "round_counts": [
+        8,
+        8,
+        16,
+        16,
+        16,
+        16,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8
+      ],
+      "host_launches": 300,
+      "codec_inverses": [
+        {
+          "role": "o",
+          "cfg": [
+            1,
+            4,
+            4,
+            1
+          ],
+          "weights": 8388608,
+          "escaped": 962,
+          "bytes": 12861440
+        },
+        {
+          "role": "pool_router",
+          "cfg": [
+            1,
+            4,
+            8,
+            4
+          ],
+          "weights": 37748736,
+          "escaped": 5993,
+          "bytes": 57249792
+        },
+        {
+          "role": "qkv3",
+          "cfg": [
+            1,
+            4,
+            8,
+            4
+          ],
+          "weights": 10485760,
+          "escaped": 1453,
+          "bytes": 15902720
+        },
+        {
+          "role": "qkv_gate",
+          "cfg": [
+            1,
+            4,
+            8,
+            4
+          ],
+          "weights": 18874368,
+          "escaped": 2587,
+          "bytes": 28624896
+        },
+        {
+          "role": "unpooler",
+          "cfg": [
+            1,
+            4,
+            8,
+            2
+          ],
+          "weights": 33554432,
+          "escaped": 3240,
+          "bytes": 50888704
+        }
+      ],
+      "wire_bytes": 11151,
+      "two_k_suffix_guard": true,
+      "limits": "Hopper NF/DSM/TMA body uses explicit arithmetic stand-ins. Exact raw-pointer/cluster/PDL launch glue and packed weights/escape/table inverses exercised; native cross-compile separate, no H200 timing claim.",
+      "code_template_sha256": "028aec3cadb6d8d256cbcf443505da5fb65deea8bab6f20cebbedfc1eda44ad4"
+    },
+    "native": {
+      "passed": true,
+      "NF": [
+        {
+          "inst": [
+            1,
+            2,
+            1,
+            1,
+            3,
+            0,
+            128,
+            0,
+            2304,
+            8192,
+            1,
+            4,
+            8,
+            4,
+            6
+          ],
+          "regs": 64,
+          "zero_spill": true,
+          "first_global_load_before_wait": true,
+          "source": "NVCCsm90a"
+        },
+        {
+          "inst": [
+            1,
+            2,
+            1,
+            1,
+            3,
+            0,
+            128,
+            0,
+            1280,
+            8192,
+            1,
+            4,
+            8,
+            4,
+            6
+          ],
+          "regs": 64,
+          "zero_spill": true,
+          "first_global_load_before_wait": true,
+          "source": "NVCCsm90a"
+        },
+        {
+          "inst": [
+            1,
+            4,
+            1,
+            1,
+            3,
+            0,
+            128,
+            0,
+            2304,
+            8192,
+            1,
+            4,
+            8,
+            4,
+            6
+          ],
+          "regs": 96,
+          "zero_spill": true,
+          "first_global_load_before_wait": true,
+          "source": "NVCCsm90a"
+        },
+        {
+          "inst": [
+            1,
+            4,
+            1,
+            1,
+            3,
+            0,
+            128,
+            0,
+            1280,
+            8192,
+            1,
+            4,
+            8,
+            4,
+            6
+          ],
+          "regs": 96,
+          "zero_spill": true,
+          "first_global_load_before_wait": true,
+          "source": "NVCCsm90a"
+        },
+        {
+          "inst": [
+            1,
+            2,
+            1,
+            2,
+            0,
+            0,
+            128,
+            0,
+            8192,
+            1024,
+            1,
+            4,
+            4,
+            1,
+            6
+          ],
+          "regs": 96,
+          "zero_spill": true,
+          "first_global_load_before_wait": true,
+          "source": "NVCCsm90a"
+        },
+        {
+          "inst": [
+            1,
+            2,
+            1,
+            1,
+            3,
+            0,
+            128,
+            0,
+            4608,
+            8192,
+            1,
+            4,
+            8,
+            4,
+            6
+          ],
+          "regs": 64,
+          "zero_spill": true,
+          "first_global_load_before_wait": true,
+          "source": "NVCCsm90a"
+        },
+        {
+          "inst": [
+            1,
+            4,
+            1,
+            1,
+            3,
+            0,
+            128,
+            0,
+            4608,
+            8192,
+            1,
+            4,
+            8,
+            4,
+            6
+          ],
+          "regs": 96,
+          "zero_spill": true,
+          "first_global_load_before_wait": true,
+          "source": "NVCCsm90a"
+        },
+        {
+          "inst": [
+            1,
+            2,
+            1,
+            1,
+            3,
+            0,
+            128,
+            0,
+            8192,
+            4096,
+            1,
+            4,
+            8,
+            2,
+            6
+          ],
+          "regs": 64,
+          "zero_spill": true,
+          "first_global_load_before_wait": true,
+          "source": "NVCCsm90a"
+        },
+        {
+          "inst": [
+            1,
+            4,
+            1,
+            1,
+            3,
+            0,
+            128,
+            0,
+            8192,
+            4096,
+            1,
+            4,
+            8,
+            2,
+            6
+          ],
+          "regs": 96,
+          "zero_spill": true,
+          "first_global_load_before_wait": true,
+          "source": "NVCCsm90a"
+        }
+      ],
+      "cluster": [
+        {
+          "shared": 73744,
+          "launch_pdl": true,
+          "constants": {
+            "BLOCK_M": 32,
+            "BLOCK_N": 64,
+            "BLOCK_K": 128,
+            "SPLIT_K": 3,
+            "SLOT_KB": 16
+          },
+          "weight_TMA_before_wait": true,
+          "activation_TMA_after_wait": true,
+          "prewait_TMA_descriptors": [
+            "%rd2"
+          ],
+          "all_TMA_descriptors": [
+            "%rd2",
+            "%rd3"
+          ],
+          "cubin_sha256": "3d7d67e0a84edf85a5c45f622818c86f7ecf6dbecf8c184098832b8058e51ed6"
+        }
+      ],
+      "NF_source_sha256": "0a5c870889375abe582d410d95ba3281f4599d26e028eb2c97ee832c2f4d30f8",
+      "NF_cubin_sha256": "0fe11e7e3de2e24e3914d690b5cca7c9e95541c85aee71f3dddcb5784a651826",
+      "limits": "Actual sm90a compile/admission and PTX issue order; native H200 arithmetic, performance and prepare remain unmeasured."
+    }
+  },
+  "limits": "Local glue and sm90a compile admission, not native performance. Parent receipt must be complete and exact before a next h200 send; no polling or quota bypass."
+}

@@ -87,7 +87,9 @@ the same Python AST, including all embedded source literals, as the screened pat
 The d16/d32 build in `pool.py.inc` keeps S19's original exact12 NF reader and
 tries WK4/8, ST1/2, and first-codeword loads before the PDL activation wait.
 `pool_tma.py.inc` tests the donor's tiled TMA with BK128/256, ST2/3 and early
-weights, reducing shared allocation from164–196KB to61–98KB. sm90 PTX proves
+weights, ordinary variants reduce shared allocation from164–196KB to61–98KB; corrected
+early variants use additional first-tile storage, with exact sizes in
+`pool_native_validation.json`. sm90 PTX proves
 that only early arms issue their first TMA before the dependency wait.
 `whole_validation.json` passes848layer+640strict projection/router TASK in the
 local full-batch rehearsal; new TMA body uses declared stand-ins, actual NF
@@ -98,10 +100,22 @@ unmeasured. The exact patch passes the official normal/forced local screens,
 13TASK/12graphs/6static each (`candidate_validation.json`).
 
 Native whole-layer selection is **unmeasured**: all five hosts have0scored and
-0checks. `queue.json` preserves sender3347492 (`9654f02c`), waiting on the real
+0checks. `queue.json` preserves corrected sender3966799 (`5a8ae27c`), replacing3347492 before the real
 10-27 09:01KST reset. It freezes S21eacc087b, tests15points individually/portfolio
 plus10pool variants on8fresh seeds and8symmetric retained rounds. The exact
-queued payload is archived in `runs/sent/9654f02caefc3014/`; no duplicate is queued.
+queued payload is archived in `runs/sent/5a8ae27c764a6f9b/`; no duplicate is queued.
 After its receipt, run `whole_read.py RECEIPT` and send surviving points to P4's
 held-out six-load G0. No new G0 promotion, native pool-prefetch result or selected
 prepare is claimed.
+
+
+The night continuation is [night/README.md](night/README.md): exact site sizing,
+seven strongest coded DSM/TMA candidates, seven leave-outs, and a no-extra-bank
+coded T32 pool alternative. One-shot dispatcher4088520 waits for the corrected
+parent receipt, runs `whole_read.py`, hands in-graph points/pool schedules to P4,
+drops losers, and sends the admitted next lab through `h200_lab --lane P10`.
+All changes to parent3347492 were a necessary correctness repair: its early-TMA
+variants hoisted activation loads before GDC. A peeled W tile and opaque post-wait
+address dependency now keep every activation TMA after the wait; all eight sm90
+schedules verify that property. Arms/seeds/rounds remain unchanged; old snapshot
+never submitted, no quota spent. See `night/parent_repair.json`.
