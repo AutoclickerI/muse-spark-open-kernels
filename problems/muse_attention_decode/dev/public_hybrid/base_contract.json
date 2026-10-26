@@ -1,0 +1,14 @@
+{
+  "base": "problems/muse_decode_layer/cand_r3_best7_s21_final.py",
+  "sha256": "eacc087bd59b3cd58ee6b7690913868d86a8deb2ad1ff50040329ece62f7c8a4",
+  "expanded_sha256": "109c0135b9a445b88b2efd1ebb73f15002a332ce553c8e50afb5557d6816398d",
+  "port_dispatch_differences": {
+    "(16, 1, False)": {
+      "lab": "operator",
+      "S21": "C3 original"
+    }
+  },
+  "port_sources_identical": true,
+  "prepare_build_hook": true,
+  "qualification": "A/A2 use S19 at unported cells; S21 adds prior C3/native merge. Current S21 keeps C3 at d16F instead of the earlier OP point, and prior Rw4 at v32F. Remaining public modules match the measured picks exactly. P4 confirms whole-layer effects against those actual choices."
+}

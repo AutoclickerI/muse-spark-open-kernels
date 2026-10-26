@@ -1,0 +1,15 @@
+{
+  "base": "problems/muse_decode_layer/cand_r3_best7_s21_final.py",
+  "base_sha256": "eacc087bd59b3cd58ee6b7690913868d86a8deb2ad1ff50040329ece62f7c8a4",
+  "source_sha256": "fbaf2793b3c32680d352d8e9ac0b669cd0148e6519593bcec1dfd4f779b68488",
+  "patch_sha256": "9b043487f341268bc1fe1d576469096f67b465d6f94fb70a1847669b0f49065d",
+  "selection": {
+    "32x1s": "F",
+    "1x8s": "F"
+  },
+  "modules": [
+    "lee_hybrid",
+    "operator_direct"
+  ],
+  "scope": "Only measured selected attention cells; original S21/S22 dispatch elsewhere. Entire prepare and held-out G0 remain P4 confirmation."
+}

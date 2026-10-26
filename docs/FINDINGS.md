@@ -1513,6 +1513,52 @@ winner so the same fusion is not built twice. No further run queued.
 Lab-only host intentionally ends at prepare after complete evidence; outer
 `passed:false` is not a failed704TASK gate. [Evidence](../problems/muse_attention_decode/dev/public_ports/README.md).
 
+### P5b post-port direct-input and consumer hybrids
+
+Post-port picks26d5054f,8freshseeds10739123+7919*i, all4752 cold integer
+round times retained,2N cyclic/reverse rounds,780nativeTASK pass.95%t7,
+no filtering. All A:A CIs cover1 except v1F .993350[.987504,.999196];
+disclose drift, no precise marginal closure there. No whole-layer G0 claim.
+
+| Recipe | New/pick [95% CI] | Mechanism | Leaves open | Receipt |
+|---|---|---|---|---|
+| Post-port 1x1s F | 1.068873[1.056879,1.080867] | Direct FP32 sum/BF16 input round inside OP both-head/last-arriver or Lee native prologue | Retain pick; closes this exact reader/geometry, not the mechanism family | `cde88b9136de4093` |
+| Post-port 1x1f F | 1.292213[1.273897,1.310530] | Direct FP32 sum/BF16 input round inside OP both-head/last-arriver or Lee native prologue | Retain pick; closes this exact reader/geometry, not the mechanism family | `cde88b9136de4093` |
+| Post-port 16x1s O | 1.294585[1.276435,1.312734] | Direct FP32 sum/BF16 input round inside OP both-head/last-arriver or Lee native prologue | Retain pick; closes this exact reader/geometry, not the mechanism family | `cde88b9136de4093` |
+| Post-port 16x1f K | 1.341944[1.336264,1.347624] | Lee K-major native FP8 QK/f16 PV on full decode | Retain pick; closes this exact reader/geometry, not the mechanism family | `cde88b9136de4093` |
+| Post-port 32x1s F | 0.985855[0.960184,1.011527] | Direct FP32 sum/BF16 input round inside OP both-head/last-arriver or Lee native prologue | P4 nominee, held-out whole-layer/prepare confirmation | `cde88b9136de4093` |
+| Post-port 32x1f F | 1.130155[1.125569,1.134742] | Direct FP32 sum/BF16 input round inside OP both-head/last-arriver or Lee native prologue | Retain pick; closes this exact reader/geometry, not the mechanism family | `cde88b9136de4093` |
+| Post-port 1x8s F | 0.839438[0.819888,0.858987] | Direct FP32 sum/BF16 input round inside OP both-head/last-arriver or Lee native prologue | P4 nominee, held-out whole-layer/prepare confirmation | `cde88b9136de4093` |
+| Post-port 1x8f F | 1.402405[1.388335,1.416474] | Direct FP32 sum/BF16 input round inside OP both-head/last-arriver or Lee native prologue | Retain pick; closes this exact reader/geometry, not the mechanism family | `cde88b9136de4093` |
+| Post-port 16x8s O | 1.024066[1.016012,1.032119] | Direct FP32 sum/BF16 input round inside OP both-head/last-arriver or Lee native prologue | Retain pick; closes this exact reader/geometry, not the mechanism family | `cde88b9136de4093` |
+| Post-port 16x8f F | 1.379079[1.374989,1.383169] | Direct FP32 sum/BF16 input round inside OP both-head/last-arriver or Lee native prologue | Retain pick; closes this exact reader/geometry, not the mechanism family | `cde88b9136de4093` |
+| Post-port 32x8s E | 1.126020[1.108130,1.143910] | Lee direct-input +25% polynomial exponents | Retain pick; closes this exact reader/geometry, not the mechanism family | `cde88b9136de4093` |
+| Post-port 32x8f Q | 1.066325[1.060408,1.072243] | Lee direct-input + early Q | Retain pick; closes this exact reader/geometry, not the mechanism family | `cde88b9136de4093` |
+
+Largest modeled remaining cells to1.3KV: d1S347.83us/load/R1.0121;
+v1S432.79/1.0095; d16S506.92/1.0073; d1F198.00/1.0068;
+v16S745.19/1.0064; v1F272.50/1.0059; v16F667.48/1.0057.
+These combine post-port component times with S19 CUPTI9c16c850 non-attention
+wall and actual old-seed KV draws; ranking counterfactual, not measured R.
+Full d32F is last41.45us/load/R1.0005 despite180us kernel time.
+
+Generic scalar QView loses2.805/3.059 at d16S/v16S: repeated FP32 queries
+10.49/25.17MB versus oldBF16 .52/4.19MB, scalar per-component/runtime-plane
+loops and some verify spills; exclusive issue/occupancy cost unmeasured.
+Vectorized plane-outer reader remains open. Producer-V, earlyQ, poly25 and
+combined lose against picks; some relative-F points improve but are not
+measured original-port nominees. Full K-major loses1.342/1.196 d16F/d32F.
+
+Combined exact licensed patch**9b043487**, source**fbaf2793**, onto current
+P4S21**eacc087b**/expanded109c0135; v1S-only80e45c72, d32S-onlya59cb4b2.
+Current P4 manifest/source newer than its PLAN row; C3d16F/Rw4v32F comparator
+differences do not affect changed cells. Only selected families ship, same
+OP kernel AST and LeeSASS except proved equivalent shared-base relocation,
+Lee80regs/no spills. Final normal/forced28eager+graph cases each pass.
+P4 confirms actual full prepare and held-out G0. First1c5f639111fa4f80
+unmeasured due13150-byte result; exact timestamp codec repair retains all
+samples/no gate changed. [Evidence](../problems/muse_attention_decode/dev/public_hybrid/README.md).
+
 ## Projections and verify dense
 
 Current small-M: balanced split-K Triton GEMVs, lossless coded qkv/pool_router at t1,

@@ -1,0 +1,517 @@
+{
+  "payload": {
+    "payload_sha256": "59cfd43230c24915f7c0e6886207d4b769c0ba2584a21996319a1484584025a2",
+    "source_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+    "seeds": [
+      10739123,
+      10747042,
+      10754961,
+      10762880,
+      10770799,
+      10778718,
+      10786637,
+      10794556
+    ],
+    "case_arms": {
+      "1x1s": [
+        "A",
+        "A2",
+        "F",
+        "J"
+      ],
+      "1x1f": [
+        "A",
+        "A2",
+        "F"
+      ],
+      "16x1s": [
+        "A",
+        "A2",
+        "F",
+        "O"
+      ],
+      "16x1f": [
+        "A",
+        "A2",
+        "F",
+        "K"
+      ],
+      "32x1s": [
+        "A",
+        "A2",
+        "F",
+        "O"
+      ],
+      "32x1f": [
+        "A",
+        "A2",
+        "F",
+        "K"
+      ],
+      "1x8s": [
+        "A",
+        "A2",
+        "F"
+      ],
+      "1x8f": [
+        "A",
+        "A2",
+        "F",
+        "P",
+        "Q",
+        "E",
+        "H"
+      ],
+      "16x8s": [
+        "A",
+        "A2",
+        "F",
+        "O",
+        "P",
+        "E"
+      ],
+      "16x8f": [
+        "A",
+        "A2",
+        "F",
+        "P",
+        "Q",
+        "E",
+        "H"
+      ],
+      "32x8s": [
+        "A",
+        "A2",
+        "P",
+        "E"
+      ],
+      "32x8f": [
+        "A",
+        "A2",
+        "F",
+        "P",
+        "Q",
+        "E",
+        "H"
+      ]
+    },
+    "official_TASK": 96,
+    "ABI_TASK": 228,
+    "scored_TASK": 456,
+    "identities": {
+      "source": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+      "operator": "ab8067762a49b7ae4b7c93c3f282263ac82a29068da411888305143da9c4815f",
+      "lee": "6e03f13fd9638c2cbf2d470db432a87ed5e7bf613a06b4f1bf3f308312f733bf",
+      "input": "46822f1a5f9f9af26f616620e10b07ad8373c15ed0f1327fb2db67f9f6435388",
+      "operator_direct": "83a260d1bd22dc7332d0bc817cd18f9f083b63d56c54dbdf9562e8441a254342",
+      "lee_hybrid": "bcf08e76b26a8e485e72ffa7cad972535b747c8f228841c86cc6263371e6c777"
+    }
+  },
+  "kernels": {
+    "operator": "83a260d1bd22dc7332d0bc817cd18f9f083b63d56c54dbdf9562e8441a254342",
+    "lee": "de4b291e8559e469734aeb7ef20db5fc28b39aec20e63b14ca260db04f6edd5a",
+    "lee_runtime": "4ac1ca246a397ea914a3e78e26d42b742544428150fc17a4100c459288e04643",
+    "qkv_load_replacements": [
+      [
+        "f",
+        "uint4",
+        "src + 8 * i"
+      ],
+      [
+        "f",
+        "uint2",
+        "krow + (16 + nkh) * D + nd0"
+      ],
+      [
+        "f",
+        "uint2",
+        "krow + (18 + nkh) * D + nd0"
+      ],
+      [
+        "f",
+        "uint4",
+        "src + 8 * i"
+      ],
+      [
+        "f",
+        "uint4",
+        "src + 8 * i"
+      ],
+      [
+        "f",
+        "uint2",
+        "krow + (16 + h_) * D + (wt_ & 15) * 4"
+      ],
+      [
+        "f",
+        "uint2",
+        "krow + (18 + h_) * D + (wt_ & 15) * 4"
+      ],
+      [
+        "f",
+        "uint4",
+        "src + 8 * i"
+      ],
+      [
+        "f",
+        "uint2",
+        "krow + (16 + h) * D + nd0"
+      ],
+      [
+        "f",
+        "uint2",
+        "krow + (18 + h) * D + nd0"
+      ],
+      [
+        "f",
+        "uint4",
+        "row0 + r * D + d0"
+      ],
+      [
+        "f",
+        "uint2",
+        "row0 + (16 + nh) * D + nd0"
+      ],
+      [
+        "f",
+        "uint2",
+        "row0 + (18 + nh) * D + nd0"
+      ],
+      [
+        "f",
+        "uint2",
+        "f.qkv + ((size_t)b * a.L + t0 + ((rr0 & 63) >> 3)) * (2 * 16 + 4) * D + 20 * D + ((rr0 >> 6) * 8 + (rr0 & 7)) * D + (tid & 15) * 4"
+      ],
+      [
+        "f",
+        "uint2",
+        "f.qkv + ((size_t)b * a.L + l) * (2 * 16 + 4) * D + 20 * D + hd * D + d4 * 4"
+      ],
+      [
+        "f",
+        "uint2",
+        "f.qkv + ((size_t)b * a.L + t0 + ((rr0 & 63) >> 3)) * (2 * 16 + 4) * D + 20 * D + ((rr0 >> 6) * 8 + (rr0 & 7)) * D + d4 * 4"
+      ],
+      [
+        "f",
+        "uint2",
+        "f.qkv + ((size_t)b * a.L + l) * (2 * 16 + 4) * D + 20 * D + hd * D + d4 * 4"
+      ],
+      [
+        "f",
+        "uint2",
+        "row0 + 20 * D + rr0 * D + (tid & 15) * 4"
+      ],
+      [
+        "f",
+        "uint2",
+        "row0 + 20 * D + rr * D + d4 * 4"
+      ],
+      [
+        "p",
+        "uint2",
+        "row0 + 16 * D + h * D + d0"
+      ],
+      [
+        "p",
+        "uint2",
+        "row0 + 18 * D + h * D + d0"
+      ],
+      [
+        "p",
+        "uint2",
+        "row0 + 20 * D + tid * 4"
+      ]
+    ],
+    "notices_sha256": "c91b7a513ad45d811b5658a368060cf32256271545d93c4cb0350404dafe1b4e"
+  },
+  "native": [
+    {
+      "name": "lee_hybrid",
+      "cuda_sha256": "de4b291e8559e469734aeb7ef20db5fc28b39aec20e63b14ca260db04f6edd5a",
+      "ok": true,
+      "registers": [
+        "96",
+        "96",
+        "96",
+        "96",
+        "96",
+        "96",
+        "96",
+        "96",
+        "96",
+        "96",
+        "96",
+        "96",
+        "80",
+        "128",
+        "155",
+        "159",
+        "155"
+      ],
+      "stack_spills": [
+        [
+          "48",
+          "44",
+          "128"
+        ],
+        [
+          "48",
+          "48",
+          "128"
+        ],
+        [
+          "24",
+          "24",
+          "56"
+        ],
+        [
+          "16",
+          "24",
+          "36"
+        ],
+        [
+          "48",
+          "48",
+          "128"
+        ],
+        [
+          "24",
+          "24",
+          "56"
+        ],
+        [
+          "24",
+          "28",
+          "56"
+        ],
+        [
+          "24",
+          "28",
+          "68"
+        ],
+        [
+          "48",
+          "44",
+          "128"
+        ],
+        [
+          "24",
+          "28",
+          "56"
+        ],
+        [
+          "48",
+          "48",
+          "128"
+        ],
+        [
+          "24",
+          "28",
+          "68"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "c75": [],
+      "hgmma": 142,
+      "setmaxnreg": [
+        "/*7d30*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP1, 0x70 ;                                  /* 0x00000070000079c8 */",
+        "/*15780*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                        /* 0x00000020000079c8 */",
+        "/*7320*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP1, 0x70 ;                                  /* 0x00000070000079c8 */",
+        "/*14da0*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                        /* 0x00000020000079c8 */",
+        "/*7330*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP1, 0x70 ;                                  /* 0x00000070000079c8 */",
+        "/*153a0*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                        /* 0x00000020000079c8 */",
+        "/*7d00*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP1, 0x70 ;                                  /* 0x00000070000079c8 */",
+        "/*15910*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                        /* 0x00000020000079c8 */",
+        "/*7320*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP1, 0x70 ;                                  /* 0x00000070000079c8 */",
+        "/*14a00*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                        /* 0x00000020000079c8 */",
+        "/*7330*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP1, 0x70 ;                                  /* 0x00000070000079c8 */",
+        "/*14fd0*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                        /* 0x00000020000079c8 */",
+        "/*1570*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP1, 0x70 ;                                  /* 0x00000070000079c8 */",
+        "/*15e30*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                        /* 0x00000020000079c8 */",
+        "/*0b40*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP1, 0x70 ;                                  /* 0x00000070000079c8 */",
+        "/*153b0*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                        /* 0x00000020000079c8 */",
+        "/*1550*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP1, 0x70 ;                                  /* 0x00000070000079c8 */",
+        "/*153e0*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                        /* 0x00000020000079c8 */",
+        "/*1570*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP1, 0x70 ;                                  /* 0x00000070000079c8 */",
+        "/*15a90*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                        /* 0x00000020000079c8 */",
+        "/*0b40*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP1, 0x70 ;                                  /* 0x00000070000079c8 */",
+        "/*14a00*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                        /* 0x00000020000079c8 */",
+        "/*0b40*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP1, 0x70 ;                                  /* 0x00000070000079c8 */",
+        "/*15000*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                        /* 0x00000020000079c8 */"
+      ],
+      "m64n8k32": []
+    }
+  ],
+  "transport": {
+    "file": "/home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/public_hybrid/out/preview.py",
+    "sha256": "e7b3a8b29ea365a01db64bb4c314fb645002e57e62d4ce23bb6bca2e6de65142",
+    "tier": "wrapper",
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "dynamic state contract: requires changed-unit/H200 checks"
+      },
+      {
+        "name": "wrapper_lab-only",
+        "ok": true,
+        "packets": 1
+      }
+    ]
+  },
+  "static": {
+    "file": "/home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/public_hybrid/out/hybrid_attention.py",
+    "sha256": "59cfd43230c24915f7c0e6886207d4b769c0ba2584a21996319a1484584025a2",
+    "tier": "static",
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "no literal prepare state contract"
+      }
+    ]
+  },
+  "screens": {
+    "normal": {
+      "checks": {
+        "official": 96,
+        "ABI": 228,
+        "scored": 456
+      },
+      "host_TASK": 16,
+      "allpass": true,
+      "elapsed": 53.754741590004414,
+      "wrapper_sha256": "e7b3a8b29ea365a01db64bb4c314fb645002e57e62d4ce23bb6bca2e6de65142"
+    },
+    "forced": {
+      "checks": {
+        "official": 96,
+        "ABI": 228,
+        "scored": 456
+      },
+      "host_TASK": 16,
+      "allpass": true,
+      "elapsed": 53.20076296199113,
+      "wrapper_sha256": "e7b3a8b29ea365a01db64bb4c314fb645002e57e62d4ce23bb6bca2e6de65142"
+    }
+  },
+  "unmeasured_attempt": {
+    "utc": "20261026T122416Z",
+    "problem": "muse_bf16_proj",
+    "mode": "check",
+    "job": "1c5f639111fa4f80",
+    "sha256": "10cf11e700b42ce3e2762e67ad92ef171aea83dfd1e354435f9f01c27eccdbba",
+    "file": "problems/muse_bf16_proj/lab/lab_hybrid_attention.py",
+    "source": "runs/muse_bf16_proj/20261026T122416Z_check_1c5f639111fa4f80.py",
+    "git": "74a8575+dirty",
+    "note": "h200_lab problems/muse_attention_decode/dev/public_hybrid/out/hybrid_attention.py: P5b54329a31:rank12post-portexcess;780TASK normal/forced+16host each,native142WGMMA,allgates;8freshseeds all cyclic/reverse2Nrounds retained. Controls8portpicks+S19elsewhere;directplanes preserveBF16,allkeys;F/J/O/K/P/Q/E/Hbatched",
+    "snapshot": "runs/sent/10cf11e700b42ce3/lab_hybrid_attention.py",
+    "lane": "P5b",
+    "decision": "post-port attention hybrids: delete timed FP32 packing inside fused prologue; producer V, early Q, exponent split, K-major full decode",
+    "priority": 2,
+    "priority_override": false,
+    "sender": "10cf11e700b42ce3",
+    "payload_sha256": "54329a31776014efd6e3a483afe6d7d6f70bca87f638bab15eae2945e9346ae5",
+    "measured": false,
+    "failure": "All cells reached but final raw JSON timing evidence13150 bytes exceeded11200 bound; no admitted times; repaired with exact gcd/LEB128+XZ codec, no tests/rounds removed."
+  },
+  "codec": [
+    {
+      "source": "/home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/public_hybrid/out/normal.json",
+      "elements": 4752,
+      "wire_bytes": 5460,
+      "sha256": "cc5e3ae1bc835142958b1fea96c560c08f62857b51de2607d9187ca1c56eb1ff"
+    },
+    {
+      "source": "/home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/public_hybrid/out/forced.json",
+      "elements": 4752,
+      "wire_bytes": 5760,
+      "sha256": "6cc738704a68e24345799314b4c6d5644e8b16f80a40fb47aab88381512b2917"
+    },
+    {
+      "source": "/home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/public_ports/receipt_data.json",
+      "elements": 3072,
+      "wire_bytes": 5500,
+      "sha256": "81451bd2ab8a798b75241917d423006a2ef947c173320e7d686006be1071dcea"
+    },
+    {
+      "adversarial": true,
+      "exact": true
+    }
+  ]
+}

@@ -1,0 +1,375 @@
+{
+  "base": "problems/muse_decode_layer/cand_r3_best7_s21_final.py",
+  "base_sha256": "eacc087bd59b3cd58ee6b7690913868d86a8deb2ad1ff50040329ece62f7c8a4",
+  "job": "cde88b9136de4093",
+  "receipt": "runs/muse_bf16_proj/20261026T123517Z_check_cde88b9136de4093.json",
+  "failed_transport_attempt": "1c5f639111fa4f80: unmeasured oversized packet, no timed result admitted",
+  "seeds": [
+    10739123,
+    10747042,
+    10754961,
+    10762880,
+    10770799,
+    10778718,
+    10786637,
+    10794556
+  ],
+  "TASK": {
+    "official": 96,
+    "ABI": 228,
+    "scored": 456
+  },
+  "controls": {
+    "1x1s": {
+      "r": 1.0049991269471839,
+      "se": 0.005765392822515463,
+      "lo": 0.9913661392625225,
+      "hi": 1.0186321146318453,
+      "seed_ratios": [
+        0.990073145245559,
+        0.9994722955145119,
+        0.9968586387434555,
+        0.996822033898305,
+        0.9925611052072264,
+        1.0030895983522141,
+        1.0328042328042328,
+        1.0283119658119657
+      ]
+    },
+    "1x1f": {
+      "r": 0.995619420806283,
+      "se": 0.0039491876186364275,
+      "lo": 0.9862810759915063,
+      "hi": 1.0049577656210595,
+      "seed_ratios": [
+        1.005486132276745,
+        1.0015092061575612,
+        1.0009071666162686,
+        0.9900211672210463,
+        0.9925439904563077,
+        0.9741176470588236,
+        0.9910044977511244,
+        1.0093655589123869
+      ]
+    },
+    "16x1s": {
+      "r": 0.99683294420594,
+      "se": 0.007447702378668741,
+      "lo": 0.9792219265471096,
+      "hi": 1.0144439618647705,
+      "seed_ratios": [
+        0.9641375222288086,
+        0.9835315645013724,
+        0.9815859815859815,
+        0.9930345245305875,
+        0.9969097651421508,
+        1.0209037811251154,
+        1.0272254512083205,
+        1.0073349633251834
+      ]
+    },
+    "16x1f": {
+      "r": 0.9997521623136444,
+      "se": 0.0012140824178301741,
+      "lo": 0.9968813135857304,
+      "hi": 1.0026230110415584,
+      "seed_ratios": [
+        0.9933862433862434,
+        1.0,
+        1.0009011223068731,
+        1.0027068671136468,
+        1.0034066655721556,
+        0.9975717166728403,
+        0.9974097458313097,
+        1.002634937626086
+      ]
+    },
+    "32x1s": {
+      "r": 0.9948357042754488,
+      "se": 0.005707379448905125,
+      "lo": 0.9813398964209087,
+      "hi": 1.0083315121299887,
+      "seed_ratios": [
+        0.9734299516908212,
+        0.992620934681607,
+        0.9879452054794521,
+        1.024524662441444,
+        0.9880108991825614,
+        0.9829406986190089,
+        1.0097601784718349,
+        0.9994531036368608
+      ]
+    },
+    "32x1f": {
+      "r": 1.0020887434107022,
+      "se": 0.0021058290654232736,
+      "lo": 0.9971092489341417,
+      "hi": 1.0070682378872626,
+      "seed_ratios": [
+        0.9975494564248797,
+        1.0085175420807138,
+        1.0068027210884354,
+        0.9941489124123454,
+        1.0106551347495598,
+        0.9984396593999376,
+        0.9982951022938623,
+        1.0023014188358843
+      ]
+    },
+    "1x8s": {
+      "r": 0.9927613195008955,
+      "se": 0.014006645086660073,
+      "lo": 0.9596408668538291,
+      "hi": 1.0258817721479618,
+      "seed_ratios": [
+        0.9471046770601337,
+        1.0022296544035676,
+        0.9920724801812005,
+        0.9894736842105264,
+        1.0555877243775333,
+        0.9797866367209432,
+        0.9397590361445783,
+        1.0360766629086808
+      ]
+    },
+    "1x8f": {
+      "r": 0.993350000514904,
+      "se": 0.0024724031573526003,
+      "lo": 0.987503696050779,
+      "hi": 0.9991963049790289,
+      "seed_ratios": [
+        0.9965397923875432,
+        0.9919148500665235,
+        0.9997941327843541,
+        0.9885369532428355,
+        0.9935740514075887,
+        0.9950414895770087,
+        1.0018444512757456,
+        0.9795542833776325
+      ]
+    },
+    "16x8s": {
+      "r": 0.9999471844155084,
+      "se": 0.0033821361301888263,
+      "lo": 0.9919497033018807,
+      "hi": 1.0079446655291362,
+      "seed_ratios": [
+        0.9916507983008642,
+        1.0084302325581394,
+        0.9945644189804612,
+        1.0186737244522865,
+        1.0014725371815638,
+        0.9941716450531839,
+        0.9907583981223412,
+        0.9998557206752272
+      ]
+    },
+    "16x8f": {
+      "r": 0.9988690785837393,
+      "se": 0.0007603629286560599,
+      "lo": 0.9970711059630778,
+      "hi": 1.0006670512044007,
+      "seed_ratios": [
+        0.9960023246394166,
+        1.0015869937049249,
+        0.9979752180534404,
+        1.0009585004792503,
+        0.9970322240758627,
+        0.998420659851785,
+        0.9975825246095517,
+        1.0013941832556825
+      ]
+    },
+    "32x8s": {
+      "r": 0.9917691098655202,
+      "se": 0.006217557036904004,
+      "lo": 0.9770669237140813,
+      "hi": 1.006471296016959,
+      "seed_ratios": [
+        0.9766194766194766,
+        1.0130519904285404,
+        0.9982989581118435,
+        0.9893962345812595,
+        0.967119219346627,
+        1.0190039318479684,
+        0.9862983906046107,
+        0.9843646773838362
+      ]
+    },
+    "32x8f": {
+      "r": 1.0003729687635015,
+      "se": 0.0008235699314846132,
+      "lo": 0.9984255353311186,
+      "hi": 1.0023204021958845,
+      "seed_ratios": [
+        0.999638661188082,
+        0.9994680795586104,
+        0.9992024527168396,
+        0.9973410308937033,
+        1.004188611952059,
+        1.0034194410768131,
+        0.998940405526351,
+        1.0007850671955538
+      ]
+    }
+  },
+  "points": [
+    {
+      "cell": "32x1s",
+      "arm": "F",
+      "r": 0.9858554768824009,
+      "se": 0.010856471505999853,
+      "lo": 0.9601840010790232,
+      "hi": 1.0115269526857786,
+      "seed_ratios": [
+        1.012614063338701,
+        0.977862804044821,
+        0.9717808219178082,
+        0.9994488839900799,
+        0.9509536784741145,
+        0.9572163552667208,
+        1.0429447852760736,
+        0.9740224227508887
+      ],
+      "nominated": true
+    },
+    {
+      "cell": "1x8s",
+      "arm": "F",
+      "r": 0.8394377912025409,
+      "se": 0.008267541201699558,
+      "lo": 0.8198881627808604,
+      "hi": 0.8589874196242214,
+      "seed_ratios": [
+        0.8318485523385302,
+        0.8288740245261984,
+        0.8573046432616082,
+        0.8060941828254848,
+        0.8442385639837869,
+        0.8686131386861313,
+        0.8132530120481928,
+        0.8652762119503945
+      ],
+      "nominated": true
+    }
+  ],
+  "selection": {
+    "32x1s": "F",
+    "1x8s": "F"
+  },
+  "candidate": {
+    "base": "problems/muse_decode_layer/cand_r3_best7_s21_final.py",
+    "base_sha256": "eacc087bd59b3cd58ee6b7690913868d86a8deb2ad1ff50040329ece62f7c8a4",
+    "source_sha256": "fbaf2793b3c32680d352d8e9ac0b669cd0148e6519593bcec1dfd4f779b68488",
+    "patch_sha256": "9b043487f341268bc1fe1d576469096f67b465d6f94fb70a1847669b0f49065d",
+    "selection": {
+      "32x1s": "F",
+      "1x8s": "F"
+    },
+    "modules": [
+      "lee_hybrid",
+      "operator_direct"
+    ],
+    "scope": "Only measured selected attention cells; original S21/S22 dispatch elsewhere. Entire prepare and held-out G0 remain P4 confirmation."
+  },
+  "alternatives": {
+    "v1s": {
+      "base": "problems/muse_decode_layer/cand_r3_best7_s21_final.py",
+      "base_sha256": "eacc087bd59b3cd58ee6b7690913868d86a8deb2ad1ff50040329ece62f7c8a4",
+      "source_sha256": "e5931a6ad5258a7b4195fa4e633a6842e13adee69a5c4711e079522f8ebbeb4f",
+      "patch_sha256": "80e45c72448b5cd4b814f6caba1908b6f281a23c3db18cfa8db9aa96bdf4d16e",
+      "selection": {
+        "1x8s": "F"
+      },
+      "modules": [
+        "operator_direct"
+      ],
+      "scope": "Only measured selected attention cells; original S21/S22 dispatch elsewhere. Entire prepare and held-out G0 remain P4 confirmation."
+    },
+    "d32s": {
+      "base": "problems/muse_decode_layer/cand_r3_best7_s21_final.py",
+      "base_sha256": "eacc087bd59b3cd58ee6b7690913868d86a8deb2ad1ff50040329ece62f7c8a4",
+      "source_sha256": "13ea0f746ff8b8b4c25d1d8cdc5eecc9cb22b980b508e3756f916e170cc63b1b",
+      "patch_sha256": "a59cb4b289e0f3e51ddf903c0816f63128f50c3997ba76647f5ccc23443c1025",
+      "selection": {
+        "32x1s": "F"
+      },
+      "modules": [
+        "lee_hybrid"
+      ],
+      "scope": "Only measured selected attention cells; original S21/S22 dispatch elsewhere. Entire prepare and held-out G0 remain P4 confirmation."
+    }
+  },
+  "screen_and_native": {
+    "selected_lee_cuda_sha256": "3c932de76789be2ab648deb67effc9f53ffa71a3d739881bd2aec5df9c639af6",
+    "selected_operator_sha256": "1cbdfd7560efb0d37f930dae812300eb7a75ae5f4869b9a8112138b2ffa55275",
+    "lee_attnd_body_identical": true,
+    "operator_kernel_AST_identical": [
+      "_combine",
+      "_combine_ml",
+      "_cos_sin",
+      "_counter",
+      "_emit",
+      "_emit_pre",
+      "_fused_attn",
+      "_partial_load"
+    ],
+    "sizes": {
+      "lee_full": 128052,
+      "lee_selected": 35253,
+      "operator_full": 44029,
+      "operator_selected": 18705
+    },
+    "selected_lee_encoded_SASS_identical_except_equivalent_smem_base": true,
+    "shared_base_proof": "0x400+{0x10,0x400}+1023 then &~1023 both2048; all other words identical. Static allocation differs but dynamic216320B keeps occupancy1 in both.",
+    "sass_differences": [
+      [
+        64,
+        "0x0000001004047890",
+        "0x0000040004047890"
+      ]
+    ],
+    "sass_words": 7024,
+    "sass_words_sha256": "acd415ec052121884c9708360b6575caf16185897ead65f2d4b09084880c8b80",
+    "native": [
+      {
+        "name": "lee_selected",
+        "cuda_sha256": "3c932de76789be2ab648deb67effc9f53ffa71a3d739881bd2aec5df9c639af6",
+        "ok": true,
+        "registers": [
+          "80"
+        ],
+        "stack_spills": [
+          [
+            "0",
+            "0",
+            "0"
+          ]
+        ],
+        "c75": [],
+        "hgmma": 12,
+        "setmaxnreg": [],
+        "m64n8k32": []
+      }
+    ],
+    "normal": {
+      "sha256": "334a8800202a0bf4739a1f07224368468bc05ab06e4767ab6ec66fe692c1af2e",
+      "TASK_cases": 28,
+      "eager_and_graph": true,
+      "allpass": true
+    },
+    "forced": {
+      "sha256": "334a8800202a0bf4739a1f07224368468bc05ab06e4767ab6ec66fe692c1af2e",
+      "TASK_cases": 28,
+      "eager_and_graph": true,
+      "allpass": true
+    }
+  },
+  "sizing": "sizing.json; resource counterfactual, not measured G0",
+  "source_pruning": "Only selected sliding8 OP and sliding-decode32 Lee remain. Lee80registers/no spills; SASS identical except one extern-shared alignment immediate with proved equivalent final shared base/occupancy. OP selected kernel/helper ASTs identical.",
+  "scope": "Interposes only v1S and d32S attention; FP32 planes sum in input order and round BF16 before existing public norm/rope/cache/attention/merge. Removes one timed packing launch. External split gate ownership unchanged. No MoE/projection/glue edits.",
+  "prepare": "Adds one selected setup hook to S21 _S19_BUILDS pool before synthetic warmup; no nested full prepare. Added actual full-prepare time unmeasured; P4 confirms300s/G0.",
+  "qualification": "Base is P4 current S21 manifest/source eacc087b/expanded109c0135, while PLAN P4 row still names older d5c6dd24. Current source has7public cells, keeps C3 atd16F and Rw4 atv32F; lab control uses earlier8picks andS19 elsewhere. Neither changed handoff cell differs from current S21 pick. All A:A CIs include1 except v1F .993350 [.987504,.999196]; no nominee there, no per-load veto. d32S point CI crosses1, nominated under G0; held-out whole-layer confirmation is P4 responsibility.",
+  "licenses": "R-20261026-1, MIT6d9b7765/Apache601c6541; full _HY_PUBLIC_NOTICES embedded, preserve it.",
+  "next": "Largest remaining d1S needs page-gather/fill-drain work. Generic scalar QView partial fusion loses on issue/duplication; vectorized plane-outer prologue remains unmeasured. Producer-V/earlyQ/poly25 hybrids lose against picks; do not transplant their relative-F contrasts as measured original-port gains."
+}

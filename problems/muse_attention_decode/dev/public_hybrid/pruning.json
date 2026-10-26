@@ -1,0 +1,21 @@
+{
+  "selected_lee_cuda_sha256": "3c932de76789be2ab648deb67effc9f53ffa71a3d739881bd2aec5df9c639af6",
+  "selected_operator_sha256": "1cbdfd7560efb0d37f930dae812300eb7a75ae5f4869b9a8112138b2ffa55275",
+  "lee_attnd_body_identical": true,
+  "operator_kernel_AST_identical": [
+    "_combine",
+    "_combine_ml",
+    "_cos_sin",
+    "_counter",
+    "_emit",
+    "_emit_pre",
+    "_fused_attn",
+    "_partial_load"
+  ],
+  "sizes": {
+    "lee_full": 128052,
+    "lee_selected": 35253,
+    "operator_full": 44029,
+    "operator_selected": 18705
+  }
+}

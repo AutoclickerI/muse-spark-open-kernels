@@ -207,3 +207,16 @@ work remains open. Other P5 native/RAW2/query changes were not edited.
 P4 selects/composes and confirms held-out whole-layer G0; the component
 receipt does not promote by itself. Selected public cells bypass previous
 FA3/row-reduction interceptors; avoid double-wrapping that work.
+
+## P5b post-port direct-input result
+
+Native cde88b9136de4093/780TASK: consuming FP32 planes and rounding BF16
+inside OP's existing v1S fused kernel deletes its remaining pack launch,
+**new/port .839438[.819888,.858987]**,9.513->7.983us,2->1launch.
+d32S direct Lee .985855[.960184,1.011527] is also a point nominee. Exact
+licensed patches/P4 handoff: `../public_hybrid/`; combined9b043487 on current
+S21eacc087b, v1S-only80e45c72. Do not duplicate this v1S input fusion.
+No producer kernel, external gate or P5 native path edited. Generic scalar
+partial reads lose badly at d16S/v16S; vectorized plane-outer reads remain
+open. d1S still keeps S19, its gather/fill-drain is the largest open term.
+P4 confirms held-out whole-layer G0 and full prepare; no score claim here.

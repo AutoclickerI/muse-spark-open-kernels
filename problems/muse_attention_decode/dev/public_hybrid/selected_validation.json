@@ -1,0 +1,65 @@
+{
+  "selected_lee_cuda_sha256": "3c932de76789be2ab648deb67effc9f53ffa71a3d739881bd2aec5df9c639af6",
+  "selected_operator_sha256": "1cbdfd7560efb0d37f930dae812300eb7a75ae5f4869b9a8112138b2ffa55275",
+  "lee_attnd_body_identical": true,
+  "operator_kernel_AST_identical": [
+    "_combine",
+    "_combine_ml",
+    "_cos_sin",
+    "_counter",
+    "_emit",
+    "_emit_pre",
+    "_fused_attn",
+    "_partial_load"
+  ],
+  "sizes": {
+    "lee_full": 128052,
+    "lee_selected": 35253,
+    "operator_full": 44029,
+    "operator_selected": 18705
+  },
+  "selected_lee_encoded_SASS_identical_except_equivalent_smem_base": true,
+  "shared_base_proof": "0x400+{0x10,0x400}+1023 then &~1023 both2048; all other words identical. Static allocation differs but dynamic216320B keeps occupancy1 in both.",
+  "sass_differences": [
+    [
+      64,
+      "0x0000001004047890",
+      "0x0000040004047890"
+    ]
+  ],
+  "sass_words": 7024,
+  "sass_words_sha256": "acd415ec052121884c9708360b6575caf16185897ead65f2d4b09084880c8b80",
+  "native": [
+    {
+      "name": "lee_selected",
+      "cuda_sha256": "3c932de76789be2ab648deb67effc9f53ffa71a3d739881bd2aec5df9c639af6",
+      "ok": true,
+      "registers": [
+        "80"
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "c75": [],
+      "hgmma": 12,
+      "setmaxnreg": [],
+      "m64n8k32": []
+    }
+  ],
+  "normal": {
+    "sha256": "334a8800202a0bf4739a1f07224368468bc05ab06e4767ab6ec66fe692c1af2e",
+    "TASK_cases": 28,
+    "eager_and_graph": true,
+    "allpass": true
+  },
+  "forced": {
+    "sha256": "334a8800202a0bf4739a1f07224368468bc05ab06e4767ab6ec66fe692c1af2e",
+    "TASK_cases": 28,
+    "eager_and_graph": true,
+    "allpass": true
+  }
+}
