@@ -15,7 +15,7 @@ Ratios are new/old time; lower is faster. Per-recipe numbers, A:A ranges and
 phase clocks are in `softmax/reset_result.json`, `decode/reset_result.json`
 and FINDINGS Attention. The losing recipes do not close alternate exp layouts,
 P*ones without a separate wait, native K-major q1 WGMMA, or operand-ready rings.
-No P4 promotion from either stage batch.
+No changed softmax arm has a point ratio below1 at either tested shape; those verdicts do not change.
 
 ## Structural follow-up
 
@@ -58,3 +58,9 @@ were retired under the dispatch lock only after identity checks; each audit's
 Structural follow-up queued: **sender589881**, exact wrapper **18895a35**, decode check, priority6, past not-before1792972800. `next/queue.json` and `next/admission.json` record identity:480 TASK gates,13 official host tests and2 static checks pass in each mode. The automatically merged unsent sender579268 was retired before acceptance so the65-shape nearby audit and this payload keep their full independent prepare deadlines; `next/auto_merge_retired.json` records that event. Nearby was restored byte-for-byte as sender587925 at priority4.9.
 
 PDL/library follow-up: sender760641, wrapper7127261f, fifteen arms and1,440 TASK gates per local mode; all143 C fixtures and25 static checks per mode pass. Exact group patches and receipt controls are indexed by `muse_decode_layer/dev/pdl_release/P4_HANDOFF.json`. This is a nomination pending held-out six-load R. Structural attention job is fb14f30ffd48450f; nearby job a793c99eb9d447df.
+
+## Point-estimate rejudgment (R-20261026-1)
+
+`rejudgment/P4_HANDOFF.json` nominates every affected shape cell with on/off point time below1, regardless of A:A overlap. Whole guarded S15n is handed to P4 now because scored dispatch is identical and nearby speed improves. O256 and small-M release cells are no longer withheld for noise. Each cell carries its ratio,8seeds, full/off load SE and the explicit absence of per-shape SE in the frozen receipt; no covariance is invented. S15e/S15L full-composition losses do not veto shape choices. P4 composes and confirms the held-out six-load R, with TASK correctness only.
+
+`fb14f30ffd48450f` returned LAB_ERROR at the native P*ones/rescale probe: seed68137 relative error .0004769067 against its exact-operand oracle. No timings or whole-layer TASK records were produced; both PVsum and the packed gather arm are **unmeasured**. The separate new structural payload does not include that failed denominator implementation.

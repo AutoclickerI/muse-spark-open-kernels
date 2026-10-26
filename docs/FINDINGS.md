@@ -565,6 +565,9 @@ Library's d1 A:A is1.013075 (1.004542–1.022814); other means are
 
 | S15 vs range-dispatch S15n vs SGLang,65 shapes | Nearby/scored speedup by d1/d16/d32/v1/v16/v32: S15 .9547/.8651/.8184/.8119/.7327/.7263; S15n1.0292/1.0142/.8884/.8682/1.0050/.9360 | Complete2seeds×8coldreplays, SGLang available, finite/schema gates pass; many unknown-B calls otherwise lose specialized MoE/attention/projection/glue. Same scored dispatch control ranges .97794–1.03416/.99554–1.00231/.99239–.99919/.99428–1.00065/.99491–1.00196/1.00054–1.00283; no independent A:A and slight d32/v32 drift | Large nearby cliffs improve; no scored gain claim or correctness promotion. Native TASK67-shape validation of guarded S15n9cc90d2e sent; B<=64 guard preserves all65 timed cases. Other neighboring contexts/batches and final integration remain open | `a793c99eb9d447df` |
 
+| P5b point-estimate rejudgment of S15e/S15L |19 affected shape cells have on/off point ratio<1;8seeds; frozen per-shape SE absent, full/off load SE retained in handoff | Re-evaluate cells instead of vetoing source groups by every load/A:A; exact source and root-applicable patch for each group | Whole guarded S15n, O256 and small-M release point gains now nominated too; P4's held-out six-load R is the promotion gate. Both softmax reset batches still have no changed-arm point gain | `f88fda4aac144374`, `f22020d25d234be6`, `a793c99eb9d447df` |
+| PV-group denominator + vector-gather payload | **Unmeasured**: native denominator probe fails before timing, rel .0004769067 at seed68137 | Local portable exact sum did not establish native tensor partial-product accuracy; LAB_ERROR aborts the packed experiment before TASK/timing | No loss/win claim for either denominator or gather. Other denominator layouts and independent gather testing remain open | `fb14f30ffd48450f` |
+
 ## Projections and verify dense
 
 Current small-M: balanced split-K Triton GEMVs, lossless coded qkv/pool_router at t1,

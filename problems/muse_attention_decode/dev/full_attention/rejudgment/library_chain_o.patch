@@ -1,0 +1,10 @@
+--- a/problems/muse_decode_layer/cand_r3_best7_s15.py
++++ b/problems/muse_decode_layer/cand_r3_best7_s15.py
+@@ -8268,6 +8268,7 @@
+ 
+ # Selected by paired H200 producer+consumer / layer evidence. T1 coded rows remain ours.
+ NF_PORT_SELECTED = {(1, 'o'), (1, 'qkv3'), (8, 'o'), (16, 'o'), (16, 'unpooler'), (32, 'o'), (32, 'qkv3'), (32, 'qkv_gate'), (32, 'unpooler')}
++NF_PORT_SELECTED |= {(128, 'o'), (256, 'o')}
+ NF_PORT_FORCE = False
+ _nf_port_base_project = _project_variant
+ _nf_port_base_prepare = prepare

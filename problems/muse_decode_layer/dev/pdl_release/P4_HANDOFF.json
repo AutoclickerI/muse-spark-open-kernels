@@ -1,6 +1,6 @@
 {
   "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
-  "status": "nominations only; await held-out six-load confirmation",
+  "status": "Point-estimate nominations to P4; no per-load/A:A veto; six-load held-out R decides promotion",
   "receipts": [
     "f88fda4aac144374",
     "f22020d25d234be6"
@@ -87,5 +87,13 @@
   "confirmation": "confirmation/README.md",
   "projection_selection_note": "Pure VDSK release affects qkv T128 only. Its v16 marginal E/no-projections=.988099 is useful; the six-load aggregate marginal is contaminated by unchanged-load variation, especially the failed d1 A:A. Confirm the pure VDSK arm rather than treating that aggregate as a measured loss.",
   "confirmation_sender": 760641,
-  "patch_validation": "confirmation/patch_validation.json"
+  "patch_validation": "confirmation/patch_validation.json",
+  "all_point_nominations": "problems/muse_attention_decode/dev/full_attention/rejudgment/P4_HANDOFF.json",
+  "changed_verdicts": [
+    "Whole guarded S15n handed off now, not withheld for per-load spread. Native TASK result remains required correctness evidence.",
+    "O256 and grouped small-M release cells with point benefit are nominated despite A:A overlap.",
+    "VDSK qkv release v16 nomination retained: six-load marginal below1 is inapplicable to its one supported T128 cell.",
+    "Previously losing whole compositions do not veto improved individual shape cells.",
+    "Both reset softmax batches still nominate no changed arm: all point ratios exceed1 at both target shapes."
+  ]
 }

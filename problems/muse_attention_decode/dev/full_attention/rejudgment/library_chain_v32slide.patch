@@ -1,0 +1,10 @@
+--- a/problems/muse_decode_layer/cand_r3_best7_s15.py
++++ b/problems/muse_decode_layer/cand_r3_best7_s15.py
+@@ -7731,6 +7731,7 @@
+ """
+ _VQ8_MOD = None
+ _VQ8_ROWS = {(16, 8, False): (4, 8), (32, 8, False): (4, 8)}
++_VQ8_ROWS.update({(32, 8, True): (4, 2)})
+ 
+ 
+ def _vq8_module():

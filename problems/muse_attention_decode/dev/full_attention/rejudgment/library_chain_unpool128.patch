@@ -1,0 +1,45 @@
+--- a/problems/muse_decode_layer/cand_r3_best7_s15.py
++++ b/problems/muse_decode_layer/cand_r3_best7_s15.py
+@@ -35,7 +35,10 @@
+ 
+ @triton.jit
+ def _vdsk_gemm(X, W, P, x_desc, w_desc, M, N, K, S,
+-               BT: tl.constexpr, BW: tl.constexpr, BK: tl.constexpr, NS: tl.constexpr, TMA: tl.constexpr):
++               BT: tl.constexpr, BW: tl.constexpr, BK: tl.constexpr, NS: tl.constexpr, TMA: tl.constexpr, CHAIN: tl.constexpr = False):
++    if CHAIN:
++        tl.extra.cuda.gdc_launch_dependents()
++        tl.extra.cuda.gdc_wait()
+     pid = tl.program_id(0)
+     ps = tl.program_id(1)
+     nw = N // BW
+@@ -59,7 +62,7 @@
+     tl.store(P + ps * M * N + rt[:, None] * N + rw[None, :], acc, mask=rt[:, None] < M)
+ 
+ 
+-def _vdsk_project(x, w, variant):
++def _vdsk_project(x, w, variant, chain=False):
+     _, cfg, S = variant
+     BT, BW, BK, NS, NWARPS, TMA = cfg
+     M, K = x.shape
+@@ -70,7 +73,7 @@
+     xd = _VDSK_TD.from_tensor(x, [BT, BK]) if TMA else None
+     wd = _VDSK_TD.from_tensor(w, [BW, BK]) if TMA else None
+     _vdsk_gemm[(-(-M // BT) * (N // BW), S)](x, w, P, xd, wd, M, N, K, S, BT=BT, BW=BW, BK=BK, NS=NS, TMA=TMA,
+-                                             num_warps=NWARPS, num_stages=NS)
++                                             num_warps=NWARPS, num_stages=NS, CHAIN=chain, launch_pdl=chain)
+     return P, S
+ 
+ 
+@@ -8279,8 +8282,12 @@
+         return nf_project(x,name,state['nf_port'])
+     return _nf_port_base_project(x,w,name,state,variant,out_dtype)
+ 
++LIBRARY_NATIVE_ROWS = {(128, 'unpooler'): ('vdsk', (128, 128, 64, 5, 8, 0), 2)}
++
+ def _best7_project(x,name,state,plan,out_dtype=torch.bfloat16):
+     key=(x.shape[0],name)
++    if key in LIBRARY_NATIVE_ROWS:
++        return _vdsk_project(x,state[name],LIBRARY_NATIVE_ROWS[key],chain=True)
+     if 'nf_port' in state and (key in NF_PORT_SELECTED or NF_PORT_FORCE and key in NF_SMALL.keys()|NF_WIDE):
+         return nf_project(x,name,state['nf_port'])
+     return _nf_port_base_best7_project(x,name,state,plan,out_dtype)
