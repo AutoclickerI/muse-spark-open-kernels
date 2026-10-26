@@ -1,42 +1,34 @@
 #!/usr/bin/env python3
-"""Run H200 measurements in prepare() or at import of a problem's best scored source (a lab run).
+"""Batch H200 lab payloads on any problem host.
 
-    tools/h200_lab.py send prof/lab/moe_skew.py [more.py ...] --note "V9 vs grouped at real routing" [--host muse_moe_w4a16] [--priority 1]
-    tools/h200_lab.py build prof/lab/moe_skew.py [more.py ...] -o /tmp/x.py   # write the lab file only (to screen it)
-    tools/h200_lab.py read <job | receipt.json> [name]                        # print the lab sections from a receipt
+    tools/h200_lab.py send probe.py [more.py ...] --host muse_prefill_layer --lab-only --import-budget 700 --lane P4 --decision "promote composition" --note "fresh pairs"
+    tools/h200_lab.py build probe.py [more.py ...] -o /tmp/lab.py
+    tools/h200_lab.py read <job | receipt.json> [name]
 
-The payload is one self-contained file defining `lab(deadline, weights[, state]) -> list[str]`: `deadline` is a
-time.monotonic() deadline (prepare's 300 s cap minus a margin, or --import-budget seconds for import-phase labs). Payloads must honor it; it does not interrupt running code. `weights` is
-what the host problem's prepare() receives (proj: qkv_gate, o, pooler, unpooler and the real router;
-MoE: the packed NVFP4 experts). Inline its CUDA/Triton (load_inline under a unique name); no imports of
-our modules, since the judge gets the one file. The optional third argument is the state returned by the
-host's already-completed base prepare; it avoids rebuilding a long tuner when a lab measures that state.
-With --phase import (also automatic without prepare), payloads run once after the host's definitions at module import, with weights=None and
-state=None; payloads needing weights must synthesize them. The import budget starts at the wrapper,
-after any import work already present in the best source. On hosts with a judge-called prepare(),
-import-phase lab diagnostics are buffered until that prepare finishes (also if it raises), so host tuning
-cannot displace them from the receipt's log tail. On attention or a host without prepare(), they print
-at import. Execution stays at import in both cases. Neither kernel nor kernel_fn is changed.
-The judge's image has torch, triton and SGLang's kernels.
+Payload: lab(deadline, weights[, state]) returns {"packet": evidence, "logs": lines},
+or the existing list[str] interface. Evidence contains identities, seeds, paired, checks,
+complete. The wrapper emits a lossless checksummed LAB_PACKET after every payload has
+finished; on import hosts it re-emits after host prepare. read recovers existing result
+lines; programmatic consumers use tools.lab_packet.result_lines/read_packets.
 
-The lab file is the host's best scored source (ledger). In prepare-phase labs, the wrapped base prepare
-runs first and its state is returned unchanged, so the run still scores, and the board keeps our best anyway.
-Each payload's source is embedded as a string and executed in its own namespace (a copy of the host
-module's globals, so host functions stay reachable and payload names can't collide), one after another,
-each with an equal share of the time left. Payloads make L2 cold with `lab_cold_l2()` (a read, as the judge
-does), never with a zero_() write. Several payloads for one host go in one judge run: our runs
-start one at a time, so batching labs is the cheapest way to more H200 answers per hour. `send` also folds
-in a lab still waiting for a judge slot on the same host (up to MERGE_MAX payloads per run; a payload of
-the same name is replaced by the new one), so lanes that send separately still share runs. The judge calls
-prepare once per run (llms.txt) and keeps the last 16,000 characters of output, followed by up to ~6 KB
-of profiler lines, so all lab lines together are capped at LIMIT characters, split evenly; each payload
-prints between its own LAB_BEGIN and LAB_END; over its share, the middle lines go (the first two and the last are kept). An exception in a payload becomes its LAB_ERROR lines; a sticky
-CUDA error (lab b63389f0) still fails the run after printing them and kills the payloads after it, so put a
-risky payload last.
+Declare a literal LAB_RESOURCES = {"compile_s": 30, "run_s": 40, "output_bytes": 2000,
+"context_poison": "none"}. output_bytes includes the encoded packet line and newline;
+256 additional bytes per payload cover section markers. Batches fit declared time and
+reserved output first; diagnostics use remaining space. Device-poison probes run alone;
+"last" probes run last. Undeclared existing payloads reserve a whole output allocation.
+The CLI splits batches automatically (build writes name.py, name.2.py, ...). The Python
+build API creates exactly one batch and rejects a batch needing a split.
 
-Hosts: proj, MoE, prefill, decode and attention, sharing each host's board quota. Prefill is off the
-overall board. Attention has no judge-called prepare(), so uses import-time labs (--import-budget,
-default 150 s). Lab runs default to proj at the priority of the measurement's problem (--priority).
+Prepare phase uses the best scored host's unchanged prepare/state. --base-prepare gives
+its estimated cost for planning (default 130 s); the real deadline is prepare start+285 s.
+--phase import runs with weights/state None after the base definitions. --lab-only uses
+a minimal import host and skips the scored source's compile/prepare entirely; it always
+goes as a check and deliberately stops at prepare after emitting evidence. Payloads own
+setup and honor deadline. lab_cold_l2 reads a buffer larger than L2, as TASK prescribes.
+
+The judge keeps a 16,000-character tail. We reserve 9,000 wire bytes for evidence and
+markers, leaving 7,000 characters for profiler/error suffixes. Queue rank comes from the
+PLAN lane of the decision, independently of the host used for quota and transport.
 """
 
 import argparse
@@ -44,6 +36,7 @@ import ast
 import fcntl
 import hashlib
 import json
+import math
 import os
 import re
 import shutil
@@ -56,12 +49,61 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "tools"))
 from screen_all import local_imports  # noqa: E402
+from lab_packet import read_packets, result_lines  # noqa: E402
 
-LIMIT = 9000          # characters of lab output kept between the markers
+LIMIT = 9000          # packet wire bytes + bounded diagnostics + markers; 7000 chars for judge suffix
 MARGIN_S = 15         # left of prepare's 300 s after the payload's deadline
 HOSTS = ("muse_bf16_proj", "muse_moe_w4a16", "muse_prefill_layer", "muse_decode_layer", "muse_attention_decode")
 IMPORT_BUDGET_S = 150  # H200 probe 33d8bb6861b64c9e completed 150 s after the host's own ~45 s import lab
-MERGE_MAX = 2        # payloads per run: base prepares take ~130 s on the H200, leaving each ~80 s
+BASE_PREPARE_S = 130
+# Undeclared payloads get a whole packet allocation. Declare LAB_RESOURCES to batch safely.
+DEFAULT_RESOURCES = dict(compile_s=30, run_s=40, output_bytes=LIMIT-256, context_poison="none")
+
+
+def resources(entry):
+    value = dict(DEFAULT_RESOURCES)
+    for n in ast.parse(entry[2]).body:
+        if isinstance(n, ast.Assign) and any(getattr(t, 'id', None) == 'LAB_RESOURCES' for t in n.targets):
+            value.update(ast.literal_eval(n.value))
+    for key in ('compile_s', 'run_s'):
+        if not isinstance(value[key], (int, float)) or not math.isfinite(value[key]) or value[key] < 0:
+            raise ValueError(f"{entry[0]}: {key} must be finite and nonnegative")
+    if value['compile_s'] + value['run_s'] <= 0:
+        raise ValueError(f"{entry[0]}: compile_s + run_s must be positive")
+    if not isinstance(value['output_bytes'], int) or not 512 <= value['output_bytes'] <= LIMIT-256:
+        raise ValueError(f"{entry[0]}: output_bytes must be 512..{LIMIT-256} wire bytes")
+    if value['context_poison'] not in ('none', 'last', 'device'):
+        raise ValueError(f"{entry[0]}: context_poison must be none, last or device")
+    return value
+
+
+def plan_batches(embedded, budget_s):
+    """Pack time and reserved wire output; context-poisoning probes get their own run."""
+    if not math.isfinite(budget_s) or budget_s <= 0:
+        raise ValueError('batch budget must be positive and finite')
+    if len({e[0] for e in embedded}) != len(embedded):
+        raise ValueError('payload names must differ')
+    batches = []
+    for entry in embedded:
+        if not re.fullmatch(r'[\w.+-]{1,80}', entry[0]):
+            raise ValueError('payload name must be 1..80 letters, numbers, _, ., + or -')
+        res = resources(entry)
+        need = res['compile_s'] + res['run_s']
+        if need > budget_s:
+            raise ValueError(f"{entry[0]} needs {need:g}s; only {budget_s:g}s declared available; use import/lab-only or increase --import-budget")
+        for batch in batches:
+            rr = [resources(e) for e in batch]
+            if (res['context_poison'] == 'device' or any(r['context_poison'] == 'device' for r in rr)
+                    or sum(r['context_poison'] == 'last' for r in rr) + (res['context_poison'] == 'last') > 1):
+                continue
+            if (sum(r['compile_s']+r['run_s'] for r in rr)+need <= budget_s
+                    and sum(r['output_bytes']+256 for r in rr)+res['output_bytes']+256 <= LIMIT):
+                batch.append(entry)
+                batch.sort(key=lambda e: resources(e)['context_poison'] == 'last')
+                break
+        else:
+            batches.append([entry])
+    return batches
 
 WRAPPER = '''
 # ---- h200_lab wrapper: payloads {names} on base {base} ----
@@ -100,37 +142,60 @@ def _lab_run(weights, state, _start, _end, _phase):
     if not _lab_ran:
         _lab_ran = True
         import traceback as _tb
+        _records = []
+        _reserve = sum(r["output_bytes"] + 256 for r in _LAB_RESOURCES)
+        _log_cap = max(0, {limit} - _reserve) // len(_LAB_PAYLOADS)
         for _i, (_name, _sha, _src) in enumerate(_LAB_PAYLOADS):
             _t0 = _t.monotonic()
-            _deadline = _t0 + max(0.0, _end - _t0) / (len(_LAB_PAYLOADS) - _i)
+            _res = _LAB_RESOURCES[_i]
+            _need = _res["compile_s"] + _res["run_s"]
+            _remaining = sum(r["compile_s"]+r["run_s"] for r in _LAB_RESOURCES[_i:])
+            _deadline = min(_end, _t0 + max(_need, max(0., _end-_t0)*_need/_remaining))
             _lines = []
+            _packet = None
             try:
                 if _t0 >= _end:
                     raise TimeoutError("lab budget exhausted before this payload")
-                _lines = [str(x) for x in (_lab_run_one(_name, _src, _deadline, weights, state) or [])]
-                torch.cuda.synchronize()  # inside the try: a sticky CUDA error still prints this payload's lines
+                _result = _lab_run_one(_name, _src, _deadline, weights, state)
+                if isinstance(_result, dict):
+                    _packet = _result["packet"]
+                    if not all(k in _packet for k in ("identities", "seeds", "paired", "checks", "complete")):
+                        raise ValueError("packet needs identities, seeds, paired, checks, complete")
+                    _lines = [str(x) for x in _result.get("logs", [])]
+                else:
+                    _lines = [str(x) for x in (_result or [])]
+                    _packet = dict(lines=_lines, complete=None, format="legacy-lines")
+                torch.cuda.synchronize()
                 torch.cuda.empty_cache()
-            except BaseException as _e:  # the error is the result; a sticky CUDA error still fails the run after
-                _lines += [f"LAB_ERROR {{type(_e).__name__}}: {{_e}}"] + _tb.format_exc().splitlines()[-8:]
-                if weights is None:
-                    _lines += ["LAB_ERROR host supplies weights=None; payloads needing weights must synthesize them "
-                               "(state is also None on import-time hosts)"]
-            # Over the cap, keep the first two lines (META) and the last lines (summaries, errors) and drop the middle.
-            _cap = {limit} // len(_LAB_PAYLOADS)
-            _head, _tail, _n = _lines[:2], [], sum(len(_l) + 1 for _l in _lines[:2]) + 40
-            if sum(len(_l) + 1 for _l in _lines) > _cap:
-                for _l in reversed(_lines[2:]):
-                    if _n + len(_l) + 1 > _cap:
-                        break
-                    _tail.insert(0, _l)
-                    _n += len(_l) + 1
-                _out = _head + [f"LAB_TRUNCATED {{len(_lines) - 2 - len(_tail)}} middle lines"] + _tail
-            else:
-                _out = _lines
-            _lab_print(f"LAB_BEGIN {{_name}} {{_sha}}")
-            for _l in _out:
-                _lab_print(_l)
-            _lab_print(f"LAB_END lab_s={{_t.monotonic() - _t0:.1f}} {{_phase}}_s={{_t.monotonic() - _start:.1f}}")
+            except BaseException as _e:
+                _errors = [f"LAB_ERROR {{type(_e).__name__}}: {{_e}}"] + _tb.format_exc().splitlines()[-8:]
+                _lines += _errors
+                if _packet is None:
+                    _packet = dict(lines=_lines, complete=False)
+                else:
+                    _packet = dict(_packet, complete=False, transport_errors=_errors)
+            try:
+                _wire = _lab_encode_packet(_name, _sha, _packet)
+            except Exception as _e:
+                _wire = _lab_encode_packet(_name, _sha, dict(complete=False, lines=[
+                    f"LAB_PACKET_ERROR {{type(_e).__name__}}: {{str(_e)[:100]}} "]))
+            if len(_wire.encode()) + 1 > _res["output_bytes"]:
+                # Never cut a packet. The planner needs a larger declaration or a smaller experiment.
+                _wire = _lab_encode_packet(_name, _sha, dict(complete=False, lines=[
+                    f"LAB_PACKET_OVERSIZE needs {{len(_wire.encode())+1}} bytes; declared {{_res['output_bytes']}}; split payload"]))
+            _diagnostics = []
+            _used = 0
+            for _line in _lines:
+                if _used + len(_line.encode()) + 1 <= _log_cap:
+                    _diagnostics.append(_line)
+                    _used += len(_line.encode()) + 1
+            _records.append([f"LAB_BEGIN {{_name}} {{_sha}}"] + _diagnostics + [_wire,
+                f"LAB_END lab_s={{_t.monotonic()-_t0:.1f}} {{_phase}}_s={{_t.monotonic()-_start:.1f}}"])
+        # Emit all reserved packets after every payload (and, on import hosts, after base prepare).
+        # A later compiler's stdout cannot evict an earlier packet from the judge's receipt tail.
+        for _record in _records:
+            for _line in _record:
+                _lab_print(_line)
 '''
 
 PREPARE_WRAPPER = '''
@@ -246,7 +311,7 @@ def lab_payloads(lab: Path) -> list:
     return []
 
 
-def absorb_waiting(host: str, embedded: list, priority: float, note: str):
+def absorb_waiting(host: str, embedded: list, priority: float, note: str, *, budget_s=155, config=None, lane=None, decision=None):
     """Fold a lab still waiting for a judge slot on this host into this send. okc_run sends under its
     dispatch lock, so holding the lock while stopping the waiter means it can't be sending meanwhile."""
     with (REPO / "runs/.dispatch.lock").open("a") as lock:
@@ -257,36 +322,58 @@ def absorb_waiting(host: str, embedded: list, priority: float, note: str):
                 os.kill(w["pid"], 0)
             except (OSError, ValueError, KeyError):
                 continue
+            if lane is not None and (w.get('lane') != lane or w.get('decision') != decision):
+                continue
             lab = REPO / w["file"]
             if w["problem"] != host or lab.parent != REPO / "problems" / host / "lab" or w.get("until", 0) > time.time():
                 continue
-            # A self-preparing import lab cannot be rebuilt as a prepare-time lab.
-            # Attention is always import-time, including its default auto phase.
-            if host != "muse_attention_decode" and any(
-                    isinstance(n, ast.Assign) and any(getattr(t, "id", None) == "_lab_import_start" for t in n.targets)
-                    for n in ast.parse(lab.read_text()).body):
+            # Merge only the exact queued snapshot and the same transport/base identity.
+            if hashlib.sha256(lab.read_bytes()).hexdigest() != w['sha256']:
+                continue
+            old_config = next((ast.literal_eval(n.value) for n in ast.parse(lab.read_text()).body
+                               if isinstance(n, ast.Assign) and any(getattr(t, 'id', None) == '_LAB_CONFIG' for t in n.targets)), None)
+            if config is None or config != old_config:
                 continue
             names = {n for n, _, _ in embedded}
             kept = [e for e in lab_payloads(lab) if e[0] not in names]
-            if not kept or len(kept) + len(embedded) > MERGE_MAX:
+            if not kept or len(plan_batches(kept + embedded, budget_s)) != 1:
                 continue
-            os.kill(w["pid"], signal.SIGTERM)
-            while p.exists():  # the waiter removes its entry as it exits
-                time.sleep(0.1)
+            import select
+            try:
+                fd = os.pidfd_open(w['pid'])
+            except ProcessLookupError:
+                p.unlink(missing_ok=True)
+                continue
+            try:
+                os.kill(w['pid'], signal.SIGTERM)
+                select.select([fd], [], [])  # process completion, not a polling cadence
+            finally:
+                os.close(fd)
+            p.unlink(missing_ok=True)
             print(f"merged the waiting lab {w['file']} ({', '.join(n for n, _, _ in kept)}) into this run", flush=True)
             return kept + embedded, min(priority, w["priority"]), f"{note} || {w.get('note', w['file'])}"
     return embedded, priority, note
 
 
-def build(embedded: list, host: str, import_budget: float = IMPORT_BUDGET_S, phase: str = "auto", base_file: Path | None = None) -> tuple[str, str]:
-    if not 1 <= len(embedded) <= MERGE_MAX:
-        sys.exit(f"a lab needs 1 to {MERGE_MAX} payloads")
+def build(embedded: list, host: str, import_budget: float = IMPORT_BUDGET_S, phase: str = "auto", base_file: Path | None = None, lab_only: bool = False, base_prepare_s: float = BASE_PREPARE_S) -> tuple[str, str]:
+    if not embedded:
+        sys.exit("a lab needs at least one payload")
     if not 0 < import_budget < float("inf"):
         sys.exit("--import-budget must be positive and finite")
     if len({name for name, _, _ in embedded}) < len(embedded):
         sys.exit("payload names must differ (they label the receipt's sections)")
-    base = best_source(host) if base_file is None else {"source": str(base_file), "job": "candidate " + str(base_file)}
-    src = (REPO / base["source"]).read_text()
+    if lab_only and base_file:
+        sys.exit("--lab-only supplies its own host; omit --base-file")
+    if lab_only:
+        base = {"job": "lab-only " + host}
+        src = (f"# okc: problem={host}\nimport torch\n"
+               "def prepare(weights):raise RuntimeError('lab-only host: evidence completed at import')\n"
+               "def kernel_fn(*args):raise RuntimeError('lab-only host')\n"
+               "kernel=kernel_fn\n")
+        phase = "import"
+    else:
+        base = best_source(host) if base_file is None else {"source": str(base_file), "job": "candidate " + str(base_file)}
+        src = (REPO / base["source"]).read_text()
     if not re.match(r"#\s*okc:\s*problem=" + re.escape(host) + r"\b", src):
         sys.exit("lab base must target --host")
     # Attention's judge never calls prepare. Its best source may still define a private,
@@ -296,7 +383,17 @@ def build(embedded: list, host: str, import_budget: float = IMPORT_BUDGET_S, pha
     has_prepare = host != "muse_attention_decode" and any(
         isinstance(n, ast.FunctionDef) and n.name == "prepare" for n in ast.parse(src).body)
     prepare_phase = has_prepare and phase != "import"
-    out = src.rstrip() + "\n\n" + WRAPPER.format(
+    budget = import_budget if not prepare_phase else 300 - MARGIN_S - base_prepare_s
+    batches = plan_batches(embedded, budget)
+    if len(batches) != 1:
+        raise ValueError("batch exceeds declared time/output/risk; split with plan_batches (the CLI does this automatically)")
+    embedded = batches[0]
+    config = dict(host=host, phase='prepare' if prepare_phase else 'import', import_budget=import_budget,
+                  base_sha256=hashlib.sha256(src.encode()).hexdigest(), lab_only=lab_only, base_prepare_s=base_prepare_s)
+    helpers = (REPO / 'tools/lab_packet.py').read_text()
+    out = src.rstrip() + "\n\n_LAB_CONFIG = " + repr(config) + "\n_LAB_RESOURCES = " + repr([resources(e) for e in embedded])
+    out += "\n_lab_packet_ns = {}\nexec(" + repr(helpers) + ", _lab_packet_ns)\n_lab_encode_packet = _lab_packet_ns['encode_packet']\n"
+    out += WRAPPER.format(
         names=", ".join(f"{n} {s}" for n, s, _ in embedded), base=base["job"], payloads=embedded,
         limit=LIMIT, print_line="_lab_output.append(line)" if has_prepare and not prepare_phase else "print(line, flush=True)")
     out += (PREPARE_WRAPPER if prepare_phase else IMPORT_WRAPPER).format(
@@ -317,6 +414,14 @@ def read(ref: str, name: str | None = None):
             sys.exit(f"no receipt for {ref} (still running? `tools/okc_run.py collect {ref}`)")
         p = hits[-1]
     tail = json.loads(p.read_text())["result"].get("log_tail", "")
+    if packets := read_packets(tail):
+        for record in packets:
+            if name is None or record['name'] == name:
+                packet = record['packet']
+                print(f"LAB_BEGIN {record['name']} {record['source_sha256']}")
+                print("\n".join(packet['lines']) if 'lines' in packet else json.dumps(packet, indent=2))
+                print('LAB_END checksum=' + record['checksum'])
+        return
     parts = [m.group(0) for m in re.finditer(r"^LAB_BEGIN (\S+).*?(?:^LAB_END.*?$|\Z)", tail, re.M | re.S)
              if name is None or m.group(1) == name]
     print("\n".join(parts) if parts else f"no LAB_BEGIN{' ' + name if name else ''} in {p} (log_tail {len(tail)} chars):\n{tail[-2000:]}")
@@ -344,9 +449,14 @@ def main():
         s.add_argument("--phase", choices=("auto", "import"), default="auto",
                        help="force import-time labs when payloads own setup; host prepare remains unchanged")
         s.add_argument("--base-file", type=Path, help="explicit screened candidate to validate as the lab host")
+        s.add_argument("--lab-only", action="store_true", help="minimal import-time host; skips the scored host's import/prepare")
+        s.add_argument("--base-prepare", type=float, default=BASE_PREPARE_S, metavar="SECONDS",
+                       help="declared host prepare cost for batch planning (default: 130)")
         if name == "send":
             s.add_argument("--note", required=True)
-            s.add_argument("--priority", type=float, default=1.0)
+            s.add_argument("--priority", type=float, help="legacy override without --lane")
+            s.add_argument("--lane", help="PLAN decision lane, independent of host (P4, P10, ...)")
+            s.add_argument("--decision", default="", help="one-line decision for the ledger")
             s.add_argument("--not-before", help="pass an ISO8601 send-time gate to okc_run; no early judge send")
             s.add_argument("--check", action="store_true", help="reserve scored quota; send only as a check "
                            "(always on muse_decode_layer, whose scored runs carry candidates)")
@@ -360,10 +470,25 @@ def main():
     if args.cmd == "read":
         return read(args.ref, args.name)
     embedded = [embed(p) for p in args.payloads]
+    if not math.isfinite(args.base_prepare) or args.base_prepare < 0:
+        ap.error('--base-prepare must be finite and nonnegative')
+    if args.lab_only and args.base_file:
+        ap.error('--lab-only supplies its own host; omit --base-file')
+    if not args.lab_only and args.base_file is None:
+        args.base_file = REPO / best_source(args.host)['source']
+    has_prepare = (not args.lab_only and args.host != 'muse_attention_decode' and any(
+        isinstance(n, ast.FunctionDef) and n.name == 'prepare' for n in ast.parse(args.base_file.read_text()).body))
+    prepare_phase = has_prepare and args.phase != 'import'
+    budget = 300 - MARGIN_S - args.base_prepare if prepare_phase else args.import_budget
+    batches = plan_batches(embedded, budget)
     if args.cmd == "build":
-        src, base = build(embedded, args.host, args.import_budget, args.phase, args.base_file)
-        args.o.write_text(src)
-        return print(f"{args.o}: {len(src)} bytes, base {base}")
+        for i, batch in enumerate(batches):
+            src, base = build(batch, args.host, args.import_budget, args.phase, args.base_file,
+                              args.lab_only, args.base_prepare)
+            path = args.o if i == 0 else args.o.with_name(args.o.stem + f'.{i+1}' + args.o.suffix)
+            path.write_text(src)
+            print(f"{path}: {len(src)} bytes, base {base}, batch {i+1}/{len(batches)}")
+        return
     left = quota()
     if left and not sum(left.get(args.host, (0, 0))):
         spare = ", ".join(f"{h} {r}+{c}" for h, (r, c) in left.items() if h in HOSTS and r + c)
@@ -371,19 +496,33 @@ def main():
               f"Hosts with scored+check runs left: {spare or 'none'}. A payload that needs only its own "
               f"synthetic data or the MoE experts can go on --host muse_moe_w4a16.", file=sys.stderr)
     note = f"h200_lab {' '.join(map(str, args.payloads))}: {args.note}"
-    # An explicitly scheduled lab must not pull another lane's ready payload
-    # into its delay. Other sends also skip this held entry via its until field.
-    # Import-phase payloads own setup and must not absorb a prepare-phase waiter.
-    embedded, priority, note = (embedded, args.priority, note) if args.not_before or args.phase == "import" else absorb_waiting(args.host, embedded, args.priority, note)
-    src, base = build(embedded, args.host, args.import_budget, args.phase, args.base_file)
-    out = REPO / "problems" / args.host / "lab" / f"lab_{'+'.join(n for n, _, _ in embedded)}.py"
-    out.parent.mkdir(exist_ok=True)
-    out.write_text(src)
-    command=[sys.executable, str(REPO / "tools/okc_run.py"), "send", str(out.relative_to(REPO)),
-             "--priority", str(priority), "--note", note]
-    if args.not_before:command += ["--not-before", args.not_before]
-    if args.check or args.host == "muse_decode_layer":command += ["--check"]
-    subprocess.run(command, cwd=REPO, check=True)
+    from okc_run import queue_metadata
+    metadata = queue_metadata(args.lane, args.decision, note=args.note, priority=args.priority)
+    for batch in batches:
+        priority = metadata['priority']
+        batch_note = note
+        # An explicitly scheduled lab never absorbs a ready lane into its delay.
+        if not args.not_before:
+            probe, _ = build(batch, args.host, args.import_budget, args.phase, args.base_file,
+                             args.lab_only, args.base_prepare)
+            config = next(ast.literal_eval(n.value) for n in ast.parse(probe).body if isinstance(n, ast.Assign)
+                          and any(getattr(t, 'id', None) == '_LAB_CONFIG' for t in n.targets))
+            batch, priority, batch_note = absorb_waiting(args.host, batch, priority, batch_note,
+                                                        budget_s=budget, config=config, lane=metadata["lane"], decision=metadata["decision"])
+        src, base = build(batch, args.host, args.import_budget, args.phase, args.base_file,
+                          args.lab_only, args.base_prepare)
+        out = REPO / "problems" / args.host / "lab" / f"lab_{'+'.join(n for n, _, _ in batch)}.py"
+        out.parent.mkdir(exist_ok=True)
+        out.write_text(src)
+        command=[sys.executable, str(REPO / "tools/okc_run.py"), "send", str(out.relative_to(REPO)),
+                 "--note", batch_note, "--decision", metadata['decision']]
+        if args.lane:command += ["--lane", args.lane]
+        elif args.priority is not None:command += ["--priority", str(priority)]
+        else:command += ["--lane", metadata['lane']]
+        if args.not_before:command += ["--not-before", args.not_before]
+        if args.check or args.lab_only or args.host == "muse_decode_layer":command += ["--check"]
+        subprocess.run(command, cwd=REPO, check=True)
+
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Screen every candidate the judge hasn't measured, in parallel, then send each one that passes.
+"""Screen candidates in parallel and send each pass as soon as its screen finishes.
 
     tools/screen_all.py                       # screen problems/*/cand_*.py not yet sent; report
     tools/screen_all.py --send                # ... and send each pass through tools/okc_run.py
@@ -16,8 +16,7 @@ are left to the lane still writing them.
 An earlier screen of the same source (sha256) that passed everything is reused instead of rerun.
 
 --send queues each pass with `tools/okc_run.py send` (receipts, priority queue, judge cap; a scored
-run while the problem has one left today, else a check, else at the reset). Sends take the problem's
-default priority + 0.5, so lanes' own later sends at the default go first.
+run while the problem has one left today, else a check, else at the reset). Sends carry --lane and --decision, so PLAN ranks the decision independently of its host.
 Results: runs/screen/<utc>/summary.json and one log per candidate.
 """
 
@@ -146,6 +145,8 @@ def main():
     ap.add_argument("--gpu", default="0")
     ap.add_argument("--skip-recent", type=float, default=20, help="minutes")
     ap.add_argument("--send", action="store_true")
+    ap.add_argument("--lane", default="P1", help="PLAN lane served by these screens (default P1)")
+    ap.add_argument("--decision", default="screen unsent candidates", help="one-line decision for the ledger")
     args = ap.parse_args()
 
     files, recent = unsent(args.problems, args.skip_recent)
@@ -158,28 +159,35 @@ def main():
         print(f"{'PASS' if r['ok'] else 'FAIL'} {r['file']} tests {r['tests']} graphs {r['graphs']}"
               f" ({r['minutes']} min){'  ' + r['why'] if not r['ok'] else ''}", flush=True)
 
+    def send_pass(r):
+        if not args.send or not r['ok']:
+            return
+        log = logdir / (Path(r['file']).stem + f".{r['problem']}.send.log")
+        with log.open('w') as out:
+            subprocess.Popen([sys.executable, str(REPO / "tools/okc_run.py"), "send", r['file'],
+                              '--lane', args.lane, '--decision', args.decision,
+                              '--note', f"screen_all {stamp}: local tests {r['tests']} and graphs {r['graphs']} pass"],
+                             cwd=REPO, stdout=out, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
+                             start_new_session=True)
+        r['sent'] = True
+        print(f"queued: {r['file']}", flush=True)
+
     results = []
     with cf.ThreadPoolExecutor(args.jobs) as pool:
-        for r in pool.map(lambda f: screen(f, args.gpu, logdir), files):
+        futures = [pool.submit(screen, f, args.gpu, logdir) for f in files]
+        for future in cf.as_completed(futures):
+            r = future.result()
             report(r)
             results.append(r)
-    # parallel screens share one GPU's memory; a candidate that ran out of it is screened again alone
+            send_pass(r)
+    # Retry memory-contention failures alone. Successful peers have already entered the queue.
     for i, r in enumerate(results):
-        if not r["ok"] and "out of memory" in (REPO / r["log"]).read_text():
+        log = REPO / r['log']
+        if not r['ok'] and log.exists() and 'out of memory' in log.read_text():
             print(f"retry alone (out of memory in parallel): {r['file']}", flush=True)
-            results[i] = screen(REPO / r["file"], args.gpu, logdir)
+            results[i] = screen(REPO / r['file'], args.gpu, logdir)
             report(results[i])
-
-    if args.send:
-        for r in sorted((r for r in results if r["ok"]), key=lambda r: PRIORITY.get(r["problem"], 3)):
-            log = logdir / (Path(r["file"]).stem + f".{r['problem']}.send.log")
-            subprocess.Popen([sys.executable, str(REPO / "tools/okc_run.py"), "send", r["file"],
-                              "--priority", str(PRIORITY.get(r["problem"], 3) + 0.5),
-                              "--note", f"screen_all {stamp}: untested candidate, local tests {r['tests']} and graphs {r['graphs']} pass"],
-                             cwd=REPO, stdout=log.open("w"), stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
-                             start_new_session=True)
-            r["sent"] = True
-            print(f"queued: {r['file']}", flush=True)
+            send_pass(results[i])
 
     (logdir / "summary.json").write_text(json.dumps({"skipped_recent": [str(p.relative_to(REPO)) for p in recent],
                                                      "results": results}, indent=1))

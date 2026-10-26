@@ -4,7 +4,7 @@
     if torch.cuda.get_device_capability(device)!=(9,0):checker['_fa3_scheduler_metadata']=lambda *a,**kw:None
     for spec in S17_NEARBY_CASES:
         label=spec['label'];case={k:v for k,v in spec.items() if k!='label'}
-        if time.monotonic()>deadline-8:failures.append('nearby:'+label+':deadline');break
+        if time.monotonic()>deadline-8:fail('nearby:'+label+':deadline',S17_NEARBY_ARMS);break
         data=graphs=None
         try:
             make=lambda seed:checker['generate_input'](**case,seed=seed,device=device)
@@ -24,9 +24,9 @@
                 try:
                     for name,(graph,output) in graphs.items():
                         graph.replay();graph.replay();torch.cuda.synchronize()
-                        ok,message=checker['check_implementation'](data,checker['collect'](data,output),weights);nearby_task_checks+=1
-                        if not ok:failures.append('nearby:'+label+':'+name+':TASK:'+message)
+                        ok,message=checker['check_implementation'](data,checker['collect'](data,output),weights);nearby_task_checks+=1;arm_status[name]['nearby_task_checks']+=1
+                        if not ok:fail('nearby:'+label+':'+name+':TASK:'+message,[name])
                 finally:checker['ref_front'],checker['ref_back']=ff,bf
                 fc=bc=None
-        except Exception as exc:failures.append('nearby:'+label+':'+type(exc).__name__+':'+str(exc)[:160])
+        except Exception as exc:fail('nearby:'+label+':'+type(exc).__name__+':'+str(exc)[:160],S17_NEARBY_ARMS)
         graphs=data=None;gc.collect();torch.cuda.empty_cache()

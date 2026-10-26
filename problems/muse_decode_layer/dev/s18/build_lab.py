@@ -32,7 +32,7 @@ def main():
  template=template.replace('task_checks=task_checks,agreement_diagnostics=agreements,','task_checks=task_checks,nearby_task_checks=nearby_task_checks,nearby_expected_checks=nearby_expected_checks,agreement_diagnostics=agreements,')
  template=template.replace("result['complete']=not failures","result['complete']=nearby_task_checks==nearby_expected_checks and not failures")
  a=template.index('    def compact(value):');template=template[:a]+'''    import struct
-    names=list(next(iter(loads.values()))['samples'][0]);labels=list(loads)
+    names=[name for name in identities if all(name in row for cell in loads.values() for row in cell['samples'])];labels=list(loads)
     values=[round(row[name]*100000000)-100000000 for label in labels for row in loads[label]['samples'] for name in names]
     result['sample_arms']=names;result['sample_loads']=labels;result['sample_scale']=100000000
     result['sample_i32_b85']=base64.b85encode(struct.pack('<'+'i'*len(values),*values)).decode()
@@ -42,13 +42,12 @@ def main():
         if isinstance(value,dict):return {k:compact(v) for k,v in value.items()}
         if isinstance(value,list):return [compact(v) for v in value]
         return value
-    blob=base64.b85encode(lzma.compress(json.dumps(compact(result),separators=(',',':')).encode())).decode()
-    assert len(blob)<8500,len(blob)
-    return ['META S18 on frozen S17;16 disjoint held-out seeds,fresh weights/router;public TASK all arms;only uncertain piece leaveouts;scored host unchanged timed code',
-            'S18_XZ85 '+blob,'END complete='+str(result['complete'])]
+    packet=dict(kind='S18',identities=identities,seeds=list(AB_SEEDS),paired=compact(result),
+                checks=dict(TASK=task_checks,nearby=nearby_task_checks),complete=result['complete'])
+    return dict(packet=packet,logs=['META S18 native held-out pairs; per-arm TASK; six-load G0'])
 '''
  body+=template;encoded=base64.b85encode(lzma.compress(body.encode(),preset=9)).decode()
- payload='import base64,lzma,linecache,hashlib\n_body=lzma.decompress(base64.b85decode('+repr(encoded)+')).decode()\n'
+ payload='LAB_RESOURCES={"compile_s":245,"run_s":175,"output_bytes":8744,"context_poison":"none"}\nimport base64,lzma,linecache,hashlib\n_body=lzma.decompress(base64.b85decode('+repr(encoded)+')).decode()\n'
  payload+='assert hashlib.sha256(_body.encode()).hexdigest()=='+repr(sha(body))+'\n_f="<s18-lab-'+sha(body)[:12]+'>"\nlinecache.cache[_f]=(len(_body),None,_body.splitlines(True),_f)\nexec(compile(_body,_f,"exec"),globals())\n_run=lab\ndef lab(deadline,weights,state):return _run(deadline,weights,state)\n'
  (H/'generated/payload.py').write_text(payload)
  host=packed+'''

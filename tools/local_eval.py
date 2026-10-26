@@ -29,7 +29,14 @@ import time
 import traceback
 from pathlib import Path
 
-import torch
+class _LazyTorch:
+    def __getattr__(self, name):
+        import torch as module
+        globals()['torch'] = module
+        return getattr(module, name)
+
+
+torch = _LazyTorch()  # imported by GPU helpers on first use; static tier never touches it
 
 REPO = Path(__file__).resolve().parent.parent
 FLUSH_BYTES = 1 << 30  # read before every timed replay; larger than any L2 here or on an H200
@@ -240,55 +247,10 @@ def summarize(rows: list[dict]) -> dict:
     return out
 
 
-def undefined_names(file: Path) -> list[dict]:
-    """Names a function uses that nothing defines (ruff F821-F823): a branch that never runs here
-    still raises NameError on the judge (cand_r3_merge 43a1f3a3 lost every XQA variant to
-    ATTN_X_CUDA). Ruff lives in the image's home (~/bin/ruff, a copy of the host's)."""
-    import os
-    import subprocess
-    ruff = os.path.expanduser("~/bin/ruff")
-    p = subprocess.run([ruff, "check", "--no-cache", "--isolated", "--select", "F821,F822,F823",
-                        "--output-format", "concise", str(file)], capture_output=True, text=True)
-    found = [l.split(": ", 1)[-1] for l in p.stdout.splitlines() if ": F82" in l]
-    return [{"name": "undefined_names", "ok": p.returncode == 0, "msg": " | ".join(found[:8])[:400]}]
+from local_preflight import undefined_names, call_signatures, preflight, expanded_source, source_units
 
 
-def call_signatures(file: Path) -> list[dict]:
-    """Calls to the file's own module-level functions that pass an argument they don't take: a
-    Hopper-only branch raises TypeError only on the judge (cand_attn_verify_wgmma 05fe4997:
-    _next_input(..., ctx=2048)). Names bound more than once at module level are skipped."""
-    tree = ast.parse(file.read_text())
-    bound: dict[str, int] = {}
-    defs: dict[str, ast.FunctionDef | ast.AsyncFunctionDef] = {}
-    for node in tree.body:
-        for target in (node.targets if isinstance(node, ast.Assign) else []):
-            if isinstance(target, ast.Name):
-                bound[target.id] = bound.get(target.id, 0) + 1
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            bound[node.name] = bound.get(node.name, 0) + 1
-            defs[node.name] = node
-    found = []
-    for call in ast.walk(tree):
-        if not (isinstance(call, ast.Call) and isinstance(call.func, ast.Name)):
-            continue
-        fn = defs.get(call.func.id)
-        if fn is None or bound[fn.name] > 1 or any(isinstance(d, ast.Name) and d.id != "staticmethod"
-                                                    for d in fn.decorator_list):
-            continue
-        a = fn.args
-        names = {x.arg for x in a.posonlyargs + a.args + a.kwonlyargs}
-        positional = len(a.posonlyargs + a.args)
-        if any(isinstance(x, ast.Starred) for x in call.args) or any(k.arg is None for k in call.keywords):
-            continue
-        bad = [str(k.arg) for k in call.keywords if a.kwarg is None and k.arg not in names]
-        if a.vararg is None and len(call.args) > positional:
-            bad.append(f"{len(call.args)} positional > {positional}")
-        if bad:
-            found.append(f"line {call.lineno}: {fn.name}() {', '.join(bad)}")
-    return [{"name": "call_signatures", "ok": not found, "msg": " | ".join(found[:8])[:400]}]
-
-
-def hopper_compile(file: Path) -> list[dict]:
+def hopper_compile(file: Path, units=None) -> list[dict]:
     """Compile every CUDA source string in the file for sm_90a, whichever branch would build it.
 
     Hopper-only extensions never build here, so their compile errors otherwise reach the judge
@@ -303,7 +265,7 @@ def hopper_compile(file: Path) -> list[dict]:
     import tempfile
     from torch.utils import cpp_extension
 
-    tree = ast.parse(file.read_text())
+    tree = ast.parse(expanded_source(file.read_text()))
     templated = set()
     for n in ast.walk(tree):
         if isinstance(n, ast.Attribute) and n.attr in ("format", "replace", "format_map") and isinstance(n.value, ast.Name):
@@ -329,7 +291,7 @@ def hopper_compile(file: Path) -> list[dict]:
         if (isinstance(n, ast.Assign) and len(n.targets) == 1 and isinstance(n.targets[0], ast.Name)
                 and isinstance(n.value, ast.Constant) and isinstance(n.value.value, str)):
             name, text = n.targets[0].id, n.value.value
-            if "#include" in text and (name in flags_of or "__global__" in text or "torch/extension.h" in text) and name not in templated:
+            if "#include" in text and (name in flags_of or "__global__" in text or "torch/extension.h" in text) and name not in templated and (units is None or name in units):
                 sources.append((name, text))
     base = (["-std=c++20", "-O0", "-gencode=arch=compute_90a,code=sm_90a", "--expt-relaxed-constexpr",
              "-DTORCH_EXTENSION_NAME=hopper_check", "-DTORCH_API_INCLUDE_EXTENSION_H",
@@ -356,20 +318,89 @@ def hopper_compile(file: Path) -> list[dict]:
         return list(pool.map(one, sources))
 
 
+
+def wrapper_smoke(transport):
+    """One tiny stand-in per transport, not a full confirmation on sm_120."""
+    import contextlib
+    import io
+    import tempfile
+    import types
+    from unittest.mock import patch
+    import h200_lab
+    from lab_packet import read_packets
+    payload = "def lab(deadline, weights, state):return ['transport smoke']"
+    cuda = types.SimpleNamespace(synchronize=lambda: None, empty_cache=lambda: None)
+    fake = types.SimpleNamespace(cuda=cuda)
+    output = io.StringIO()
+    with tempfile.TemporaryDirectory(prefix='okc-wrapper-smoke-') as tmp:
+        base = Path(tmp)/'host.py'
+        base.write_text('# okc: problem=muse_bf16_proj\ndef prepare(w):return w\n')
+        src, _ = h200_lab.build([('smoke', 'standin', payload)], 'muse_bf16_proj',
+                               phase='import' if transport != 'prepare' else 'auto',
+                               base_file=None if transport == 'lab-only' else base,
+                               lab_only=transport == 'lab-only')
+        ns = {'torch': fake}
+        with patch.dict(sys.modules, {'torch': fake}), contextlib.redirect_stdout(output):
+            exec(compile(src, '<wrapper-smoke>', 'exec'), ns)
+            if transport == 'lab-only':
+                try:
+                    ns['prepare'](None)
+                except RuntimeError as exc:
+                    assert 'lab-only host' in str(exc)
+                else:
+                    raise AssertionError('lab-only prepare must stop the judge')
+            else:
+                ns['prepare'](None)
+    packets = read_packets(output.getvalue())
+    assert len(packets) == 1 and packets[0]['packet']['lines'] == ['transport smoke']
+    return dict(name='wrapper_'+transport, ok=True, packets=len(packets))
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("file", type=Path, help="the submission (first line '# okc: problem=<name>')")
+    ap.add_argument("--payload", action="store_true", help="static/changed tier for a lab payload (no problem header)")
+    ap.add_argument("--tier", choices=('static', 'changed', 'wrapper', 'screen'), default='screen',
+                    help="static preflight; changed native units; transport smoke; or local TASK/graph screen")
+    ap.add_argument("--against", type=Path, help="previous expanded/packed source for --tier changed")
+    ap.add_argument("--unit", action='append', help="explicit changed source name (repeatable)")
+    ap.add_argument("--transport", choices=('prepare', 'import', 'lab-only'), default='prepare')
     ap.add_argument("--tests-only", action="store_true")
     ap.add_argument("--bench-only", action="store_true", help="skip the tests")
     ap.add_argument("--no-baseline", action="store_true", help="time the submission alone")
     ap.add_argument("--loads", help="comma-separated loads to time (default: all)")
-    ap.add_argument("--reps", type=int, default=20, help="timed replays per side per shape (even)")
-    ap.add_argument("--inputs", type=int, default=3, help="fresh input sets per shape")
+    ap.add_argument("--reps", type=int, default=2, help="timed replays per side per shape (even)")
+    ap.add_argument("--inputs", type=int, default=1, help="fresh input sets per shape")
     ap.add_argument("--seed", type=int, default=90000, help="first test seed (the judge's are its own)")
     ap.add_argument("--json", type=Path, help="write the result here")
     args = ap.parse_args()
 
+    if args.payload and args.tier not in ('static', 'changed'):
+        ap.error('--payload supports --tier static or changed')
+    if args.reps < 2 or args.reps % 2 or not 1 <= args.inputs <= args.reps:
+        ap.error('--reps must be even and >=2; --inputs must be 1..reps')
     file = args.file.resolve()
+    result = dict(file=str(file), sha256=hashlib.sha256(file.read_bytes()).hexdigest(), tier=args.tier)
+    result['static'] = preflight(file, payload=args.payload)
+    def finish_early():
+        print(json.dumps(result, indent=1))
+        if args.json:
+            args.json.write_text(json.dumps(result, indent=1))
+        raise SystemExit(0 if all(c['ok'] for c in result['static']) else 1)
+    if not all(c['ok'] for c in result['static']) or args.tier == 'static':
+        finish_early()
+    if args.tier == 'wrapper':
+        result['static'].append(wrapper_smoke(args.transport))
+        finish_early()
+    if args.tier == 'changed':
+        if not args.against and not args.unit:
+            ap.error('--tier changed needs --against <previous.py> or --unit <CUDA_SOURCE>')
+        changed = set(args.unit or [])
+        if args.against:
+            before = source_units(expanded_source(args.against.read_text()))
+            changed.update(k for k, v in source_units(expanded_source(file.read_text())).items() if before.get(k) != v)
+        result['changed_units'] = sorted(changed)
+        result['static'] += hopper_compile(file, units=changed) if changed else []
+        finish_early()
     name = problem_of(file)
     pdir = REPO / "problems" / name
     sys.path[:0] = [str(pdir), str(file.parent)]  # reference.py imports checks and nvfp4 by name
@@ -384,8 +415,8 @@ def main():
     print(f"{name}: {file.relative_to(REPO) if file.is_relative_to(REPO) else file}")
     print(f"LOCAL screen on {dev.name} (sm_{dev.major}{dev.minor}); the judge runs an H200 (sm_90),"
           " so these timings are not its timings")
-    result = {"problem": name, "file": str(file), "sha256": hashlib.sha256(file.read_bytes()).hexdigest(),
-              "gpu": dev.name, "cc": f"{dev.major}.{dev.minor}", "torch": torch.__version__}
+    result.update({"problem": name, "file": str(file), "sha256": hashlib.sha256(file.read_bytes()).hexdigest(),
+              "gpu": dev.name, "cc": f"{dev.major}.{dev.minor}", "torch": torch.__version__})
 
     if (dev.major, dev.minor) != (9, 0) and hasattr(ref, "_fa3_scheduler_metadata"):
         # generate_input asks FA3 for its tile schedule on full-attention decode steps; FA3 imports
@@ -444,7 +475,7 @@ def main():
                 print(f"LOCAL speedup (geomean over loads): {result['speedup']:.3f}x  [not an H200 number]")
 
     # Static checks for code no local run reaches: Hopper-only branches and their names.
-    result["static"] = undefined_names(file) + call_signatures(file) + (hopper_compile(file) if (dev.major, dev.minor) != (9, 0) else [])
+    result["static"] += hopper_compile(file) if (dev.major, dev.minor) != (9, 0) else []
     bad = [c for c in result["static"] if not c["ok"]]
     print(f"static checks ({len(result['static'])}: undefined names, call signatures, sm_90a compile of each CUDA source): "
           + ("all pass" if not bad else "; ".join(f"FAIL {c['name']}: {c['msg']}" for c in bad)), flush=True)

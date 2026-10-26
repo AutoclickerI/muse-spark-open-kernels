@@ -65,10 +65,23 @@ def lab(deadline,weights,state):
     device=weights['qkv_gate'].device
     original=base['_S16_LAB_BASE_STATE'];sources={'A':S16_BUNDLE['host']}
     ns={'A':base};states={'A':state};shared={};failures=[];agreements={};task_checks=0
+    identities={'A':hashlib.sha256(S16_BUNDLE['host'].encode()).hexdigest()}
+    identities['A2']=identities['A'];identities.update({n:spec['sha256'] for n,spec in S16_BUNDLE['arms'].items()})
+    arm_status={n:dict(sha256=sha,native=torch.cuda.get_device_capability(device)==(9,0),complete=True,
+                      seed_ids=[],task_checks=0,expected_task_checks=12*len(AB_SEEDS),
+                      nearby_task_checks=0,nearby_expected_checks=len(S17_NEARBY_CASES)*2 if n in S17_NEARBY_ARMS else 0,
+                      failures=[]) for n,sha in identities.items()}
+    def fail(reason,arms=None,scope='arm'):
+        # CUDA device faults can poison the context. No subsequent data from those arms is evidence.
+        if any(word in reason.lower() for word in ('illegal memory','device-side assert','launch failure','misaligned address')):
+            scope='device';arms=list(identities)
+        affected=list(identities) if arms is None else list(arms)
+        failures.append(dict(scope=scope,arms=affected,reason=reason))
+        for n in affected:arm_status[n]['failures'].append(reason);arm_status[n]['complete']=False
     for name,spec in S16_BUNDLE['arms'].items():
         source=s16_source(spec);sources[name]=source
-        v,shared[name]=s16_namespace(name,source,base);ns[name]=v
         try:
+            v,shared[name]=s16_namespace(name,source,base);ns[name]=v
             v['_vq8_module']();v['nf_module']();v['cd_module']()
             v['smallm_module']();v['_glue_cl_ext']();v['partial_port_ext'](False)
             st=s16_copy_state(original)
@@ -80,23 +93,23 @@ def lab(deadline,weights,state):
             if '_r2_prepare' in v:st['r2_rows']=v['_r2_prepare'](device)
             if '_s16_prepare_delta' in v:st=v['_s16_prepare_delta'](weights,st)
             states[name]=st
-        except Exception as exc:failures.append(name+':prepare:'+type(exc).__name__+':'+str(exc)[:100])
+        except Exception as exc:fail(name+':prepare:'+type(exc).__name__+':'+str(exc)[:100],[name])
     generator=_ap_generate_input
     if torch.cuda.get_device_capability(device)!=(9,0):generator=ab_namespace({'_ap_fa3_scheduler_metadata':lambda *a,**kw:None})['_ap_generate_input']
     times={};shapes={}
     for b,q,w in AB_CASES:
         key=(b,q,w);label=ab_label(key)
-        if time.monotonic()>deadline-8:failures.append(label+':deadline');continue
+        if time.monotonic()>deadline-8:fail(label+':deadline',scope='run');continue
         make=lambda seed:generator(batch=b,q_len=q,ctx=80000,layer='sliding' if w else 'full',spread='fixed' if b==1 else 'agentic',dist='soft',page=1,seed=seed,device=device)
         data=make(AB_SEEDS[0]);graphs={};gates={}
         for name,v in dict(A=base,A2=base,**{n:ns[n] for n in states if n!='A'}).items():
             st=state if name=='A2' else states[name]
             try:graphs[name]=ab_graph(lambda v=v,st=st:v['kernel_fn'](data,st))
-            except Exception as exc:gates[name]='capture:'+str(exc)[:100]
-        if 'A' not in graphs:failures.append(label+':host capture');continue
+            except Exception as exc:gates[name]='capture:'+str(exc)[:100];fail(label+':capture:'+str(exc)[:100],[name])
+        if 'A' not in graphs:fail(label+':host capture');continue
         per=[]
         for seed in AB_SEEDS:
-            if time.monotonic()>deadline-4:failures.append(label+':seeds incomplete');break
+            if time.monotonic()>deadline-4:fail(label+':seeds incomplete',scope='run');break
             if seed!=AB_SEEDS[0]:ab_copy(data,make(seed))
             for graph,_ in graphs.values():graph.replay()
             torch.cuda.synchronize()
@@ -113,13 +126,13 @@ def lab(deadline,weights,state):
             try:
                 for name,(_,output) in graphs.items():
                     if name!='A' and (why:=ab_gate(output,graphs['A'][1])):agreements.setdefault(label+':'+name,why)
-                    ok,message=checker['check_implementation'](data,checker['collect'](data,output),weights);task_checks+=1
+                    ok,message=checker['check_implementation'](data,checker['collect'](data,output),weights);task_checks+=1;arm_status[name]['task_checks']+=1
                     if not ok:gates.setdefault(name,'TASK:'+message)
             finally:checker['ref_front']=front_fn;checker['ref_back']=back_fn
             front_cache=back_cache=None
             values=ab_time(graphs,16 if b*q<=8 else 8)
             per.append({name:statistics.mean(v) for name,v in values.items()})
-        if gates:failures.append(label+':'+str(gates))
+        for name,reason in gates.items():fail(label+':'+reason,[name])
         if per:
             times[key]=per;aa=[s['A2']/s['A'] for s in per]
             shapes[label]=dict(n=len(per),aa=[min(aa),max(aa)],r={name:statistics.mean(s[name]/s['A'] for s in per) for name in per[0] if name!='A'})
@@ -130,8 +143,11 @@ def lab(deadline,weights,state):
         pairs=list(zip(times[b,q,2048],times[b,q,0]));aa=[(46*s['A2']+16*f['A2'])/(46*s['A']+16*f['A']) for s,f in pairs]
         # Every paired seed survives. Means/SE/normalized summaries duplicate
         # these samples and can be recomputed by the receipt reader.
-        loads[label]=dict(n=len(pairs),aa=[min(aa),max(aa)],samples=[{name:(46*s[name]+16*f[name])/(46*s['A']+16*f['A']) for name in s} for s,f in pairs])
-    result=dict(host_sha256=hashlib.sha256(S16_BUNDLE['host'].encode()).hexdigest(),shapes=shapes,loads=loads,
+        loads[label]=dict(n=len(pairs),aa=[min(aa),max(aa)],samples=[{name:(46*s[name]+16*f[name])/(46*s['A']+16*f['A']) for name in s if name in f} for s,f in pairs])
+    for name,st in arm_status.items():
+        st['complete']=st['complete'] and st['task_checks']==st['expected_task_checks']
+        st['seed_ids']=list(AB_SEEDS) if st['complete'] else []
+    result=dict(arm_status=arm_status,host_sha256=hashlib.sha256(S16_BUNDLE['host'].encode()).hexdigest(),shapes=shapes,loads=loads,
                 failures=failures,shared_jit=shared,seeds=len(AB_SEEDS),seed_ids=list(AB_SEEDS),task_checks=task_checks,agreement_diagnostics=agreements,
                 checker_sha256=hashlib.sha256(S16_CHECKER.encode()).hexdigest(),elapsed=time.monotonic()-started,left=deadline-time.monotonic())
     result['complete']=not failures and len(shapes)==12 and len(loads)==6 and task_checks==12*16*(len(S16_BUNDLE['arms'])+2) and all(s['n']==16 and len(s['r'])==len(S16_BUNDLE['arms'])+1 for s in shapes.values())

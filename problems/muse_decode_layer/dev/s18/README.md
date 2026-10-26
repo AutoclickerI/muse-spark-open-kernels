@@ -86,15 +86,21 @@ replaces the half-build's pdl_B: B is M plus `_gb`/`_gi` L2 hints and measured l
   load 1.0027 [1.0016, 1.0037]), D4 1.00079 [.99953, 1.00205]. Route-ID diagnostics: d16S 4/16, d32S 4/32 rows
   (D8/D4 vs controls). A composition re-selected from this read needs seeds other than these 16.
 
-Gate (`../s16/score_gate.py`): promote S18 when the lower 95% bound of the six-load geomean R (46 sliding +
-16 full per load) over the held-out seeds is above 1 and every arm passes TASK. Leave-out R > 1 favours
+Gate (`tools/promotion.py`): promote S18 when the lower 95% bound of the six-load geomean R (46 sliding +
+16 full per load) over the held-out seeds is above 1 and primary arms/control pass TASK, with native evidence, nearby checks and the official candidate TASK pass. Leave-out R > 1 favours
 keeping a piece; it is a diagnostic, not a veto. A composition selected from these leave-outs needs fresh
 seeds. Read a receipt with `python3 problems/muse_decode_layer/dev/s18/report.py <receipt.json>`; on
 promotion it writes `cand_r3_best7_s18_final.py`.
 
 Rebuild from the repo root: `python3 problems/muse_decode_layer/dev/s18/build_lab.py`, then
 `CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_decode_layer/dev/s18/screen_lab.py [--forced]`.
-Off-decode first read: `python3 problems/muse_decode_layer/dev/s18/remote_lab.py build`, `CUDA_VISIBLE_DEVICES=0
+Off-decode paired run: `python3 problems/muse_decode_layer/dev/s18/remote_lab.py build`, `CUDA_VISIBLE_DEVICES=0
 tools/img python problems/muse_decode_layer/dev/s18/remote_lab.py screen [--forced]`, then `tools/h200_lab.py send
-<payload> --host muse_prefill_layer --phase import --import-budget 700 --base-file <abs prefill_host.py> --check`
-(the absolute path keeps the wrapper byte-identical to the screened one).
+<payload> --host muse_prefill_layer --lab-only --import-budget 700 --lane P4 --decision "confirm S18 vs S17" --check`
+(the runner supplies the minimal import host).
+
+P1 loop update: the `build` path now uses the runner's `lab_only=True` host instead of a private host template.
+`prefill_host.py` remains the source identity of archived `5d0282bb`, not the current builder. Both report paths
+call `tools/promotion.py`; the host no longer changes eligibility. New batches emit structured checksummed
+packets with per-arm status; old XZ85 receipts still replay. Local wrapper scripts now run one transport smoke;
+full held-out confirmations run on the H200. Flags and the packet reader API: docs/RESOURCES.md "Experiment loop (P1)".

@@ -20,7 +20,7 @@ rest. Running `collect` in the background is also the way to wait for results.
 
 The judge starts our team's runs one at a time (FINDINGS, "Judge queue"), so at most OKC_INFLIGHT
 (default 4) of our runs sit at the judge; further sends wait here in runs/waiting/ and go in
-priority order (PRIORITY; --priority overrides), woken by the judge finishing our oldest run or by
+priority order (--lane from PLAN Ranked work; legacy --priority without a lane), woken by the judge finishing our oldest run or by
 another waiter leaving. OKC_INFLIGHT=0 sends at once.
 
 The mode is chosen when the run goes out: a scored run while the problem has one left today
@@ -55,9 +55,28 @@ WAITING = REPO / "runs" / "waiting"
 SENT = REPO / "runs" / "sent"  # each send's source as queued: okc reads the file it is given at send time
 LOCK = REPO / "runs" / ".dispatch.lock"
 CAP = int(os.environ.get("OKC_INFLIGHT", "4"))  # our runs at the judge at once; 0 sends at once
-# Lower goes first. The order is docs/PLAN.md "Ranked work" (overall-board weight, FINDINGS "Boards").
-PRIORITY = {"muse_decode_layer": 0, "muse_moe_w4a16": 1, "muse_prefill_layer": 1, "muse_attention_decode": 2,
-            "muse_bf16_proj": 3}
+PLAN = REPO / 'docs/PLAN.md'
+# Retained for callers enumerating problem names. Hosts do not determine queue rank.
+PRIORITY = dict.fromkeys(('muse_decode_layer', 'muse_moe_w4a16', 'muse_prefill_layer',
+                          'muse_attention_decode', 'muse_bf16_proj'), 2)
+
+
+def ranked_lanes():
+    section = PLAN.read_text().split('## Ranked work', 1)[1].split('\n## ', 1)[0]
+    return {lane: int(rank) for rank, lane in re.findall(r'^\|\s*(\d+)\s*\|\s*(P\w+)\s*\|', section, re.M)}
+
+
+def queue_metadata(lane=None, decision='', *, note='', priority=None):
+    explicit_lane = lane is not None
+    lane = lane or 'P1'
+    ranks = ranked_lanes()
+    if lane not in ranks:
+        raise ValueError(f'{lane}: no such lane in PLAN Ranked work; choose '+', '.join(ranks))
+    decision = ' '.join((decision or note or 'unspecified decision (legacy caller)').split())
+    return dict(lane=lane, decision=decision, priority=ranks[lane] if explicit_lane or priority is None else priority,
+                priority_override=not explicit_lane and priority is not None)
+
+
 JOB_KEYS = ("job_id", "job", "id")
 OKC_MODE = {"check": "check", "submit": "run"}  # our mode -> okc's job mode
 
@@ -160,7 +179,9 @@ def entries() -> list:
 
 def waiters() -> list:
     """Sends waiting for a slot as (priority, time, path), best first; those held until the reset are out."""
-    return sorted((w["priority"], w["t"], p) for p, w in entries() if w.get("until", 0) <= time.time())
+    ranks = ranked_lanes()
+    return sorted((ranks.get(w.get('lane'), w['priority']) if not w.get('priority_override') else w['priority'],
+                   w['t'], p) for p, w in entries() if w.get('until', 0) <= time.time())
 
 
 CHANGED = threading.Event()  # the oldest run in flight finished, or a waiter left the queue
@@ -340,6 +361,8 @@ def supersede(file: str):
 
 
 def send(args):
+    metadata = queue_metadata(getattr(args, 'lane', None), getattr(args, 'decision', ''),
+                              note=args.note, priority=args.priority)
     src = args.file.read_bytes()
     if hits := rejected_words(src.decode(errors="replace")):
         sys.exit(f"{args.file}: the judge rejects these words before running, even in comments; reword them:\n  "
@@ -363,7 +386,7 @@ def send(args):
     snap = SENT / sha[:16] / args.file.name
     snap.parent.mkdir(parents=True, exist_ok=True)
     snap.write_bytes(src)
-    priority = args.priority if args.priority is not None else PRIORITY.get(problem, 3)
+    priority = metadata["priority"]
     rel = os.path.relpath(args.file.resolve(), REPO)
     supersede(rel)
 
@@ -394,7 +417,7 @@ def send(args):
             # file's job (cand_v11_gemm took cand_expert_tma_cluster's d318167e, FINDINGS "Failures").
             job = pick(result, *JOB_KEYS) if isinstance(result, dict) else None
             if job:
-                start_receipt(problem, mode, job, src, args.file, args.note, stamp, snapshot=str(snap.relative_to(REPO)))
+                start_receipt(problem, mode, job, src, args.file, args.note, stamp, snapshot=str(snap.relative_to(REPO)), **metadata)
                 return mode, job
             # `okc problems` lags the cap, which counts runs not yet queued: a 429 here means this mode is spent
             if "daily cap" not in proc.stdout + proc.stderr:
@@ -403,7 +426,7 @@ def send(args):
         return None
 
     mode, job = send_in_turn({"problem": problem, "file": rel, "sha256": sha, "note": args.note,
-                             "not_before": getattr(args, "not_before", None) or 0},
+                             "not_before": getattr(args, "not_before", None) or 0, **metadata},
                              priority, send, mode_now)
     print(f"okc {mode} {problem} {args.file}: job {job} accepted; waiting for the result "
           f"(if this process dies, `tools/okc_run.py collect {job}` finishes the receipt)", flush=True)
@@ -457,7 +480,9 @@ def main():
     p.add_argument("--force", action="store_true", help="send source the ledger already has")
     p.add_argument("--scored", action="store_true", help="only as a scored run: wait for the reset if none is left today")
     p.add_argument("--check", action="store_true", help="only as a check, preserving scored quota")
-    p.add_argument("--priority", type=float, help="queue order, lower first (default: by problem)")
+    p.add_argument("--priority", type=float, help="legacy numeric override when --lane is omitted; --lane uses PLAN rank")
+    p.add_argument("--lane", help="decision's lane (P4, P10, P3a, ...); priority is its current PLAN rank")
+    p.add_argument("--decision", default="", help="one-line decision this run will settle; recorded in ledger")
     p.add_argument("--not-before", type=parse_not_before, help="hold this snapshot until an ISO8601 timestamp with timezone")
     p.set_defaults(run=send)
     p = sub.add_parser("collect", help="finish pending receipts (all of them if no job is named)")

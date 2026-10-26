@@ -1,40 +1,10 @@
-"""Exercise the exact S18 import wrapper and every leave-out arm locally."""
-import importlib.util,json,sys,time,types
+"""One import transport smoke. Full held-out confirmation runs only on the H200."""
+import argparse,json,sys
 from pathlib import Path
-H=Path(__file__).resolve().parent;R=H.parents[3]
-sys.path[:0]=[str(R/'tools'),str(H.parent/'s16')]
-import local_eval
-sp=importlib.util.spec_from_file_location('s18_screen',H/'screen.py');screen=importlib.util.module_from_spec(sp);sp.loader.exec_module(screen)
-sp=importlib.util.spec_from_file_location('s18_report',H/'report.py');report=importlib.util.module_from_spec(sp);sp.loader.exec_module(report)
-forced='--forced' in sys.argv;original=local_eval.load_module;lines=[]
-manifest=json.loads((H/'manifest.json').read_text())
+R=Path(__file__).resolve().parents[4];sys.path.insert(0,str(R/'tools'))
+from local_eval import wrapper_smoke
 
-
-def loader(name,path):
-    if name!='submission':return original(name,path)
-    m=types.ModuleType(name);m.__file__=str(path);sys.modules[name]=m
-    def install():
-        screen.install(m,forced);m.S16_LOCAL_INSTALL=lambda v:screen.install(v,forced)
-        run=m._lab_run_one
-        def checked(name,source,deadline,weights,state):
-            out=run(name,source,time.monotonic()+1800,weights,state);lines.extend(out);return out
-        m._lab_run_one=checked
-    m._S17_LOCAL_INSTALL=install
-    source=path.read_text();marker='\n_lab_import_start = ';assert source.count(marker)==1
-    exec(compile(source.replace(marker,'\n_S17_LOCAL_INSTALL()'+marker,1),str(path),'exec'),m.__dict__)
-    return m
-
-
-local_eval.load_module=loader
-mode='forced' if forced else 'normal';out=H/'generated'/('lab_'+mode+'_local.json')
-sys.argv=['local_eval.py',str(R/manifest['wrapper']),'--tests-only','--json',str(out)]
-try:local_eval.main()
-except SystemExit as exc:
-    if exc.code==0:
-        import base64,lzma
-        blob=[l.split(' ',1)[1] for l in lines if l.startswith('S18_XZ85 ')];assert len(blob)==1,lines[-3:]
-        result=report.decode(json.loads(lzma.decompress(base64.b85decode(blob[0]))))
-        result['local_wrapper_sha256']=manifest['wrapper_sha256']
-        (H/'generated'/('lab_'+mode+'_validation.json')).write_text(json.dumps(result,indent=2)+'\n')
-        assert result['complete'] and not result['failures'],result['failures']
-    raise
+if __name__=='__main__':
+    ap=argparse.ArgumentParser();ap.add_argument('--forced',action='store_true');args=ap.parse_args()
+    result=wrapper_smoke('import');result['forced_flag']=args.forced
+    print(json.dumps(result))
