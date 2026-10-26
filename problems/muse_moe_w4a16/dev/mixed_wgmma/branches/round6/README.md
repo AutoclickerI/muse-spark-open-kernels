@@ -1,7 +1,7 @@
 # P3b native repair and bounded-token reuse
 
 Payload **bd2192e2**, CUDA **8c476193**, built by `build.py` onto S14 **f1c77ce6**'s nf cell.
-No production patch or native performance claim. Target whole MoE132.6/158.5us at M128/256.
+Point gains are handed to P4 through../s15_review/P4_HANDOFF.json. Target whole MoE132.6/158.5us at M128/256.
 
 The original CTA2/S3 numerical gates passed, but WG0 could copy shared X after retiring only
 its own WGMMA reader. WG1 had no joined retirement frontier. The old checker assumed that
@@ -98,5 +98,25 @@ The generated host file is ignored; builder reproduces it from the archiveddd539
 
 Rebuild: `CUDA_VISIBLE_DEVICES=0 python3 .../round6/build.py`. Local checks: `check.py`,
 `protocol_check.py`, `audit.py` and `entry_check.py`; official adapters use `tools/local_eval.py`.
-Send only through h200_lab; the queue already contains this exact payload. Next: read its
-native gates, actual resources and S14 pairs before changing the production nf cell.
+Send only through h200_lab; the queue already contains this exact payload. Native gates and paired results are complete below; P4 confirms the whole-layer score.
+
+## R6 landed and point nominations
+
+Receipt **b433947196f94ef4**,24 seeds x3/M, allTASK gates pass, worst L2/row .004134/.004756.
+S14 controls185.92/257.34us; A:A signed/absolute/max−.159/.429/1.712us.
+
+| Arm | us M128 / M256 | Paired/S14 | Decision |
+|---|---|---|---|
+|SAFE_CTA2S3|225.82/298.24|1.2196/1.1629|Measured loss after retirement repair.|
+|SAFE_STATIC|283.39/374.43|1.5266/1.4609|Measured loss; native N16 now passes.|
+|SAFE_QUEUE|287.13/377.93|1.5463/1.4749|Measured loss for this queue schedule.|
+|SAFE_QUEUE_S3|233.21/318.63|1.2587/1.2428|Measured loss despite deeper ring.|
+|CHUNK64 S3|188.35/242.40|1.0165/.9448|NominateM256 point gain.|
+|CHUNK64 S4|181.55/233.26|.9791/.9083|NominatebothM point gains.|
+
+Native128regs,76800/102400 dynamic bytes,2CTAs/SM confirmed. Original SE was not retained;
+mean/range cannot recover it. All three point pieces go toP4 without a per-load/A:A veto.
+The S15 follow-up retains independent seed means/SE. Root-applicable patches with successful
+normal/forced whole-layer screens are in../s15_review/P4_HANDOFF.json. Earlier qualified
+round2-5 primary S14 means are all>1, so no older A:A-vetoed point winner changes verdict.
+Corrected tail losses close those implementations, not every expert-major scheduler.

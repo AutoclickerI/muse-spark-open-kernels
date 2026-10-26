@@ -573,6 +573,217 @@
       "Fully hidden warp-specialized heavy stage/decode/epilogue plus a 4us tail",
       "Converting scheduled byte reduction linearly to whole-MoE speedup"
     ],
-    "next": "R6 repairs shared-X retirement and native N16, and tests bounded64-token chunks at two CTA/SM without decoded-A smem publication."
+    "next": "P4 per-shape chunk composition and held-out six-load R. These independent packet and capped-readiness recipes are measured losses; retain other encoding/publication designs as open questions."
+  },
+  "round6": {
+    "job": "b433947196f94ef4",
+    "seeds": 24,
+    "AA_us": {
+      "signed_mean": -0.159,
+      "absolute_mean": 0.429,
+      "max_absolute": 1.712
+    },
+    "comparisons": [
+      {
+        "m": 128,
+        "arm": "S14",
+        "observed_us": 185.92,
+        "observed_ratio": 1.0,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "SAFE_CTA2S3",
+        "observed_us": 225.82,
+        "observed_ratio": 1.2196,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "SAFE_STATIC",
+        "observed_us": 283.39,
+        "observed_ratio": 1.5266,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "SAFE_QUEUE",
+        "observed_us": 287.13,
+        "observed_ratio": 1.5463,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "SAFE_QUEUE_S3",
+        "observed_us": 233.21,
+        "observed_ratio": 1.2587,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "CHUNK64_S3_2CTA",
+        "observed_us": 188.35,
+        "observed_ratio": 1.0165,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "CHUNK64_S4_2CTA",
+        "observed_us": 181.55,
+        "observed_ratio": 0.9791,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "S14",
+        "observed_us": 257.34,
+        "observed_ratio": 1.0,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "SAFE_CTA2S3",
+        "observed_us": 298.24,
+        "observed_ratio": 1.1629,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "SAFE_STATIC",
+        "observed_us": 374.43,
+        "observed_ratio": 1.4609,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "SAFE_QUEUE",
+        "observed_us": 377.93,
+        "observed_ratio": 1.4749,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "SAFE_QUEUE_S3",
+        "observed_us": 318.63,
+        "observed_ratio": 1.2428,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "CHUNK64_S3_2CTA",
+        "observed_us": 242.4,
+        "observed_ratio": 0.9448,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "CHUNK64_S4_2CTA",
+        "observed_us": 233.26,
+        "observed_ratio": 0.9083,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      }
+    ],
+    "rule": "Nominate CHUNK4 at128/256 andCHUNK3 at256 point gains, without A:A veto. Corrected full-width/static/queue recipes now have measured losses.",
+    "SE": "Not retained in original summary; fresh S15 lab retains seed means.",
+    "model": "Observed S4 181.55/233.26us; do not infer causal factors from net .9791/.9083 recipe effect."
+  },
+  "s15_confirmation": {
+    "job": "7e38226389a848eb",
+    "source": "s15_review/results.json",
+    "seeds": 24,
+    "CHUNK4": [
+      {
+        "ratio": 0.9974995,
+        "SE": 0.009853968090593492
+      },
+      {
+        "ratio": 0.9096805833333333,
+        "SE": 0.007857511047066404
+      }
+    ],
+    "PACK5": [
+      1.1689321666666668,
+      1.2602865833333334
+    ],
+    "READY": [
+      1.0747082083333332,
+      1.074582375
+    ],
+    "READY_SERIAL": [
+      1.0397737083333334,
+      1.15551975
+    ],
+    "mechanism": "PACK5 retains4CTA occupancy: its added timed code/metadata cost dominates4.058percent byte saving. Capped readiness regains part of the serial grid penalty atM256 but loses toS15; no general readiness closure.",
+    "decision": "All three chunk point pieces toP4, including small uncertainM128 gain; original stage forecast not reused."
   }
 }

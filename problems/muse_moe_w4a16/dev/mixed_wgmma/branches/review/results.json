@@ -1274,6 +1274,437 @@
     "payload_sha256_prefix": "bd2192e2928ec700",
     "job": "b433947196f94ef4",
     "receipt": "runs/muse_moe_w4a16/20261026T024455Z_submit_b433947196f94ef4.json",
-    "state": "at_judge"
+    "state": "measured",
+    "host_status": "ok",
+    "decoded": {
+      "valid": true,
+      "reason": "complete paired lab, all gates pass",
+      "rows": [
+        {
+          "m": 128,
+          "arm": "S14",
+          "n": 72,
+          "us": 185.92,
+          "pairS14": 1.0,
+          "pairCTA2": 0.8231,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.0,
+            1.0
+          ],
+          "gate": true,
+          "line": "M128 S14 n=72 us=185.92 pairS14=1.0000 pairCTA2=0.8231 lo/hi=1.000/1.000 L2/row=0.004134/0.004709 TASK=PASS"
+        },
+        {
+          "m": 128,
+          "arm": "SAFE_CTA2S3",
+          "n": 72,
+          "us": 225.82,
+          "pairS14": 1.2196,
+          "pairCTA2": 1.0,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.069,
+            1.423
+          ],
+          "gate": true,
+          "line": "M128 SAFE_CTA2S3 n=72 us=225.82 pairS14=1.2196 pairCTA2=1.0000 lo/hi=1.069/1.423 L2/row=0.004134/0.004709 TASK=PASS"
+        },
+        {
+          "m": 128,
+          "arm": "SAFE_STATIC",
+          "n": 72,
+          "us": 283.39,
+          "pairS14": 1.5266,
+          "pairCTA2": 1.2543,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.226,
+            1.837
+          ],
+          "gate": true,
+          "line": "M128 SAFE_STATIC n=72 us=283.39 pairS14=1.5266 pairCTA2=1.2543 lo/hi=1.226/1.837 L2/row=0.004134/0.004709 TASK=PASS"
+        },
+        {
+          "m": 128,
+          "arm": "SAFE_QUEUE",
+          "n": 72,
+          "us": 287.13,
+          "pairS14": 1.5463,
+          "pairCTA2": 1.2702,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.263,
+            1.861
+          ],
+          "gate": true,
+          "line": "M128 SAFE_QUEUE n=72 us=287.13 pairS14=1.5463 pairCTA2=1.2702 lo/hi=1.263/1.861 L2/row=0.004134/0.004709 TASK=PASS"
+        },
+        {
+          "m": 128,
+          "arm": "SAFE_QUEUE_S3",
+          "n": 72,
+          "us": 233.21,
+          "pairS14": 1.2587,
+          "pairCTA2": 1.0325,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.1,
+            1.411
+          ],
+          "gate": true,
+          "line": "M128 SAFE_QUEUE_S3 n=72 us=233.21 pairS14=1.2587 pairCTA2=1.0325 lo/hi=1.100/1.411 L2/row=0.004134/0.004709 TASK=PASS"
+        },
+        {
+          "m": 128,
+          "arm": "CHUNK64_S3_2CTA",
+          "n": 72,
+          "us": 188.35,
+          "pairS14": 1.0165,
+          "pairCTA2": 0.8339,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            0.915,
+            1.175
+          ],
+          "gate": true,
+          "line": "M128 CHUNK64_S3_2CTA n=72 us=188.35 pairS14=1.0165 pairCTA2=0.8339 lo/hi=0.915/1.175 L2/row=0.004134/0.004709 TASK=PASS"
+        },
+        {
+          "m": 128,
+          "arm": "CHUNK64_S4_2CTA",
+          "n": 72,
+          "us": 181.55,
+          "pairS14": 0.9791,
+          "pairCTA2": 0.8036,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            0.891,
+            1.099
+          ],
+          "gate": true,
+          "line": "M128 CHUNK64_S4_2CTA n=72 us=181.55 pairS14=0.9791 pairCTA2=0.8036 lo/hi=0.891/1.099 L2/row=0.004134/0.004709 TASK=PASS"
+        },
+        {
+          "m": 256,
+          "arm": "S14",
+          "n": 72,
+          "us": 257.34,
+          "pairS14": 1.0,
+          "pairCTA2": 0.8619,
+          "L2": 0.004123,
+          "row": 0.004756,
+          "spread": [
+            1.0,
+            1.0
+          ],
+          "gate": true,
+          "line": "M256 S14 n=72 us=257.34 pairS14=1.0000 pairCTA2=0.8619 lo/hi=1.000/1.000 L2/row=0.004123/0.004756 TASK=PASS"
+        },
+        {
+          "m": 256,
+          "arm": "SAFE_CTA2S3",
+          "n": 72,
+          "us": 298.24,
+          "pairS14": 1.1629,
+          "pairCTA2": 1.0,
+          "L2": 0.004123,
+          "row": 0.004756,
+          "spread": [
+            1.039,
+            1.313
+          ],
+          "gate": true,
+          "line": "M256 SAFE_CTA2S3 n=72 us=298.24 pairS14=1.1629 pairCTA2=1.0000 lo/hi=1.039/1.313 L2/row=0.004123/0.004756 TASK=PASS"
+        },
+        {
+          "m": 256,
+          "arm": "SAFE_STATIC",
+          "n": 72,
+          "us": 374.43,
+          "pairS14": 1.4609,
+          "pairCTA2": 1.2554,
+          "L2": 0.004123,
+          "row": 0.004756,
+          "spread": [
+            1.198,
+            1.918
+          ],
+          "gate": true,
+          "line": "M256 SAFE_STATIC n=72 us=374.43 pairS14=1.4609 pairCTA2=1.2554 lo/hi=1.198/1.918 L2/row=0.004123/0.004756 TASK=PASS"
+        },
+        {
+          "m": 256,
+          "arm": "SAFE_QUEUE",
+          "n": 72,
+          "us": 377.93,
+          "pairS14": 1.4749,
+          "pairCTA2": 1.2679,
+          "L2": 0.004123,
+          "row": 0.004756,
+          "spread": [
+            1.216,
+            1.935
+          ],
+          "gate": true,
+          "line": "M256 SAFE_QUEUE n=72 us=377.93 pairS14=1.4749 pairCTA2=1.2679 lo/hi=1.216/1.935 L2/row=0.004123/0.004756 TASK=PASS"
+        },
+        {
+          "m": 256,
+          "arm": "SAFE_QUEUE_S3",
+          "n": 72,
+          "us": 318.63,
+          "pairS14": 1.2428,
+          "pairCTA2": 1.0683,
+          "L2": 0.004123,
+          "row": 0.004756,
+          "spread": [
+            1.084,
+            1.435
+          ],
+          "gate": true,
+          "line": "M256 SAFE_QUEUE_S3 n=72 us=318.63 pairS14=1.2428 pairCTA2=1.0683 lo/hi=1.084/1.435 L2/row=0.004123/0.004756 TASK=PASS"
+        },
+        {
+          "m": 256,
+          "arm": "CHUNK64_S3_2CTA",
+          "n": 72,
+          "us": 242.4,
+          "pairS14": 0.9448,
+          "pairCTA2": 0.8132,
+          "L2": 0.004123,
+          "row": 0.004756,
+          "spread": [
+            0.855,
+            1.081
+          ],
+          "gate": true,
+          "line": "M256 CHUNK64_S3_2CTA n=72 us=242.40 pairS14=0.9448 pairCTA2=0.8132 lo/hi=0.855/1.081 L2/row=0.004123/0.004756 TASK=PASS"
+        },
+        {
+          "m": 256,
+          "arm": "CHUNK64_S4_2CTA",
+          "n": 72,
+          "us": 233.26,
+          "pairS14": 0.9083,
+          "pairCTA2": 0.7832,
+          "L2": 0.004123,
+          "row": 0.004756,
+          "spread": [
+            0.814,
+            1.007
+          ],
+          "gate": true,
+          "line": "M256 CHUNK64_S4_2CTA n=72 us=233.26 pairS14=0.9083 pairCTA2=0.7832 lo/hi=0.814/1.007 L2/row=0.004123/0.004756 TASK=PASS"
+        }
+      ],
+      "AA_us": {
+        "signed_mean": -0.159,
+        "absolute_mean": 0.429,
+        "max_absolute": 1.712
+      },
+      "seeds": 24,
+      "lab_seconds": 59.7,
+      "errors": [],
+      "lines": [
+        "META shared-X retirement repair: both consumer WGs join after wait1 before copy reuse, plus S1 join after wait0. S14 and safeCTA2S3 direct controls vs safecompact STATIC/QUEUE/S3 and fixed64-token chunk S3/S4 with128-register two-CTA targets. No extra activation pack, cluster or producer role. Cold read ABBAx8, all TASK gates.",
+        "M128 S14 n=72 us=185.92 pairS14=1.0000 pairCTA2=0.8231 lo/hi=1.000/1.000 L2/row=0.004134/0.004709 TASK=PASS",
+        "M128 SAFE_CTA2S3 n=72 us=225.82 pairS14=1.2196 pairCTA2=1.0000 lo/hi=1.069/1.423 L2/row=0.004134/0.004709 TASK=PASS",
+        "M128 SAFE_STATIC n=72 us=283.39 pairS14=1.5266 pairCTA2=1.2543 lo/hi=1.226/1.837 L2/row=0.004134/0.004709 TASK=PASS",
+        "M128 SAFE_QUEUE n=72 us=287.13 pairS14=1.5463 pairCTA2=1.2702 lo/hi=1.263/1.861 L2/row=0.004134/0.004709 TASK=PASS",
+        "M128 SAFE_QUEUE_S3 n=72 us=233.21 pairS14=1.2587 pairCTA2=1.0325 lo/hi=1.100/1.411 L2/row=0.004134/0.004709 TASK=PASS",
+        "M128 CHUNK64_S3_2CTA n=72 us=188.35 pairS14=1.0165 pairCTA2=0.8339 lo/hi=0.915/1.175 L2/row=0.004134/0.004709 TASK=PASS",
+        "M128 CHUNK64_S4_2CTA n=72 us=181.55 pairS14=0.9791 pairCTA2=0.8036 lo/hi=0.891/1.099 L2/row=0.004134/0.004709 TASK=PASS",
+        "M256 S14 n=72 us=257.34 pairS14=1.0000 pairCTA2=0.8619 lo/hi=1.000/1.000 L2/row=0.004123/0.004756 TASK=PASS",
+        "M256 SAFE_CTA2S3 n=72 us=298.24 pairS14=1.1629 pairCTA2=1.0000 lo/hi=1.039/1.313 L2/row=0.004123/0.004756 TASK=PASS",
+        "M256 SAFE_STATIC n=72 us=374.43 pairS14=1.4609 pairCTA2=1.2554 lo/hi=1.198/1.918 L2/row=0.004123/0.004756 TASK=PASS",
+        "M256 SAFE_QUEUE n=72 us=377.93 pairS14=1.4749 pairCTA2=1.2679 lo/hi=1.216/1.935 L2/row=0.004123/0.004756 TASK=PASS",
+        "M256 SAFE_QUEUE_S3 n=72 us=318.63 pairS14=1.2428 pairCTA2=1.0683 lo/hi=1.084/1.435 L2/row=0.004123/0.004756 TASK=PASS",
+        "M256 CHUNK64_S3_2CTA n=72 us=242.40 pairS14=0.9448 pairCTA2=0.8132 lo/hi=0.855/1.081 L2/row=0.004123/0.004756 TASK=PASS",
+        "M256 CHUNK64_S4_2CTA n=72 us=233.26 pairS14=0.9083 pairCTA2=0.7832 lo/hi=0.814/1.007 L2/row=0.004123/0.004756 TASK=PASS",
+        "CH_RES [(3, 0, [128, 8, 0, 76800, 2]), (3, 1, [128, 8, 0, 76800, 2]), (4, 0, [128, 8, 0, 102400, 2]), (4, 1, [128, 0, 0, 102400, 2])]",
+        "AA signed/abs/max=-0.159/0.429/1.712",
+        "END seeds=24 used=59.7 left=83.6"
+      ],
+      "wrapper_end": " lab_s=66.4 import_s=66.4",
+      "unproven_arms": []
+    },
+    "comparisons": [
+      {
+        "m": 128,
+        "arm": "S14",
+        "observed_us": 185.92,
+        "observed_ratio": 1.0,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "SAFE_CTA2S3",
+        "observed_us": 225.82,
+        "observed_ratio": 1.2196,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "SAFE_STATIC",
+        "observed_us": 283.39,
+        "observed_ratio": 1.5266,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "SAFE_QUEUE",
+        "observed_us": 287.13,
+        "observed_ratio": 1.5463,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "SAFE_QUEUE_S3",
+        "observed_us": 233.21,
+        "observed_ratio": 1.2587,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "CHUNK64_S3_2CTA",
+        "observed_us": 188.35,
+        "observed_ratio": 1.0165,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "CHUNK64_S4_2CTA",
+        "observed_us": 181.55,
+        "observed_ratio": 0.9791,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "S14",
+        "observed_us": 257.34,
+        "observed_ratio": 1.0,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "SAFE_CTA2S3",
+        "observed_us": 298.24,
+        "observed_ratio": 1.1629,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "SAFE_STATIC",
+        "observed_us": 374.43,
+        "observed_ratio": 1.4609,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "SAFE_QUEUE",
+        "observed_us": 377.93,
+        "observed_ratio": 1.4749,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "SAFE_QUEUE_S3",
+        "observed_us": 318.63,
+        "observed_ratio": 1.2428,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "CHUNK64_S3_2CTA",
+        "observed_us": 242.4,
+        "observed_ratio": 0.9448,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "CHUNK64_S4_2CTA",
+        "observed_us": 233.26,
+        "observed_ratio": 0.9083,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      }
+    ]
   }
 }

@@ -610,7 +610,28 @@ PERMW only for byte coding and reconstructs it in timed decode. Its full80530636
 and100663296 scale bytes prove exact,4.05816% net saving. Native PACK5 stage image188→309.75
 instructions includes alternative raw/compressed paths; zero spills,103/104regs. P3a's fresh
 PACK5 losses are an adverse prior, not proof of this different heavy path. The two-base37→406
-recipe is dropped. New arms remain unmeasured until their own receipt.
+recipe is dropped. Their S15 paired receipt is recorded below.
+
+P3b isolated S15 confirmation `7e38226389a848eb` (24 fresh independent weight seeds,3fixtures/seed/M):
+
+| Recipe | M128 ratio ±SE / M256 ratio ±SE | Mechanism | Leaves open | Receipt |
+|---|---|---|---|---|
+| CHUNK64 S3 on exact S15 NF |1.032764±.007501 / **.946036±.013047**|Native2CTAs/SM; valid N32/N64; nominateM256 point piece|P4's held-out six-load composition, layer overlap differs from component|`7e38226389a848eb`|
+| CHUNK64 S4 on exact S15 NF |**.997500±.009854 / .909681±.007858**|175.862/219.844us vs176.552/241.940; native2CTAs/SM; nominatebothM despiteM128 uncertainty|P4 score gate; freshM128 gain is.25%, smaller than R6 discovery2.1%|`7e38226389a848eb`|
+| Exact heavy PACK5 |1.168932±.006967 /1.260287±.006467|4.05816% fewer exact bytes but added timed scale unpack/metadata; native4CTAs/SM retained,104/103regs,no spills; loss is not an occupancy drop|Cheaper exact coding; net test does not isolate decode from metadata cost|`7e38226389a848eb`|
+| Matched sequential W2-grid control |1.039774±.009193 /1.155520±.013055|Same S15 kernels, W2 grid limited toSM count; exposes capacity cost|An uncapped readiness design preserving memory-level parallelism|`7e38226389a848eb`|
+| Own token-block READY versus S15 |1.074708±.006290 /1.074582±.005278|Correct per-block publications/acquires; Kloop unchanged, native4CTA resource admission but capped consumer grid; net loss|Readiness without this grid cost; same-seed normalized READY/serial contrast~1.0349/.9324 is exploratory, not separately timed ABBA|`7e38226389a848eb`|
+
+AllTASK gates pass, worst L2/row .004128/.004955. A:A signed/absolute/max on24 seed means
+(each averages3fixture pairs) is+.100/.253/1.653us atM128,−.098/.306/.874 atM256; max here is
+not a max over individual fixtures. Ratio SE is across independent weight seeds. Binary
+transport retains all seed means, no dropped lines. S4/M128 remains nominated even inside
+A:A/SE uncertainty; no older round2-5 qualified point winner was excluded. P4 gets all3
+eligible arm/shape pieces with actualSE and exact root-applicable patches in
+`branches/s15_review/P4_HANDOFF.json`, then confirms held-out six-load R. Neither packet
+nor capped-readiness losses close their general families. Normal/forced whole-layer screens
+all10pass (13TASK,12shapes,26static),684 captured checks are bit-equal toS15 across57 cases,
+9raw-scale graphs pass, and7458 timed-decoder packed/raw groups preserve all u8 scale codes.
 
 ## Attention
 

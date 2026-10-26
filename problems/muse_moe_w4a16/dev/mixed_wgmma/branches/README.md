@@ -38,7 +38,7 @@ Base source: [S14 final](../../../../muse_decode_layer/cand_r3_best7_s14_final.p
 Current receipts and decisions are in [review/README.md](review/README.md), with exact raw
 pairs in [review/results.json](review/results.json) and the forecast audit in
 [review/recalibrated.json](review/recalibrated.json). Targets132.6/158.5us remain unmet.
-No new production patch or P4 nomination.
+R6 point gains are handed to P4; targets remain unmet.
 
 | Batch | Receipt | Result M128 / M256, candidate/S14 |
 |---|---|---|
@@ -52,11 +52,20 @@ Model: DIRECT calibration survives within.6%; byte-proportional TRANS128 and ful
 warp-stage residual do not. Original model files preserve predictions. No causal decode,
 launch, tail or overlap partition follows from the isolated phases or different input means.
 
-[Round6](round6/README.md) is the applied follow-up: payload **bd2192e2**, CUDA **8c476193**.
-It repairs all-consumer shared-X retirement and native N16, and packs safe CTA2S3/static/queue/
-queueS3 with CHUNK64 S3/S4 at two-CTA resource admission. Six official forced screens,1729
-captured checks and1380 source-coupled protocol checks pass. Sender **50c82e7edb5e83aa**, job **b433947196f94ef4**, is on the MoE host. Current metadata
-is in round6/queue.json. Its first oversized wrapper was rejected before a job; retry uses the
-H200-passed round2 host prefix and a275130-byte wrapper, same experimental payload.
-Next: read R6, require all native gates and adequate A:A before interpreting any pairs; validated
-point improvements by shape go to P4 with uncertainty for whole-layer six-load verification.
+[Round6](round6/README.md) **b433947196f94ef4**, payloadbd2192e2/CUDA8c476193, is complete:
+CHUNK4 **.9791/.9083**, CHUNK3 **1.0165/.9448**;24seeds x3/M, allTASK gates pass, actual2CTAs/SM.
+Corrected full-widthS3/static/queue/S3 forms lose. All three eligible arm/shape point pieces
+are in [P4_HANDOFF](s15_review/P4_HANDOFF.json), with exact S15-applicable patches and normal/
+forced whole-layer screens. The original SE is unavailable, not inferred from a min/max range.
+
+[S15 review](s15_review/README.md) builds independent PACK5, token-block readiness and matched
+sequential-grid controls, plus both chunk rebases. The next payload retains seed means/SE and
+bounded fixed-width A:A data. [ATTRIBUTION](s15_review/ATTRIBUTION.md) reconciles phase clocks,
+logical bytes, actual broad dependency and the unmeasured wait/epilogue cycle split. P4's held-out six-load R confirms production promotion.
+
+S15 confirmation **7e38226389a848eb** is complete: CHUNK4 .9974995/.9096806 withSE .009854/
+.007858 across24fresh seeds, CHUNK3/M256 .9460363(SE.013047). All point pieces go toP4.
+PACK5 loses1.168932/1.260287, READY1.074708/1.074582; matched serial grid1.039774/1.155520.
+Native S15/PACK5/READY resource admission4CTAs/SM, chunks2; allTASK gates pass. The strong
+M256 chunk gain repeats; M128's fresh expected gain is smaller and uncertain. Current evidence,
+source-applicable patches and seed means are in[s15_review](s15_review/README.md).

@@ -4,7 +4,7 @@
 [results.json](results.json) contains the raw paired receipt rows and per-arm qualification;
 [recalibrated.json](recalibrated.json) compares the original forecasts and current evidence.
 `receipt_index.json` preserves exact accepted jobs without depending on ledger recency.
-All five batches are terminal. No new arm is nominated to P4.
+All six batches are terminal. R6 has three eligible arm/shape point nominations to P4.
 
 | Batch / receipt | Primary S14 paired ratios, M128 / M256 | A:A signed / absolute / max us | Decision |
 |---|---|---|---|
@@ -62,3 +62,30 @@ lab output and spending one slot. R5 senderf0c92b1867e9aa50 was sent on the stag
 R6's first wrapperf8009c7cc24c5abe was rejected422 (>1MB), before any job. Its retry uses only
 the H200-passed round2 MoE host prefix and a checked275130-byte wrapper; payload is unchanged.
 See round6/queue.json for the actual retry sender and job. No accepted run was duplicated.
+
+## R6 landed and point nominations
+
+Receipt **b433947196f94ef4**,24 seeds x3/M, allTASK gates pass, worst L2/row .004134/.004756.
+S14 controls185.92/257.34us; A:A signed/absolute/max−.159/.429/1.712us.
+
+| Arm | us M128 / M256 | Paired/S14 | Decision |
+|---|---|---|---|
+|SAFE_CTA2S3|225.82/298.24|1.2196/1.1629|Measured loss after retirement repair.|
+|SAFE_STATIC|283.39/374.43|1.5266/1.4609|Measured loss; native N16 now passes.|
+|SAFE_QUEUE|287.13/377.93|1.5463/1.4749|Measured loss for this queue schedule.|
+|SAFE_QUEUE_S3|233.21/318.63|1.2587/1.2428|Measured loss despite deeper ring.|
+|CHUNK64 S3|188.35/242.40|1.0165/.9448|NominateM256 point gain.|
+|CHUNK64 S4|181.55/233.26|.9791/.9083|NominatebothM point gains.|
+
+Native128regs,76800/102400 dynamic bytes,2CTAs/SM confirmed. Original SE was not retained;
+mean/range cannot recover it. All three point pieces go toP4 without a per-load/A:A veto.
+The S15 follow-up retains independent seed means/SE. Root-applicable patches with successful
+normal/forced whole-layer screens are in../s15_review/P4_HANDOFF.json. Earlier qualified
+round2-5 primary S14 means are all>1, so no older A:A-vetoed point winner changes verdict.
+Corrected tail losses close those implementations, not every expert-major scheduler.
+
+Fresh S15 confirmation **7e38226389a848eb** supplies actualSE: S4/M128 .9974995(SE.009854),
+S3/M256 .9460363(.013047), S4/M256 .9096806(.007858),24fresh seeds each. All point pieces
+remain handed toP4. PACK5, cappedREADY and matched serial grid all lose versusS15; exact
+ratios, SE and source/resource checks are ins15_review/results.json andP4_HANDOFF.json.
+M128 discovery gain is revised downward on fresh evidence; no A:A veto is introduced.
