@@ -863,6 +863,47 @@ Live designs: `problems/muse_attention_decode/dev/cluster_sliding/`,
 Ratios are candidate/control time; SE is across paired seeds. Every measured
 per-shape point ratio below1 is handed to P4, including estimates inside A:A
 spread. [Complete point handoff](../problems/muse_attention_decode/dev/sliding_round2/point_handoff.json)
+### P3b activation-mechanism oracle (2026-10-26)
+
+`3330edc297f044f0`:one cheap MoE lab-only import,16 fresh seeds x3fixtures/M,
+native60.0s. All9 math arms pass TASK before/after,maxL2/row .004138/.004756.
+A:A signed/absolute/max seed-mean us−.043/.542/1.547(M128),−.274/.571/3.611(M256).
+Packet checksum/seed archive retained in `branches/mechanism/results.json`.
+
+S18 atomic routing changes slot order across calls. All arms therefore use one
+current-fixture route outside timing,identical metadata copied to each. PRE also
+moves current-input gathering outside timing and is never a candidate. BASE
+176.426/231.016us is core+finish,not full MoE. Native resources confirm2CTAs;
+PACK3/EARLY3 both Q3/X4,93184B,128/123regs;DUP pair both102400B+1024B,128/126regs.
+
+| Oracle contrast | M128 ratio [95% CI] | M256 ratio [95% CI] | Mechanism / decision | Leaves open | Receipt |
+|---|---|---|---|---|---|
+|PREPACK/PACK|0.919125 [0.913731,0.924518]|0.938771 [0.932476,0.945067]|Remove current-fixture gather;about15us saved. Free gather is only .995668/.991693 of BASE.|Production zero-cost gathering is not implemented.|`3330edc297f044f0`|
+|EARLY3/PACK3|1.001377 [0.999731,1.003024]|1.003610 [1.001865,1.005354]|X issued one KT128 earlier,same bytes/grid/indexing/footprint. No latency-hiding gain.|Other pipeline schedules;not a general latency bound.|`3330edc297f044f0`|
+|DUPCTA/DUPSYNC|0.884004 [0.856472,0.911537]|0.816633 [0.794178,0.839088]|Same private unicast copies and2CTA cluster grid;local instead of cluster sync. Large recovery of added overhead.|Correct multicast still requires peer readiness/retirement;BASE never paid this cost.|`3330edc297f044f0`|
+|MC2/DUPSYNC|0.999803 [0.997956,1.001651]|0.998526 [0.995800,1.001252]|Same sync/grid/math;multicast halves L2-side requests with no material net gain.|Byte benefit cancelled by delivery costs cannot be excluded;no HBM counter.|`3330edc297f044f0`|
+|PREMC2/MC2|0.933568 [0.928091,0.939045]|0.952658 [0.946219,0.959097]|Remove gather from same multicast path;14us-scale recovery still leavesPREMC2 1.159/1.244 of BASE.|PRE is an excluded-work oracle,not a candidate.|`3330edc297f044f0`|
+
+Literal MC2 with only__syncthreads is incorrect:one CTA cannot prove peer full-barrier
+arming or prior-reader retirement. It was not sent. DUP own-destination controls
+are correct and distinguish synchronization from the net multicast/request effect.
+The prior +39/+100us X−W term changed8KiB activation versus36KiB weight work-item
+granularity,loop/address issue and cache order;it was mixed attribution,not a
+bandwidth tax. Measured new-path costs are gather and synchronization;one-stage
+X lookahead gives no support. No universal zero-byte-cost claim follows.
+
+All timed-gather arms lose BASE;PRE arms cannot promote. Free-gatherPACK .995668
+[.992942,.998394]/.991693[.985817,.997570] yields only+0.21% six-load even if MoE
+were100% of both verify layers;optimistic CI endpoint size illustration+0.36%,not
+joint confidence or measured layer R. A >1% six-load case needs at least2.94%
+reduction at each of the two affected loads even at that maximal stage share.
+Combining gather-free MC2 with measured private-copy sync removal predicts still
+1.024/1.016 versus BASE;interaction-dependent model,not an MC2-local measurement.
+
+No new build or P4 nomination. Propose parking P3b by current measured decision
+value pending fresh re-rank/new mechanism;the theoretical31% gap ceiling is not
+closed. Handoff and every seed/CI/control: `branches/mechanism/P4_HANDOFF.json`.
+
 records all42 winning arm cells (duplicates/controls included), one incremental
 history nomination, actual seed IDs and all controls. Stage-only/older-base
 results retain their scope; missing replay correctness or a failed experimental

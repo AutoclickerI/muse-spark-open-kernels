@@ -1,0 +1,20 @@
+{
+  "payload_sha256": "37901b75f395dcbe647c7db4614d80e9ccaa3ab4b3bb0497dac60e6f312cfa83",
+  "TASK_checks": 360,
+  "cases": 20,
+  "maxL2_row": [
+    0.004140651784837246,
+    0.0046003167517483234
+  ],
+  "bit_equal": {
+    "PACK": 20,
+    "PREPACK": 20,
+    "PACK3": 20,
+    "EARLY3": 20,
+    "MC2": 20,
+    "PREMC2": 20,
+    "DUPSYNC": 20,
+    "DUPCTA": 20
+  },
+  "standin": "sm120 executes existing mma.sync; cluster ranks load independent private stages, same indexing/math. Native TMA/unicast protocol requires H200. All PRE buffers poisoned then freshly gathered outside capture on each changed fixture."
+}

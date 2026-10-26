@@ -1,8 +1,12 @@
 # branches
 
-Current work: [activation reuse on S18](actreuse/README.md), including output-panel
-multicast and four output tiles per CTA. Complete `4e1926c6`: all six native arms lose despite2CTA admission and lower counted requests; no P4 nomination. Prior [count routing and matched stream attribution](balance/README.md) was
-paired against S15 and CHUNK4. Complete `b5c4d99e`: all-light transfers and one-path lose; B4/M128 point .998493 vs CH4 goes to P4 with CI [.986834,1.010153]. The matched oracle identifies activation-request/service costs; [handoff](balance/P4_HANDOFF.json). Earlier cluster/direct-copy receipts remain below.
+Current result: [mechanism oracle on S18](mechanism/README.md), **3330edc297f044f0**.
+Gather and cluster synchronization explain the tested activation-path losses;
+one-stage lookahead and halved requests give no useful gain. No new P4 nominees.
+Parking is proposed by size (+0.21% optimistic free-gather score illustration),
+not as a permanent restriction. Earlier B4/M128 remains P4's decision.
+Previous [activation reuse](actreuse/README.md) and [count-routing](balance/README.md)
+retain exact receipts, sizes and qualified negative results.
 
 Files (one entry per retained direct file):
 

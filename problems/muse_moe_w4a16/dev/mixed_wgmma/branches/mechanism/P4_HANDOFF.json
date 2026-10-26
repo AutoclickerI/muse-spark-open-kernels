@@ -1,0 +1,16 @@
+{
+  "job": "3330edc297f044f0",
+  "receipt": "runs/muse_moe_w4a16/20261026T072147Z_check_3330edc297f044f0.json",
+  "nominations": [],
+  "keep": "Current incumbent at M128/256; earlier B4 decision remains P4",
+  "reason": "All arms freeze current-fixture routing outside timing. PREPACK/PREMC2 additionally exclude input-dependent gather and can never be candidates; all timed-gather probes lose BASE. No new production build or patch.",
+  "size_case": {
+    "free_gather_PACK_point_ceiling_R": 1.0021160179547668,
+    "optimistic_CI_endpoint_R": 1.0035676135886753,
+    "assumption": "Onlyverify16/32 change; assume MoE equals the entire layer at each, all other stages free. Actual score transfer is smaller. CI endpoint calculation is an optimistic size illustration, not joint95confidence.",
+    "required_equal_MoE_reduction_for_R101_even_at_full_layer_share": 0.02940985207235569,
+    "decision": "Propose parking P3b by current measured decision value; no supported >1pct six-load next build. Theoretical31pct gap ceiling is not disproven."
+  },
+  "source_manifest": "problems/muse_moe_w4a16/dev/mixed_wgmma/branches/mechanism/manifest.json",
+  "evidence": "problems/muse_moe_w4a16/dev/mixed_wgmma/branches/mechanism/results.json"
+}

@@ -1,0 +1,102 @@
+{
+  "cuda_sha256": "df119e8b0c9542cfc00660cd2c52396a7a8ca5a80cbd7ff4e9ad6024936f2064",
+  "resources": [
+    {
+      "name": "'_ZN5probe6kernelILi3ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_' for 'sm_90a'",
+      "kind": 3,
+      "first": false,
+      "registers": 128,
+      "stack_spills": [
+        0,
+        0,
+        0
+      ],
+      "dynamic_shared": 102400
+    },
+    {
+      "name": "'_ZN5probe6kernelILi3ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_' for 'sm_90a'",
+      "kind": 3,
+      "first": true,
+      "registers": 126,
+      "stack_spills": [
+        0,
+        0,
+        0
+      ],
+      "dynamic_shared": 102400
+    },
+    {
+      "name": "'_ZN5probe6kernelILi2ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_' for 'sm_90a'",
+      "kind": 2,
+      "first": false,
+      "registers": 128,
+      "stack_spills": [
+        0,
+        0,
+        0
+      ],
+      "dynamic_shared": 102400
+    },
+    {
+      "name": "'_ZN5probe6kernelILi2ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_' for 'sm_90a'",
+      "kind": 2,
+      "first": true,
+      "registers": 126,
+      "stack_spills": [
+        0,
+        0,
+        0
+      ],
+      "dynamic_shared": 102400
+    },
+    {
+      "name": "'_ZN5probe6kernelILi1ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_' for 'sm_90a'",
+      "kind": 1,
+      "first": false,
+      "registers": 128,
+      "stack_spills": [
+        0,
+        0,
+        0
+      ],
+      "dynamic_shared": 93184
+    },
+    {
+      "name": "'_ZN5probe6kernelILi1ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_' for 'sm_90a'",
+      "kind": 1,
+      "first": true,
+      "registers": 123,
+      "stack_spills": [
+        0,
+        0,
+        0
+      ],
+      "dynamic_shared": 93184
+    },
+    {
+      "name": "'_ZN5probe6kernelILi0ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_' for 'sm_90a'",
+      "kind": 0,
+      "first": false,
+      "registers": 128,
+      "stack_spills": [
+        0,
+        0,
+        0
+      ],
+      "dynamic_shared": 93184
+    },
+    {
+      "name": "'_ZN5probe6kernelILi0ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_' for 'sm_90a'",
+      "kind": 0,
+      "first": true,
+      "registers": 123,
+      "stack_spills": [
+        0,
+        0,
+        0
+      ],
+      "dynamic_shared": 93184
+    }
+  ],
+  "unsafe_literal_MC2_local": "Not built: peer arming/retirement needs inter-CTA synchronization. DUP controls own their destinations, keeping grid/bytes fixed between sync variants."
+}

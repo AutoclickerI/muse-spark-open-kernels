@@ -1,0 +1,88 @@
+{
+ "board": "muse_moe_w4a16",
+ "call_id": "kc-3330edc297f044f0",
+ "cluster": "sfo3",
+ "content_hash": "fbb781b16ec627fdee183796dd74b1312babb55a52f42e09a71fd0efe7baba6f",
+ "created_at": 1792999310.0764663,
+ "dedicated": false,
+ "duplicate_of": null,
+ "finished_at": 1792999425.1160343,
+ "id": "3330edc297f044f0",
+ "mode": "check",
+ "output": {
+  "log": "/home/jihoon/competitions/muse_kernel/runs/sent/0b61b0f45d63b7e0/profiles/lab_mechanism_payload.3330edc297f044f0.log"
+ },
+ "payload_ref": "muse_moe_w4a16/fbb781b16ec627fdee183796dd74b1312babb55a52f42e09a71fd0efe7baba6f.py",
+ "result": {
+  "checks": {
+   "flagged": [],
+   "ok": true,
+   "rejected": []
+  },
+  "error": null,
+  "evaluator": {
+   "code_sha256": "afcead6a6ff090aa50fe9bc907f0fa8f4ba73d95fa92af93ec260b5e8ff00f00",
+   "files": {
+    "challenge/checks.py": "9a046c3c38db28b325dcd1557baecdf6bc9ef941d2175f9a900ba4c230bb8055",
+    "challenge/nvfp4.py": "cfdf37c7bc14b10f7353aba7d4632f4767401b92b4b073941a8030d9a961aaaf",
+    "configs/muse-spark-open.yaml": "98f07230e4e64fe91b7c76d9a3ce04948053c043d494d5f1fae56cfe2de033af",
+    "harness/eval.py": "0051a1bfac67a9f1fad06086b306653c6643b2bb253e15a794aa672312f070a9",
+    "harness/runner.py": "c905e5c80264c6d27620b6fc7d55b162dccdb8ed7282f8a513a4d2e6f2f226f2",
+    "harness/static_checks.py": "c5588b69e9e86229459a525c61b30096f6f13ff2add6cadf98f272c4ac8ca0c2",
+    "harness/worker.py": "950437610f57ddffbc1176b65d9c2ae909c47bf67b1e3fe0716a81946986f568",
+    "problems/muse_moe_w4a16/baseline.py": "4fc48bd9cdfd749863c93a2dbf4e556e0c38fb04acc4fa48a53ef34cbf6c92a1",
+    "problems/muse_moe_w4a16/reference.py": "a7e0b4fa86aa477a4e7bb5745b2b258954d72636b6da153bd239a717927cba44",
+    "problems/muse_moe_w4a16/task.yml": "cc6870087c1a115e69f40093478553e0a03c1b3e92f527c2e55c4115e2db42ad"
+   },
+   "image": "localhost:30500/kc/judge@sha256:9a7f287b80d772c6f636bbcb57422c619fe326e2aabc53803b85007bca93f68e"
+  },
+  "flags": [],
+  "gpu": "H200",
+  "log_tail": "LAB_BEGIN mechanism_payload 37901b75f395dcbe\nMETA diagnostic only:route frozen outside timing for all arms (atomic slots);all share current-fixture metadata.PREPACK/PREMC2 gather outside timing, cold flush before every replay, never nominatable. BASE=S18 95df42fe; PACK=current gather. PACK3/EARLY3 same Q3/93184B footprint, X earlier by one KT128 only. DUPSYNC/DUPCTA same2CTA cluster grid,private unicast copies,cluster vs local sync. MC2/DUPSYNC isolates multicast with sync fixed; unsafe literal MC2-local excluded.\nM128 BASE n=16 ratio=1.000000 SE=0.000000 us=176.426 TASK=PASS\nM128 PACK n=16 ratio=1.083757 SE=0.002151 us=191.198 TASK=PASS\nM128 PREPACK n=16 ratio=0.995668 SE=0.001279 us=175.728 TASK=PASS\nM128 PACK3 n=16 ratio=1.112921 SE=0.005569 us=195.943 TASK=PASS\nM128 EARLY3 n=16 ratio=1.113815 SE=0.005914 us=196.055 TASK=PASS\nM128 MC2 n=16 ratio=1.239631 SE=0.018765 us=218.064 TASK=PASS\nM128 PREMC2 n=16 ratio=1.158755 SE=0.017143 us=203.903 TASK=PASS\nM128 DUPSYNC n=16 ratio=1.241036 SE=0.018863 us=217.992 TASK=PASS\nM128 DUPCTA n=16 ratio=1.092219 SE=0.003150 us=192.253 TASK=PASS\nPAIR M128 PREPACK/PACK ratio=0.919125 SE=0.002530\nPAIR M128 EARLY3/PACK3 ratio=1.001377 SE=0.000773\nPAIR M128 DUPCTA/DUPSYNC ratio=0.884004 SE=0.012917\nPAIR M128 MC2/DUPSYNC ratio=0.999803 SE=0.000867\nPAIR M128 PREMC2/MC2 ratio=0.933568 SE=0.002570\nAA M128 signed/abs/max_us=-0.043/0.542/1.547\nM256 BASE n=16 ratio=1.000000 SE=0.000000 us=231.016 TASK=PASS\nM256 PACK n=16 ratio=1.057373 SE=0.003913 us=243.893 TASK=PASS\nM256 PREPACK n=16 ratio=0.991693 SE=0.002757 us=228.982 TASK=PASS\nM256 PACK3 n=16 ratio=1.082425 SE=0.003484 us=249.015 TASK=PASS\nM256 EARLY3 n=16 ratio=1.082649 SE=0.003769 us=249.890 TASK=PASS\nM256 MC2 n=16 ratio=1.305853 SE=0.016828 us=301.149 TASK=PASS\nM256 PREMC2 n=16 ratio=1.244052 SE=0.015948 us=286.971 TASK=PASS\nM256 DUPSYNC n=16 ratio=1.306595 SE=0.016619 us=301.306 TASK=PASS\nM256 DUPCTA n=16 ratio=1.063402 SE=0.003184 us=245.459 TASK=PASS\nPAIR M256 PREPACK/PACK ratio=0.938771 SE=0.002954\nPAIR M256 EARLY3/PACK3 ratio=1.003610 SE=0.000818\nPAIR M256 DUPCTA/DUPSYNC ratio=0.816633 SE=0.010535\nPAIR M256 MC2/DUPSYNC ratio=0.998526 SE=0.001279\nPAIR M256 PREMC2/MC2 ratio=0.952658 SE=0.003021\nAA M256 signed/abs/max_us=-0.274/0.571/3.611\nRES {'PACK3': [[128, 0, 0, 93184, 2], [123, 0, 0, 93184, 2]], 'EARLY3': [[128, 0, 0, 93184, 2], [123, 0, 0, 93184, 2]], 'DUPSYNC': [[128, 0, 1024, 102400, 2], [126, 0, 1024, 102400, 2]], 'DUPCTA': [[128, 0, 1024, 102400, 2], [126, 0, 1024, 102400, 2]]}\nGATE L2/row=0.004138/0.004756 END seeds=16 seconds=60.0\nLAB_PACKET mechanism_payload 37901b75f395dcbe a5edfde35b3aa14d44f5458ac6edfdb6dd95cb8e01d027e69e644b84c651e9c8 c-oy=33sB(*8M9QhvyIz=HWWe5l3*g`>Kd22!b*Qj=%jYv6Jp}^49v+%gPE{sI&K}GgOu2{3Phxohn-5(?6Q6s?Sd=-PrQh(?3tDxaNgpLX|bqe0qL*T>ts;)GYV%zNO5sHQlsi!KZ8L@gGCCEz!3!^pmLh05;{N=(FUltgU^3(Z{Q*k2kiaFTz{;7Fe08Zkf^K{k|#jhUgP)!w@wqv65ZO2A{X0#V>h_f9Y`LPQF-w1=nT~@vV7F5{<t!o_&I@E`2N2HYMLe1d5_hJc!28XNWtMKR)}k`$wM!v^7AwP{kKtA>S>hyD;UW@#P9bR$|h37fS!~<d@QmcN2Xr=efoh^_l!u^s(qGjlvXG0CUr=ogr)1vv1@Rc|(<f%HjxuBKqn*7@@rIy!cA}PIufYzJhBJgzwIR+<^c*wt&gnkeAPZ=)i+8+L|ozrUmA-lST9Seayl1sk*>}fE_jA#Rr1%`is^lo4N`tP2bj5t%tEATaq`@2O=silYrIaSE5gq0T&<v=7|TL=mLeMxO@RwZr)wK2gawRVZvwdmaM1Y7s&hZfp|gh*f!HJNxWbP;p^qQ^>ioS?Y<M-BlZ^og_1b=PJqBT>=DrL3rthr5Il1JCkOOG(>Os;?;J2f(hn!_7ZRbqcLM$F1q>rJ0>3lhIPqYh@fR9HzcTzv`Ck+$1>+wSG>knch!?>3mEvBppX?EoCeU{mV2UL0yFCI^FA#x!8;CCyFiw&9y9+Q01J~~q5c)zx-^}8@Mn1cN!4OJ(xIqyQ4wwW{M!w~^SL^4L(g*_6?~y=Z{81A$@`B)>-RR_NobS)PzIw_1$SWuV<RhfO82V)M$inL*oxckbM#+zQf=CkmWb^R%qdnf0C<=oh?0wb<4U?a&{_LpVMMqO0s_#M+LH<3VyVX5M9~LNz|1MJmC-2kA=O5!ud98`dSAJo>Zh3bG0+s-yF!U9A!7=0&27m7YO#~<Y-))GX;0gR!8{P@NX+xYu$&cBfH2g?AhQ3fV`VGPNZ3q+e2M2O*>pKTRz0ef$y%Xr)ivfcDPB@BD*ux7NOauSQ@Ld}M3Ih9GeB`5(?-UdbeWm!)Lnwq(`1>Saf&!@l_9z6p3($TSh_9WDVGxeIQ{Xh_Q6LoYLX+@Uif`Kxg$SJfXk~(c>3284lW#e`wjqIH5c0bX--C(2U^x9v8~%~kzuFL`Nb+NGL}(oQWb<Fz5GCN>1xdlwC!7D)hG3@XNAMvW#Xnhn--Z;95Pz=ye^2O38-nrpM;oGG&-vAc_wnDhAwpvJHYDL!^o4-$!@K2jsp~uceA2*vZT<wOpPx_nuKfA*{PXD^i3fN@^W!G!p+~$t2;6!f_zr)~?;V3E{e1ct;2kd;p3sl4y!R15J`w*?^KQSh{7LRT_#)}u{lgdU`tMy`1IjP~z~c}IJ^{Exk^7;+Qo)f*1Lr>NNAuYf#pSaXX_I~ybj>ork;BBF^LY?U<k>dqe?98^0nTFq%dXOB<Jau0yS4F4_PWf(Lsm&NSL6N4J&5%@HS-gbSObIgoy%vZ)4-YREAv8!v)7nya&9AVZk>DD*zCUDX0C^(83;MXHYfBvm#R6mo2wJDeeAyV3ABrH`(!&<2`5Hc(i5NV$rZemZuSPl_1rQzN`(_mvP~a)yPb@kY<sR_gUPMas*xMT+~JEXPHz+XlEsr6qm**hKwi4e^KmYf@lcxcYh<+8jNQl+&CZ>!6m7Q8CI!Vhx9I3#vP8W;?xiB0IFG=M*$zDyx3k(j6X=KhqTh(QOhTIqy|>&9U4|C9&T6-Gh*8Fn*Qdzfmd}McN5ss>Doma&1;^5crqwv)A>QD|u*Ig_i+$w6HO@L$Z;4dtI*H^IxQ>vg)xMdU3;Bn5c^d0CQ0L6g%T)USA3NeIOk6vOh%_0H?xxrf!h=L(Jj&z>yUNy|sI(NZykA8*`6}F^2fh|ALWPCPPZu5v296yvRfZCw1sRcGNF|F#jy7#3zI5CW*G4DJVW=5cc;ZWI;>>4<MkZ0G=Z##q<zl1c+1}O`w?b*0W2WtfN}M^J9kr#70#4}xb$iRFOXKc7xm=gC#h`S)B^W3(7<-75!cc1*8Wf0SB){eS?R=P4Tg#B44$uKdt#fKenoP2+C;nFBTqlI2ik6!fj0q&JqbcTODg6!7-1jRTY@Wyrx)F2F6f>iE!dOtXlXF_d_=Xjia;t#K8?1QTu~wq%p}r0$S-T#$lp~e)&o&Z0E=G5uK{UDx&h3J{U8iSsV2^p?seUdLN3UsIAB2;7T~E}rVG3Ub@{m&tW;8U|Ewoujt(KOy%p|q*fp_1uYoJo!mWkzUfhN&aX;1(KJ;6MbolGRZTh98S#3r60K%Cuvg6IpE+!@t6<n~;jWsH4m=!r+1dd>(mE=5>qp(xfCg-qBC2x~=13@*KvaSq=?(PItE(IM0j@HZzHW~{5dZWx*Bde#`Q;bLiCjV4x?m51sknVxThE4>{IoNA->YDtEVQM#_U%@uVPQ_ZQ9FVKYKiKE$5_{?XZdUC>Kt~;^^?`!eKh^}QvP=8y|BW1kRV(?WvI!4E{1*saaG7{j)z+ZKBE#oKARS|al)s2|+5ZV|oooOY=xd^vlQLF4|t^7s8cd5p%O$2Imv6R=f;`&i=7go%cNjz57Eu;!Tz0S~>RNf+^f(?&T=F#a09m5DKiD;HPS1)6sQNx;M4343jH%62goe>Ae7#$5)>mG``eCF!6k);S0y&|mXnE{(Qy|tBrbhFAqep2@53shwCnEADi+fX;P9!5vO!K4>$R6|*K97q+L%&Al8&lGrK9<n36W#1;jEf#9R$<Sb&i?42~8SOQ7vsB0$J4Zz}9*Pl6dIuJ~f#kX2rt@>T7chu+yE)wXd!Us<`w|)=Jn_B@f@AiG#4;IdIu&v$ioNxgn@pl3F5Nj~RQcAIXtmi(r09bl4JQZgm3Hx*Ecl(X&{w)Bd?<xTTMD;4RE{g8*@|R?tC_~cCdK$-l1r;AaU;TMK3ECLh=R`p=|`UrghPxPtm^qj{;CJN0+o=3ZMv7-rf&E!2BomMS%BtcMQYo+)0yNPk-ao6{fwEXh%~iV2av(78PIOmx`+6XxF^WyL6r;k$;@%qd=(5AD{Yfe&r!&nU8?p%ZA}GFT#r;6J$FzHth14A4Ph#m>023lLmO|&n%~b~uUxIU&V}32T<+?J#>Nt_AK0>~Y?7@Wdu(gnjupQI+K4%nJQT>wEtEi6C!HuwTVvR$rNY#DT9v>@b#0Z8Z?T=TB{QD*+^ng$5*^_RHZxeanw>X@v)M#~IYEgmskate1J0GY^$;@+cCyuUsXcTKlU}E0Fk2=lLsk389#aMWTF^c8HVfWdD>dz3XVFVgX*WkpxR;4yvu+JaLFxeG4-zWZ&z^X9!Uyfe&4xR3KXjQP(<z#M3m^23;Ud*Tz6hbtB0&$Q{876hI$tOU_il4;hWbR!KIhlzDp*-hGT2QO$3xvbZ%{-F$BSS~z2dn>G@=hfZ2>&1YOGtH7R5L-zZ^Yrs8GDD_5Jm>R*)p-u3|^Gru5^*j?J`m%kCL=s=pc+u8H{cP!ZXngF-Sj<T!P66PYGf*nw@#p{>;H$a^SSY!9VMP&)7vx9`eC+FxG@hOh^#?(KZ8GRVllRJQGS;tghaXvR;u3!F%`YoT6JGU-e*IMz)uo~<~J(m2lFh+KxP*2XLR62+Mo*BBOSczB?m)=00{p`we$dL>34XrZ!$W=-MG7Y3TT($s3NhfT9yN&^p0#$;(G$*K@^6;C{@lL&j1vL?HRBQT}RB4o9|R4<Y7wi^@YJqO)XletBQ-Wd%#z8n+E1yQ=I{b_#d9}pW>1!ECnZ8)E=d596mmuzekgy-#bDSbJdvhXko^{K@y2KhH_#E~<ktvGd0d^d120W*bO*|C^fNCbtkk|T$1#dBYq-D*b##mb7%J(O=7U6IsIb6n1e7hw`AjK}F&Tx$&pjG_<aXshQT8>V_-rKxL)fDUs`Ue|B5A|KXGyhmqB@#U$p-=N0$ag5@3=h`SRuD1rcH0<ED!2AuzBi&0*4Z$T^9w67j`I1UXv~$Z(#kNrm^P&vv?NMhRo9<`%=#HVHB{`a1Vjd#tRbe*RX*yd~x>i4xYHfv4v8I%xMHa@0itNadTDMq!?B|y-8$86%+lsbs4Qg|8uup|%!?Vyj@&1@&`1gpLohfc?l-&%GK(}~l?C^ZugyH%ifD-voqaIvS%gP$6c*xIlXr;BSbdpVED;-U7Jq~f!wPx>+MViet{5uDyhvZ{<WsPhxOSj)Pb%E)yDmQVrY`RjB159H>UIpV;bDUjNRnzHp@wC{R@o<xohr~1(RyuR#OkCQh%q%Kr#cskwg}3GsoZK#03)Gdm4(SDDc1YvvRF+Gl0Y;pNc-&of!k+j<Q`^A=J}<v<LbIv6jYVR&F7{{JkU|Fh{>y?m$~op#w#9O{u@bJRzmL?6B6rAS3^*mzTc&O)Ev}7;dk>MPd~|UFJMFl?NVk@t4NlzK(9aK-<gDn&CZ$7s8<bM0CoVQCh#l7Ql|qz^WtYP%yc;s5TAxdvGliiRj2=oHBPKU88c7}~?iT1!rQ4yzD(5mZy1|Z$H{?$Axb4d&4~>bELX9_OrPayk%4FQh>P=_cW@??xE)WC9Fk}y@R2zD1EKtPA4o_h!8xH2Cm&P<s#mlXUW%J=yQOKRg)yc?Tyo~)>OO+01<2Z!2#ake5h8U)+?T42L2r>lf3T=7Fi)mKXZ;FH}9dlT#kE%Uv5g|7ENr6Q;7fFMYiQ;<V2P>M`TY(*BuB1$mKP%c?jUq9w6hRo)5cCMnfndpTYI(X%&dU^jDDSRymyjY#XR$s;HvL?0ZgG6gfjpF4#&-2>_OPz2t(DW<mk9ZmY8cr$v{dlWTw>Izc*^4ePrRqU1@;b^Ks2ENDPf59D;;t2)?q^-l8M0QT5u*_xnXY<O&zi@lpG&zlF+-^$n}=P&FXQkcM8Xi+mvA4Ln!QqO_1}L?WRiyK3^!TSg^j>QZEy)SvWoFuSHq}yUbmjTg-A&{1QL4h0-|#Va7fh4myGUT;Eb-sbyG=%K4aS5ZiKb!81kXYT9jdh_SIIDV>wx+ht}x*CHF;ov<ESS>$3_YR@!1cgB%02(fk)PlZWUbJkL&#iL}Nn)HW{RvTG#$B50Gfj-$^{MCV!6a2Hlwv<KTHWdhS+cWL-8})KuAlb1BrQ)I5F|Jlmv!T3$ok(kXtS%MAt9B2e$7y>ScLi1mO1F5}KK3vZ91T`3Smk*jN*per4GNDlT&Tghk+8oWRY&6lw1_Mg`7Y*<#;BH~5*o=@-rB3}V4s;oRQNRU-)`k9IBtZU5i=X>gFq|~z5oszvVH3IA1J%bx!}Np?Th`(Te>JH%+V_Q$%QA*Y6(+4TJylj6JKB~p=|22N-<Z+sf@s07nAeC?8BARDa|8`GwiQgRq*YPyc!A>8&^_+m4htf3o+WoxQ4s~wYHpr?pYHaIyHBlYHZ`*i5n@uTp!kjRB|`%No9*HO-_T|4vlO($YS^N>H75i#Fe|g^MAaz3jg`X_u~hQP|rTd`}O|c@$5tXefELd=$G5z{(l~CCjJ-8U+*S9nZgi)J^n(_hdJ@>qhA!oUjBb(xKF>D@0EQG<kip}@1+q2qtvSh$omVhR>^mN?_u8GzL}z+YXB19@zcN8{{xK;4ZQ\nLAB_END lab_s=69.2 import_s=69.2\nTraceback (most recent call last):\n  File \"/tmp/muse_moe_w4a16-vb2ak7fd/run/worker.py\", line 423, in child_main\n    send(_setup_op(msg, module, state, sync, perf))\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_moe_w4a16-vb2ak7fd/run/worker.py\", line 322, in _setup_op\n    state[\"prep\"] = prepare(weights)\n                    ^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_moe_w4a16-vb2ak7fd/run/submission.py\", line 113, in prepare\n    return _lab_base_prepare(weights)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_moe_w4a16-vb2ak7fd/run/submission.py\", line 3, in prepare\n    def prepare(weights):raise RuntimeError('lab-only host: evidence completed at import')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host: evidence completed at import\n",
+  "machine": {
+   "gpu_after": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 122.27,
+    "power.limit": 700,
+    "temperature.gpu": 38
+   },
+   "gpu_before": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 130.91,
+    "power.limit": 700,
+    "temperature.gpu": 34
+   },
+   "node": "n-djsogg5ih26gwdcnhyhbnqzfkb"
+  },
+  "passed": false,
+  "records": [
+   {
+    "baseline_copies": 4,
+    "baseline_prepare_pad": 2667520,
+    "copies": null,
+    "error": "RuntimeError: lab-only host: evidence completed at import",
+    "event": "setup",
+    "first": "submission",
+    "prepare_pad": null,
+    "prepare_s": null,
+    "status": "fail"
+   }
+  ],
+  "returncode": 112,
+  "score_us": null,
+  "speedup": null,
+  "speedup_ci": null,
+  "status": "ok"
+ },
+ "started_at": 1792999322.920062,
+ "status": "done",
+ "team": "AutoclickerI"
+}

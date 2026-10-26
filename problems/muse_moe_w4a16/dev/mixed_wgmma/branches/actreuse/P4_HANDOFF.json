@@ -78,5 +78,8 @@
   "integration": "Each patch applies to actual packed S18 e04635ec and replaces it with a checked packed body. Decompress source for P4 AST composition. It appends ACT_CUDA/activation_module/activation_plan and nf_call/prepare compile hook. The plan is S18 p3b_plan plus selected heavy producer and optional timed gather; original P7 mt_pmz_module W2 and mt_finish10 remain byte-for-byte. No low-expert ownership or weight layout change.",
   "precision": "NVFP4 unchanged; gathered X and shared stage BF16; SwiGLU remains BF16, accumulation unchanged FP32; TASK checker only.",
   "screen": "Six exact expanded candidates normal/forced13TASK12graphs38static,966current-input replay gates, exact16seed packed payload; each packed patch body SHA equals its screened expanded source. Native H200 correctness/resources are in receipt.",
-  "promotion": "Every valid per-shape point gain against S18 goes to P4 with descriptive95pct Student-t seed CI and full seed samples. A:A is diagnostic; held-out six-load R confirms composition. W4N64 C7512 serialization is explicitly part of that recipe, not a general width verdict."
+  "promotion": "Every valid per-shape point gain against S18 goes to P4 with descriptive95pct Student-t seed CI and full seed samples. A:A is diagnostic; held-out six-load R confirms composition. W4N64 C7512 serialization is explicitly part of that recipe, not a general width verdict.",
+  "mechanism_followup": "problems/muse_moe_w4a16/dev/mixed_wgmma/branches/mechanism/P4_HANDOFF.json",
+  "mechanism_job": "3330edc297f044f0",
+  "mechanism_verdict": "No production nominees;gather+sync explain tested regressions;propose parking by size."
 }

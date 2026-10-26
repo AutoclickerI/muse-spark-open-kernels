@@ -1,0 +1,45 @@
+{
+  "payload_sha256": "37901b75f395dcbe647c7db4614d80e9ccaa3ab4b3bb0497dac60e6f312cfa83",
+  "static_checks": [
+    {
+      "name": "packaging",
+      "ok": true,
+      "msg": "single-file problem header and size"
+    },
+    {
+      "name": "local_imports",
+      "ok": true,
+      "msg": ""
+    },
+    {
+      "name": "judge_packaging",
+      "ok": true,
+      "msg": ""
+    },
+    {
+      "name": "undefined_names",
+      "ok": true,
+      "msg": ""
+    },
+    {
+      "name": "call_signatures",
+      "ok": true,
+      "msg": ""
+    },
+    {
+      "name": "state_keys",
+      "ok": true,
+      "msg": "no literal prepare state contract"
+    }
+  ],
+  "transport_smoke": [
+    {
+      "name": "wrapper_lab-only",
+      "ok": true,
+      "packets": 1
+    }
+  ],
+  "changed_unit": "validation.json",
+  "native": "native_audit.json",
+  "packet": "transport_validation.json"
+}
