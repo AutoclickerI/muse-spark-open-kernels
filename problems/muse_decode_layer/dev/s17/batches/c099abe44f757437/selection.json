@@ -1,0 +1,66 @@
+{
+  "base_sha256": "435df5f78a0d157f979b4b472865a139a28ac333fe275b1aebc0055a76dbf6d3",
+  "sha256": "9c0bb03ed2ee59ad4193e5af1b9a2f49334aba0f1d7a58d3954b0781a8522485",
+  "enabled": [
+    "drop_dsm8",
+    "drop_pool128",
+    "large_release_only",
+    "nearby",
+    "p5_verify1",
+    "p7_P",
+    "vdsk_release"
+  ],
+  "removed_s16_pieces": [
+    "dsm_16",
+    "dsm_8",
+    "layer_library_pool128",
+    "layer_release_moe"
+  ],
+  "ilp_alternative": false,
+  "provenance": [
+    {
+      "name": "guarded_nearby",
+      "old_sha256": "ebceda91ed055adc0ece9161a350934dc92b93cd78277bc6b25e54ce66d890a6",
+      "new_sha256": "9cc90d2e4764f0b47016ec526aa9742a86394ec87c3e838bf66c6376a672bfc8",
+      "nodes": [
+        "_best7_attention"
+      ]
+    },
+    {
+      "name": "pure_large_release",
+      "old_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+      "new_sha256": "78652aabf55d269bee2441fbde4abfd086f98a8a7c7157b8accf7ba3a0eafc25",
+      "nodes": [
+        "NF_CUDA"
+      ]
+    },
+    {
+      "name": "P5_35seed_v1_DSM",
+      "old_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+      "new_sha256": "403bb778b295b87adabf668f338fe423fc70e91c72007f9a6ca331c4ff5f1baf",
+      "nodes": [
+        "prepare",
+        "_best7_attention",
+        "r2_KERNELS",
+        "Expr(value=Constant(value='Launch-only runtime shared verbatim by component screens and whole-layer lab arms.'))",
+        "Import(names=[alias(name='hashlib'), alias(name='re')])",
+        "Import(names=[alias(name='torch')])",
+        "ImportFrom(module='torch.utils.cpp_extension', names=[alias(name='load_inline')], level=0)",
+        "r2__MODULES",
+        "r2__COUNTERS",
+        "r2__FREQ",
+        "r2_module",
+        "r2_attention",
+        "r2_apply_arm",
+        "_R2_SELECTION",
+        "_r2_prepare"
+      ]
+    },
+    {
+      "name": "P7_P",
+      "runtime_sha256": "0d5b0faf4c92b55691938bac09dfdad8ab3c5ccb312213b3012f073572ee7538",
+      "receipt": "1a7bbd9e33c04466",
+      "policy": "best point ratio at all four verify shapes; original expert math/weight layout"
+    }
+  ]
+}

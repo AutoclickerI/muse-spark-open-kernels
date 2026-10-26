@@ -1,0 +1,75 @@
+{
+  "pool": {
+    "B816": {
+      "R": 1.0036124218651605,
+      "CI95": [
+        1.0019005813247333,
+        1.005327187244729
+      ],
+      "n": 16,
+      "log_se": 0.0008009079217288039,
+      "AA_log_se": 0.0007869043660389703,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+    },
+    "C1816": {
+      "R": 1.011822524358871,
+      "CI95": [
+        1.010126830420257,
+        1.013521064848875
+      ],
+      "n": 16,
+      "log_se": 0.000676791833389605,
+      "AA_log_se": 0.0007869043660389703,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+    }
+  },
+  "scope": "Six-load selection evidence on S15; outer host failed a prep exact-ID gate. Lab public TASK768/768, no current-base promotion. Fresh S17 paired confirmation required.",
+  "heavy": "CHUNK4 ratios .9791/.9083 at M128/256;24 seeds x3fixtures/M; no retained variance so CI unavailable.",
+  "tail": "Latest11d531dc v1F T candidate/control .994935(SE.002209),n32; earlier d1F/v1S N failed to repeat. Only new v1F T selected.",
+  "P7_point_intervals": {
+    "v16S": {
+      "R": 1.0067279100917625,
+      "CI95": [
+        1.0051676119160704,
+        1.008290630281821
+      ],
+      "n": 32,
+      "log_se": 0.0007594736701514819,
+      "AA_log_se": 0.000671641212749447,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+    },
+    "v16F": {
+      "R": 1.0037474752512605,
+      "CI95": [
+        1.0022862515358324,
+        1.0052108292710238
+      ],
+      "n": 32,
+      "log_se": 0.0007133275816600871,
+      "AA_log_se": 0.0006054545231970606,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+    },
+    "v32S": {
+      "R": 1.0034869834286788,
+      "CI95": [
+        1.0028490314342344,
+        1.0041253412496578
+      ],
+      "n": 32,
+      "log_se": 0.00026892763337303357,
+      "AA_log_se": 0.0003113829318202755,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+    },
+    "v32F": {
+      "R": 1.0031909564367452,
+      "CI95": [
+        1.002403518955426,
+        1.0039790124891044
+      ],
+      "n": 32,
+      "log_se": 0.00036479463439867,
+      "AA_log_se": 0.0003844885746512612,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "job": "05b8a69b98d748ad",
+  "source_sha256": "9c0bb03ed2ee59ad4193e5af1b9a2f49334aba0f1d7a58d3954b0781a8522485",
+  "freeze_gate": false,
+  "R": null,
+  "CI95": null,
+  "measured": false,
+  "host_passed": true,
+  "reason": "No paired seed archive; not a timing loss",
+  "errors": [
+    "LAB_ERROR ValueError: glue router disagrees with FP32 oracle",
+    "LAB_ERROR host supplies weights=None; payloads needing weights must synthesize them (state is also None on import-time hosts)"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "expanded_sha256": "fea717603233f240b3e5d2c99b5ffdd0edb19d4264161489da44cc192b7f55dc",
+  "shipped_sha256": "219fac280951a0e41c391ed75586531e317375b7fca06b588f62746cb941ba71",
+  "shipped_source": "problems/muse_decode_layer/cand_r3_best7_s17_fea717603233.py",
+  "wrapper_sha256": "589d9e2c98fa0a8b83821631e33041cda7f82c9666cf4c60aa3636d886c3591f",
+  "wrapper": "problems/muse_decode_layer/lab/lab_s17_fea717603233.py",
+  "screens": {
+    "normal": {
+      "TASK_tests": 13,
+      "passed": true,
+      "torch": "2.14.1+cu130"
+    },
+    "forced": {
+      "TASK_tests": 13,
+      "passed": true,
+      "torch": "2.14.1+cu130"
+    }
+  },
+  "native_checks": 34,
+  "native_passed": true,
+  "prepare_validation": "prepare_validation.json",
+  "composition": [
+    "chunk4",
+    "pool",
+    "tail"
+  ],
+  "status": "Scored7ec5f9ab passed1.828637x; pairedda0cd64b accepted, awaiting H200; S16ee5fe249 remains frozen",
+  "confirmation_queued": true,
+  "scored_job": "7ec5f9ab1eee4a17",
+  "scored_passed": true,
+  "scored_speedup": 1.8286373670057716,
+  "scored_receipt": "runs/muse_decode_layer/20261026T035210Z_submit_7ec5f9ab1eee4a17.json",
+  "baseline_arm": "CURRENT",
+  "baseline_sha256": "ee5fe24973f440e5c0daf34c9a65ca4848fc03dd661bd08b6d92b40280cab745",
+  "prior_wrapper_local": {
+    "wrapper_sha256": "2fce0692e12da37821a706283f67aab75e32366194cfd5953d7d5579c2c31fe1",
+    "task_checks": 1344,
+    "nearby_task_checks": 260,
+    "complete": true
+  },
+  "paired_local": {
+    "complete": true,
+    "task_checks": 1536,
+    "nearby_task_checks": 390,
+    "seeds": 16,
+    "local_wrapper_sha256": "589d9e2c98fa0a8b83821631e33041cda7f82c9666cf4c60aa3636d886c3591f"
+  },
+  "confirmation_job": "da0cd64bb08644f7"
+}

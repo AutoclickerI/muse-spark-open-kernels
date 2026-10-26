@@ -1,0 +1,172 @@
+{
+  "normal": {
+    "sha256": "219fac280951a0e41c391ed75586531e317375b7fca06b588f62746cb941ba71",
+    "torch": "2.14.1+cu130",
+    "tests": [
+      {
+        "case": "batch 1, ctx 10, layer sliding",
+        "ok": true
+      },
+      {
+        "case": "batch 1, ctx 3000, layer full",
+        "ok": true
+      },
+      {
+        "case": "batch 8, ctx 2047, layer sliding",
+        "ok": true
+      },
+      {
+        "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
+        "ok": true
+      },
+      {
+        "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
+        "ok": true
+      },
+      {
+        "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
+        "ok": true
+      },
+      {
+        "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
+        "ok": true
+      },
+      {
+        "case": "batch 2, ctx 300000, layer sliding, q_len 8",
+        "ok": true
+      },
+      {
+        "case": "batch 1, ctx 1048576, layer full, q_len 8",
+        "ok": true
+      },
+      {
+        "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+        "ok": true
+      },
+      {
+        "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
+        "ok": true
+      },
+      {
+        "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
+        "ok": true
+      },
+      {
+        "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
+        "ok": true
+      }
+    ],
+    "static": [
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      }
+    ]
+  },
+  "forced": {
+    "sha256": "219fac280951a0e41c391ed75586531e317375b7fca06b588f62746cb941ba71",
+    "torch": "2.14.1+cu130",
+    "tests": [
+      {
+        "case": "batch 1, ctx 10, layer sliding",
+        "ok": true
+      },
+      {
+        "case": "batch 1, ctx 3000, layer full",
+        "ok": true
+      },
+      {
+        "case": "batch 8, ctx 2047, layer sliding",
+        "ok": true
+      },
+      {
+        "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
+        "ok": true
+      },
+      {
+        "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
+        "ok": true
+      },
+      {
+        "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
+        "ok": true
+      },
+      {
+        "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
+        "ok": true
+      },
+      {
+        "case": "batch 2, ctx 300000, layer sliding, q_len 8",
+        "ok": true
+      },
+      {
+        "case": "batch 1, ctx 1048576, layer full, q_len 8",
+        "ok": true
+      },
+      {
+        "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+        "ok": true
+      },
+      {
+        "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
+        "ok": true
+      },
+      {
+        "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
+        "ok": true
+      },
+      {
+        "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
+        "ok": true
+      }
+    ],
+    "static": [
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      }
+    ]
+  },
+  "final_wrapper": {
+    "local_wrapper_sha256": "589d9e2c98fa0a8b83821631e33041cda7f82c9666cf4c60aa3636d886c3591f",
+    "complete": true,
+    "failures": [],
+    "task_checks": 1536,
+    "nearby_task_checks": 390,
+    "seeds": 16,
+    "seed_ids": [
+      304910273,
+      305015002,
+      305119731,
+      305224460,
+      305329189,
+      305433918,
+      305538647,
+      305643376,
+      305748105,
+      305852834,
+      305957563,
+      306062292,
+      306167021,
+      306271750,
+      306376479,
+      306481208
+    ],
+    "checker_sha256": "63c76da556b07a1e80be88445cbe0ea84d17278731979bb40586c4e605ffe4d7",
+    "host_sha256": "fea717603233f240b3e5d2c99b5ffdd0edb19d4264161489da44cc192b7f55dc",
+    "judge_image": true,
+    "GPU": 0
+  }
+}

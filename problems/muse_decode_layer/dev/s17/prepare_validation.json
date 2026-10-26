@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "all_other_AST_identical": true,
+  "original_sha256": "4ac08d1e3679a84bfaa79a4c768aa8527794a2ed39ee887f3bb24b47b68f3b49",
+  "source_sha256": "fea717603233f240b3e5d2c99b5ffdd0edb19d4264161489da44cc192b7f55dc",
+  "changed_only": [
+    "_s16_prepare_check_routing",
+    "_tune_glue"
+  ],
+  "routing_helper_revision": "f756a178f603f9cdd879af2a9ce841d2c42e159a42eccc78f8a8ee7554be268c",
+  "public_oracle_validation": "problems/muse_decode_layer/dev/s16/prepare_constraint_validation.json (144 published-checker cases; identical helper)"
+}

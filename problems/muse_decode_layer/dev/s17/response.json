@@ -1,0 +1,232 @@
+{
+  "expanded_sha256": "9c0bb03ed2ee59ad4193e5af1b9a2f49334aba0f1d7a58d3954b0781a8522485",
+  "shipped_sha256": "db82a6fef69659c6f5425a261f77e5681908cd4604e2fad3d5310fe10c470f03",
+  "shipped_source": "problems/muse_decode_layer/cand_r3_best7_s17_9c0bb03ed2ee.py",
+  "wrapper_sha256": "c099abe44f757437741156c0116c34708262a59c825f90d6cafd17eb9d2377c0",
+  "screens": {
+    "normal": {
+      "expanded_tests": 13,
+      "expanded_graph_shapes": 12,
+      "expanded_static": 30,
+      "packed_tests": 13,
+      "packed_static": 2
+    },
+    "forced": {
+      "expanded_tests": 13,
+      "expanded_graph_shapes": 12,
+      "expanded_static": 30,
+      "packed_tests": 13,
+      "packed_static": 2
+    }
+  },
+  "native_audit": {
+    "sha256": "9c0bb03ed2ee59ad4193e5af1b9a2f49334aba0f1d7a58d3954b0781a8522485",
+    "shipped_sha256": "db82a6fef69659c6f5425a261f77e5681908cd4604e2fad3d5310fe10c470f03",
+    "P5_units": {
+      "dsm": "0f250847cd8dbc3cbc8583425f4fef9e441e538c340b90d91448dccc125ab4a9"
+    },
+    "checks": [
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "GLUE_CL_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "V9_CUDA_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "V9_CPP_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "CUDA_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "LT_CUDA_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "ATTN_PORT_CUDA_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "ATTN_X_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "ATTN_G_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "ATTN_P8_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "PG_RAW",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "V9_NT2_CUDA_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "V9_NT2_CPP_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "_pf_GROUPED_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "SP_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "P7_PREFETCH_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "DENSE_CHAIN_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "DENSE_CHAIN_CPP",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "SMALLM_VAR_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "NF_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "GF_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "VQ8_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "PARTIAL_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "cs_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "_s16_global_C128_cs_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "_s16_epi_NORM_EPIN_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "_s16_epi_PAIR_EPIT_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "MT_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "MT_PMZ_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "CUDA",
+        "ok": true,
+        "msg": ""
+      }
+    ],
+    "passed": true
+  },
+  "scored": {
+    "command": [
+      "/home/jihoon/anaconda3/envs/comp_kv/bin/python3",
+      "tools/okc_run.py",
+      "send",
+      "problems/muse_decode_layer/cand_r3_best7_s17_9c0bb03ed2ee.py",
+      "--scored",
+      "--priority",
+      "-1.1",
+      "--note",
+      "P4 S17 on frozen S16 435df5f7: guarded S15n nearby, P5 35seed v1 cooperative DSM, remove losing v16 DSM/pool128, pure large-M release and VDSK qkv release, P7 P shell (32seed four-shape winner); retain PAIR over slower ILP. Both expanded modes13 TASK+12 graphs, packed13 TASK each,31 exact Python/native checks pass. Held-out paired confirmation follows."
+    ],
+    "stdout": "queued problems/muse_decode_layer/cand_r3_best7_s17_9c0bb03ed2ee.py at priority -1.1; progress in runs/detached/db82a6fef69659c6.log, the receipt in runs/ when the judge finishes\n",
+    "sender_log": "runs/detached/db82a6fef69659c6.log",
+    "job": "5f35323aa8bc47ef",
+    "passed": true,
+    "speedup": 1.8378866426354703,
+    "receipt": "runs/muse_decode_layer/20261026T030535Z_submit_5f35323aa8bc47ef.json"
+  },
+  "confirmation_queued": true,
+  "status": "First composition scored1.83789x; paired05b8 unmeasured from exact-ID prep veto; late revision fixes TASK routing admission on every arm; S16 frozen",
+  "nearby_screens": {
+    "normal": {
+      "fixtures": 143,
+      "eager_and_graph_replays": true,
+      "passed": true
+    },
+    "forced": {
+      "fixtures": 143,
+      "eager_and_graph_replays": true,
+      "passed": true
+    }
+  },
+  "paired_local_normal": {
+    "complete": true,
+    "task_checks": 2112,
+    "nearby_task_checks": 260,
+    "seeds": 16,
+    "local_wrapper_sha256": "c099abe44f757437741156c0116c34708262a59c825f90d6cafd17eb9d2377c0"
+  },
+  "confirmation_wrapper": "problems/muse_decode_layer/lab/lab_s17_9c0bb03ed2ee.py",
+  "confirmation_job": "05b8a69b98d748ad",
+  "confirmation_result": "unmeasured: inherited S15 exact-ID preparation veto; official host passed; no seed timing archive",
+  "confirmation_host_pass": true,
+  "confirmation_host_speedup": 1.806761897869995
+}

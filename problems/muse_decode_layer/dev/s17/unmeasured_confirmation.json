@@ -1,0 +1,9 @@
+{
+  "job": "05b8a69b98d748ad",
+  "host_passed": true,
+  "R": null,
+  "CI95": null,
+  "reason": "ValueError: glue router disagrees with FP32 oracle before any TASK lab/seed timing; official host passes. NOT a performance loss.",
+  "correction": "Pinned TASK routing-margin admission on all arms; all timed AST unchanged by this preparation-only correction.",
+  "retry": "late S17 composition pairs against prepared S16 and S17 first on fresh304910273 regime"
+}
