@@ -1,0 +1,190 @@
+{
+  "cuda_sha256": "c31f8a2345577b727299cd6bcdfd7394cf0f886f17bacaee92fe661d5525c890",
+  "resources": [
+    {
+      "name": "'_ZN2ax6kernelILi6ELi1ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_' for 'sm_90a'",
+      "kind": 6,
+      "first": false,
+      "regs": 128,
+      "stack_spills": [
+        0,
+        0,
+        0
+      ],
+      "dynamic_shared_bytes": 104448,
+      "static_shared_bytes": 0,
+      "wgmma_serialized_warning": true,
+      "predicted_CTA_per_SM": 2
+    },
+    {
+      "name": "'_ZN2ax6kernelILi6ELi1ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_' for 'sm_90a'",
+      "kind": 6,
+      "first": true,
+      "regs": 127,
+      "stack_spills": [
+        0,
+        0,
+        0
+      ],
+      "dynamic_shared_bytes": 104448,
+      "static_shared_bytes": 0,
+      "wgmma_serialized_warning": true,
+      "predicted_CTA_per_SM": 2
+    },
+    {
+      "name": "'_ZN2ax6kernelILi5ELi1ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_' for 'sm_90a'",
+      "kind": 5,
+      "first": false,
+      "regs": 112,
+      "stack_spills": [
+        0,
+        0,
+        0
+      ],
+      "dynamic_shared_bytes": 106496,
+      "static_shared_bytes": 0,
+      "wgmma_serialized_warning": false,
+      "predicted_CTA_per_SM": 2
+    },
+    {
+      "name": "'_ZN2ax6kernelILi5ELi1ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_' for 'sm_90a'",
+      "kind": 5,
+      "first": true,
+      "regs": 111,
+      "stack_spills": [
+        0,
+        0,
+        0
+      ],
+      "dynamic_shared_bytes": 106496,
+      "static_shared_bytes": 0,
+      "wgmma_serialized_warning": false,
+      "predicted_CTA_per_SM": 2
+    },
+    {
+      "name": "'_ZN2ax6kernelILi4ELi4ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_' for 'sm_90a'",
+      "kind": 4,
+      "first": false,
+      "regs": 128,
+      "stack_spills": [
+        0,
+        0,
+        0
+      ],
+      "dynamic_shared_bytes": 102400,
+      "static_shared_bytes": 1024,
+      "wgmma_serialized_warning": false,
+      "predicted_CTA_per_SM": 2
+    },
+    {
+      "name": "'_ZN2ax6kernelILi4ELi4ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_' for 'sm_90a'",
+      "kind": 4,
+      "first": true,
+      "regs": 128,
+      "stack_spills": [
+        0,
+        0,
+        0
+      ],
+      "dynamic_shared_bytes": 102400,
+      "static_shared_bytes": 1024,
+      "wgmma_serialized_warning": false,
+      "predicted_CTA_per_SM": 2
+    },
+    {
+      "name": "'_ZN2ax6kernelILi2ELi2ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_' for 'sm_90a'",
+      "kind": 2,
+      "first": false,
+      "regs": 128,
+      "stack_spills": [
+        0,
+        0,
+        0
+      ],
+      "dynamic_shared_bytes": 102400,
+      "static_shared_bytes": 1024,
+      "wgmma_serialized_warning": false,
+      "predicted_CTA_per_SM": 2
+    },
+    {
+      "name": "'_ZN2ax6kernelILi2ELi2ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_' for 'sm_90a'",
+      "kind": 2,
+      "first": true,
+      "regs": 128,
+      "stack_spills": [
+        0,
+        0,
+        0
+      ],
+      "dynamic_shared_bytes": 102400,
+      "static_shared_bytes": 1024,
+      "wgmma_serialized_warning": false,
+      "predicted_CTA_per_SM": 2
+    },
+    {
+      "name": "'_ZN2ax6kernelILi1ELi1ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_' for 'sm_90a'",
+      "kind": 1,
+      "first": false,
+      "regs": 128,
+      "stack_spills": [
+        0,
+        0,
+        0
+      ],
+      "dynamic_shared_bytes": 102400,
+      "static_shared_bytes": 1024,
+      "wgmma_serialized_warning": false,
+      "predicted_CTA_per_SM": 2
+    },
+    {
+      "name": "'_ZN2ax6kernelILi1ELi1ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_' for 'sm_90a'",
+      "kind": 1,
+      "first": true,
+      "regs": 124,
+      "stack_spills": [
+        0,
+        0,
+        0
+      ],
+      "dynamic_shared_bytes": 102400,
+      "static_shared_bytes": 1024,
+      "wgmma_serialized_warning": false,
+      "predicted_CTA_per_SM": 2
+    },
+    {
+      "name": "'_ZN2ax6kernelILi0ELi1ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_' for 'sm_90a'",
+      "kind": 0,
+      "first": false,
+      "regs": 128,
+      "stack_spills": [
+        8,
+        4,
+        4
+      ],
+      "dynamic_shared_bytes": 102400,
+      "static_shared_bytes": 0,
+      "wgmma_serialized_warning": false,
+      "predicted_CTA_per_SM": 2
+    },
+    {
+      "name": "'_ZN2ax6kernelILi0ELi1ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_' for 'sm_90a'",
+      "kind": 0,
+      "first": true,
+      "regs": 124,
+      "stack_spills": [
+        0,
+        0,
+        0
+      ],
+      "dynamic_shared_bytes": 102400,
+      "static_shared_bytes": 0,
+      "wgmma_serialized_warning": false,
+      "predicted_CTA_per_SM": 2
+    }
+  ],
+  "warnings": [
+    "ptxas info    : (C7512) Potential Performance Loss: wgmma.mma_async instructions are serialized due to insufficient register resources for the function '_ZN2ax6kernelILi6ELi1ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_'",
+    "ptxas info    : (C7512) Potential Performance Loss: wgmma.mma_async instructions are serialized due to insufficient register resources for the function '_ZN2ax6kernelILi6ELi1ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i14CUtensorMap_stSC_'"
+  ],
+  "limitation": "Native compile counts, admission formula includes1KiB driver shared reservation. Runtime CUDA occupancy in receipt is authoritative; cluster placement/tail may reduce actual residency. W4N64 serialization is a measured recipe tradeoff, not hidden."
+}

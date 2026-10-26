@@ -1,6 +1,7 @@
 # branches
 
-Current work: [count routing and matched stream attribution](balance/README.md),
+Current work: [activation reuse on S18](actreuse/README.md), including output-panel
+multicast and four output tiles per CTA. Prior [count routing and matched stream attribution](balance/README.md) was
 paired against S15 and CHUNK4. Complete `b5c4d99e`: all-light transfers and one-path lose; B4/M128 point .998493 vs CH4 goes to P4 with CI [.986834,1.010153]. The matched oracle identifies activation-request/service costs; [handoff](balance/P4_HANDOFF.json). Earlier cluster/direct-copy receipts remain below.
 
 Files (one entry per retained direct file):

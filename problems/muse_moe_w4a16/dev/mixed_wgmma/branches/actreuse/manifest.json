@@ -1,0 +1,56 @@
+{
+  "PACK": {
+    "candidate": "runs/screen/p3b_actreuse/pack.py",
+    "candidate_sha256": "413eeb37d5e9a1081cba41fdbe490e5c64c766787a8e680dc97b18b9ab98fc76",
+    "packed_candidate": "runs/screen/p3b_actreuse/pack_packed.py",
+    "packed_sha256": "98d06f8078dcd45da751510d9c7eb0b7c00083dbcb3e92b57c8bb1784129cfb1",
+    "patch_sha256": "3bc2c5706acc9599111bd3fc14c18b1d2c68f5823f6a15333d2b42e8c0ee22b2"
+  },
+  "TMA1": {
+    "candidate": "runs/screen/p3b_actreuse/tma1.py",
+    "candidate_sha256": "5cdd52d966c7014a0a3600596fe8b5cdbd0728ab44e33df1afcd8eb82d2f1c40",
+    "packed_candidate": "runs/screen/p3b_actreuse/tma1_packed.py",
+    "packed_sha256": "126c20a70730f27824cbc9c679e7ea0b6bd194186310ce76391fcefa40b49612",
+    "patch_sha256": "1d956aa0fb44b4b14b9f0bada4b81718370aab3ff51755f5a98f00a9e303f319"
+  },
+  "MC2": {
+    "candidate": "runs/screen/p3b_actreuse/mc2.py",
+    "candidate_sha256": "077baad3cbde7f8b863cc3e3e8d0668e5b9520dce9acb50ba89bbade23c94823",
+    "packed_candidate": "runs/screen/p3b_actreuse/mc2_packed.py",
+    "packed_sha256": "583ce65a5abbc9e97e7fb14a67e6d7be8b13924ebca0afb3694a97cd2ce9210a",
+    "patch_sha256": "3ba2a1c695981ce87a7fd97a6a0e10d23b397dc51d3db9a28237c1eae9928454"
+  },
+  "MC4": {
+    "candidate": "runs/screen/p3b_actreuse/mc4.py",
+    "candidate_sha256": "fbd374866e4505752551fe88f0acf9c7812e40984967288c867173d8480629bd",
+    "packed_candidate": "runs/screen/p3b_actreuse/mc4_packed.py",
+    "packed_sha256": "e3a6b93d225ff6cb79d499918a70a3d9bc5e64706ecfb5b8bc9264e760ce37df",
+    "patch_sha256": "a644baf5b7d03e583410d56c6984ca6cf3a8771a232b7f3c60885ace26aa5606"
+  },
+  "W4N32": {
+    "candidate": "runs/screen/p3b_actreuse/w4n32.py",
+    "candidate_sha256": "b2d12469a970f23be3fe8228c747fc492d1a7c25c9f52bfa98b98b8d8a1a180f",
+    "packed_candidate": "runs/screen/p3b_actreuse/w4n32_packed.py",
+    "packed_sha256": "e5309e8414e93142f82e0d284c641eac86709c85bfcdd198d261b924b9cff8cb",
+    "patch_sha256": "e205f32e9e8fced033402e7acc8ad817f2b7e63a9d0d131fd1c95ce0b9ddfb81"
+  },
+  "W4N64": {
+    "candidate": "runs/screen/p3b_actreuse/w4n64.py",
+    "candidate_sha256": "4bac4d9665445d128a872125dcd1144c4d52b023f7b2c24abf057803511a4c7e",
+    "packed_candidate": "runs/screen/p3b_actreuse/w4n64_packed.py",
+    "packed_sha256": "8b923a8e34dcda7b1960df431be7cb24cdf199465afb43250d431e3af27e6b6e",
+    "patch_sha256": "07ed077aa9eb7ffe09059464917dfde2cce975c2933c6a0c611996e823bba7c1"
+  },
+  "base_expanded_sha256": "95df42fe7b3a31e66d60bc769bae15412c952ad77753b7d15b3beea3d89b3af4",
+  "base_shipped_sha256": "e04635ec0369348273c945204be0795ca93d47f36e7d57078ce5d025693994c9",
+  "cuda_sha256": "c31f8a2345577b727299cd6bcdfd7394cf0f886f17bacaee92fe661d5525c890",
+  "arms": [
+    "S18",
+    "PACK",
+    "TMA1",
+    "MC2",
+    "MC4",
+    "W4N32",
+    "W4N64"
+  ]
+}

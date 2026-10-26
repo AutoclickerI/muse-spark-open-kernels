@@ -1,0 +1,18 @@
+{
+  "payload_sha256": "51dde34ebceead22685d850d5c1b43820689e7e4671f6315efea89da316ebb94",
+  "checks": 966,
+  "cases": 69,
+  "bit_equal": {
+    "PACK": 69,
+    "TMA1": 69,
+    "MC2": 69,
+    "MC4": 69,
+    "W4N32": 69,
+    "W4N64": 69
+  },
+  "worst_L2_row": [
+    0.004213553853332996,
+    0.004770186264067888
+  ],
+  "standin": "Multicast executes independent contig copies at each cluster rank locally; group routing and all math execute. Native WGMMA fragments execute existing mma.sync on sm120; CH4 depth4 becomes depth3 to fit local shared memory. All route masks, branch transfers, N32/64 coverage and joins execute."
+}
