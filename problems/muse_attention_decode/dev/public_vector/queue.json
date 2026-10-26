@@ -1,15 +1,18 @@
 {
-  "pid": 3705999,
+  "pid": 3831549,
   "priority": 2,
-  "t": 1793022908.9668193,
+  "t": 1793023807.331389,
   "problem": "muse_attention_decode",
   "file": "problems/muse_attention_decode/lab/lab_in_graph.py",
-  "sha256": "c833f550a52ff28cd8a105e05c939d9ad3c2004326c3ccb5ed16aa6b0e7c08bd",
-  "note": "h200_lab problems/muse_attention_decode/dev/public_vector/out/in_graph.py: Replaces own unsent3620849; exact S21 eacc087b +9b043487. Seven single-cell S19 restores with source-owned caches; D PDL, V vector/shared direct partials,F combined; native d1S/F. Production graphs8freshseeds8symmetriccold432TASK; every round + CUPTI neighbours.",
+  "sha256": "5191ed5db2ed9eb8188b8d0ac2293100176e487458d8ef49c34904e95dd5ac27",
+  "note": "h200_lab problems/muse_attention_decode/dev/public_vector/out/in_graph.py: Replaces own unsent3705999/3620849. S21+9b043487 production graphs;7 S19 restores,D PDL,V shared vector,F combined,d1native. Guard balanced cross-request/idle lanes;15 native prologue tests99crossings/1idle-peer bitexact. 8freshseeds8symmetriccold432TASK,allrounds+CUPTI neighbours.",
   "not_before": 1793059200.0,
   "lane": "P5b",
   "decision": "in-graph attention transfer and vectorized direct partials",
   "priority_override": false,
   "until": 1793059200.0,
-  "supersedes_unsent_sender": 3620849
+  "supersedes_unsent_senders": [
+    3620849,
+    3705999
+  ]
 }

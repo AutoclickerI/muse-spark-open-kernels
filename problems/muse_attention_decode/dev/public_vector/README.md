@@ -62,7 +62,10 @@ at entry and waits after its scalar independent metadata prologue.
 V consumes projection partials directly with plane-outer 16-byte loads,
 ordered FP32 addition and the existing BF16 rounding boundary. Lee LN0
 loads each query and own K/V slice once per CTA; LN1 reuses the query tile
-and BF16 own-KV staging in its unused query space. There is no new shared
+and BF16 own-KV staging in its unused query space **only when both lanes
+belong to the same request**. At balanced request boundaries each lane
+reads its own distinct rows; an idle peer never participates in barrier13.
+There is no new shared
 allocation. Consumer-only barrier 13 does not block the history producer.
 OP loads contiguous 64-element rows, then splits even/odd RoPE lanes in
 registers. F combines D and V. V has ordinary launches as its control;
@@ -92,12 +95,14 @@ questions, not a mechanism claimed solved by local emulation.
 - Five exact sm90a CUDA units compile. The changed readers pass eight
   bit-exact tests: BF16 and ordered FP32 planes at S1/3/7/10. Local Lee
   arithmetic uses the explicit one-lane WGMMA stand-in because GPU0 cannot
-  hold Hopper's two-lane shared ring. Native two-lane TASK remains pending.
-- Full-size synthetic transport rehearsal: 7,631 bytes before native
+  hold Hopper's two-lane shared ring. Native two-lane attention TASK remains pending. The exact two-lane balanced
+  map/query-sharing prologue runs locally:15 cases,99 cross-request CTAs and
+  one active/idle peer, every emitted query bit-exact and no stranded barrier.
+- Full-size synthetic transport rehearsal: 7,756 bytes before native
   profiling diagnostics, exact timestamp round trip, 11,700-byte reservation.
-- **Sender3705999**, wrapper`c833f550a52ff28c`, attention host, check,
+- **Sender3831549**, wrapper`5191ed5db2ed9eb8`, attention host, check,
   priority2, **2026-10-27 09:00 KST / epoch1793059200**. All hosts had zero
-  quota. Payload`5479fb1ae4293f57`: eight fixed fresh seeds
+  quota. Payload`b4a5ec1bb85d260e`: eight fixed fresh seeds
   `281730011 + 104729*i`, eight forward/reverse cold rounds, **432 TASK**,
   every integer-nanosecond round retained. Profiles capture A/S/F attention
   and adjacent graph nodes. `queue.json` matches the waiting sender's exact
@@ -107,14 +112,14 @@ The exact candidate screen retains all 37 inherited native compile checks (43 st
 checks total); the local cache adapter expands the packed source only for compilation
 so its unit keys agree with local_eval. No checker or compiler gate was removed.
 
-The all-F review patch is `891d9414`, source`76dd1aee`, onto exact
+The all-F review patch is `6a605fa2`, source`a4c63f0b`, onto exact
 `fbaf2793`. It retains complete MIT/Apache notices already in that base.
 It is **ready but unmeasured**, not a new nominee. P4 already owns the
 d16S restore; its exact one-line patch and prior CI are in `P4_HANDOFF.json`.
 
 ## Receipt decision
 
-Read the job assigned to sender3705999, then run `analyze.py <receipt>`.
+Read the job assigned to sender3831549, then run `analyze.py <receipt>`.
 Require exact source/seeds/round counts, native completion and every TASK
 gate. Report A:A with each interval; use the larger paired/A:A log SE,
 never subtract control drift, discard rounds or retime selected seeds.

@@ -135,17 +135,28 @@ void lee_attention(torch::Tensor qkv,torch::Tensor loc,torch::Tensor kc,torch::T
     common+=host
     # Vector arm: one shared query tile/CTA, no duplicate global partial reads by LN1.
     vec=common
+    # Balanced lanes can straddle request boundaries (or an idle final lane).
+    # All warps derive the same CTA-wide equality predicate from the scan.
+    vec=vec.replace('  bool spare = false;', '  bool spare = false;\n  bool shareQ=PV_SHARE;')
+    needle='    const int bb = __popc(__ballot_sync(0xffffffffu, lane_ < a.B && pre <= gl));'
+    assert needle in vec
+    vec=vec.replace(needle,needle+'''
+    const int first=__popc(__ballot_sync(0xffffffffu,lane_<a.B && pre<=blockIdx.x*NL));
+    const int last=__popc(__ballot_sync(0xffffffffu,lane_<a.B && pre<=blockIdx.x*NL+NL-1));
+    shareQ=shareQ && first==last;
+''')
     a=vec.index('template<typename V,typename Params>');z=vec.index('\nstruct WF',a)
     vec=vec[:a]+VECTOR+vec[z:]
     old='const uint32_t ring = sb + LN * LS, qs = ring + RS * 16384, vf0 = qs + 8192, ptr = vf0 + 32768;'
-    new='const uint32_t ring = sb + LN * LS, qs0 = ring + RS * 16384, qs = PV_SHARE ? sb + RS * 16384 : qs0, vf0 = qs0 + 8192, ptr = vf0 + 32768;'
+    new='const uint32_t ring = sb + LN * LS, qs0 = ring + RS * 16384, qs = shareQ ? sb + RS * 16384 : qs0, vf0 = qs0 + 8192, ptr = vf0 + 32768;'
     assert old in vec;vec=vec.replace(old,new)
     a=vec.index('  // query rows:');z=vec.index("  // the block's own key",a)
-    vec=vec[:a]+'  if(!PV_SHARE || LN==0){\n'+vec[a:z]+'  }\n'+vec[z:]
+    vec=vec[:a]+'  if(!shareQ || LN==0){\n'+vec[a:z]+'  }\n'+vec[z:]
+    vec=vec.replace('if (EQ && (!PV_SHARE || LN==0))','if (EQ && (!shareQ || LN==0))')
     old='  const uint2 kraw = EQ ? kpre : qread<uint2>(f,krow + (16 + h) * D + nd0), vraw = EQ ? vpre : qread<uint2>(f,krow + (18 + h) * D + nd0);'
     assert old in vec
     new='''  uint2 kraw,vraw;
-  if constexpr(PV_SHARE && NL>1){
+  if(shareQ && NL>1){
     const uint32_t own=sb+LS+RS*16384;
     if(LN==0){
       kraw=EQ?kpre:qread<uint2>(f,krow+(16+h)*D+nd0);

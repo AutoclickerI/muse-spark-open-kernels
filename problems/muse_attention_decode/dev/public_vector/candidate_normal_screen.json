@@ -1,6 +1,6 @@
 {
  "file": "/home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/public_vector/out/candidate_normal_attention.py",
- "sha256": "0f4d2b24781432f939fc3a7371b78681dd304133c425b5b120c72f258d954395",
+ "sha256": "f9082b992d15f9d31723f3816c26af30cc2f643819a8bd07ac915a5b3eaac340",
  "tier": "screen",
  "static": [
   {
@@ -61,7 +61,7 @@
   {
    "name": "ATTN_PORT_CUDA_SRC",
    "ok": true,
-   "msg": ""
+   "msg": "exact source/flags compile cache"
   },
   {
    "name": "ATTN_X_CUDA",
@@ -141,7 +141,7 @@
   {
    "name": "PARTIAL_CUDA",
    "ok": true,
-   "msg": ""
+   "msg": "exact source/flags compile cache"
   },
   {
    "name": "cs_CUDA",
@@ -151,7 +151,7 @@
   {
    "name": "_s16_global_C128_cs_CUDA",
    "ok": true,
-   "msg": ""
+   "msg": "exact source/flags compile cache"
   },
   {
    "name": "_s16_epi_NORM_EPIN_CUDA",
@@ -211,19 +211,19 @@
   {
    "name": "_P5B_BRIDGE_SRC",
    "ok": true,
-   "msg": ""
+   "msg": "exact source/flags compile cache"
   },
   {
    "name": "_P5B_REDUCE_SRC",
    "ok": true,
-   "msg": ""
+   "msg": "exact source/flags compile cache"
   }
  ],
  "problem": "muse_attention_decode",
  "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
  "cc": "12.0",
  "torch": "2.14.1+cu130",
- "prepare_s": 0.0001144080888479948,
+ "prepare_s": 0.00014403299428522587,
  "tests": [
   {
    "case": "batch 1, ctx 10, heads tp8, layer sliding",

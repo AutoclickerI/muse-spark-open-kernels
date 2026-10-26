@@ -1697,12 +1697,14 @@ ready candidate passes28 eager+graph each, five exact sm90a units compile and
 eight native-reader cases are bit-exact. Verify spills remain; native two-lane
 correctness and performance are unmeasured, not a closed recipe.
 
-One check is queued as sender3705999, attention host, priority2, not-before
+One check is queued as sender3831549, attention host, priority2, not-before
 **2026-10-27 09:00KST /1793059200**: eight fresh seeds, eight symmetric cold rounds,
 432TASK, all production-graph round times and adjacent-kernel profiles retained.
-Payload5479fb1a; controlfbaf2793=S21eacc087b+9b043487. Unsent sender3620849 was
-replaced before dispatch to keep S19's native caches source-owned. All-F review
-patch891d9414/source76dd1aee is ready and unmeasured; no new fix is nominated.
+Payloadb4a5ec1b; controlfbaf2793=S21eacc087b+9b043487. Unsent senders3620849/3705999 were
+replaced before dispatch to keep S19 caches source-owned and guard balanced
+cross-request/idle lanes. Exact two-lane prologue tests pass15cases/99crossings/1idle-peer
+bit-exact; full native attention TASK remains pending. All-F review
+patch6a605fa2/sourcea4c63f0b is ready and unmeasured; no new fix is nominated.
 P4 confirms correct whole-load improving points on disjoint held-out G0 seeds.
 
 ## Projections and verify dense
