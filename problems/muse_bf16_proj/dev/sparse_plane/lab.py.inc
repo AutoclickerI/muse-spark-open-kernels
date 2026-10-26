@@ -1,8 +1,8 @@
 def lab(deadline,weights,state=None):
     import linecache,statistics,time,math
-    begin=time.monotonic();p={};file='<nf-sparse-adapter>'
+    begin=time.monotonic();p={'__name__':'p10_nf_sparse_adapter'};file='<nf-sparse-adapter>'
     linecache.cache[file]=(len(SP_SOURCE),None,SP_SOURCE.splitlines(True),file);exec(compile(SP_SOURCE,file,'exec'),p)
-    old={};file='<s15-pool-control>';linecache.cache[file]=(len(BASE_SOURCE),None,BASE_SOURCE.splitlines(True),file);exec(compile(BASE_SOURCE,file,'exec'),old)
+    old={'__name__':'p10_s15_pool_control'};file='<s15-pool-control>';linecache.cache[file]=(len(BASE_SOURCE),None,BASE_SOURCE.splitlines(True),file);exec(compile(BASE_SOURCE,file,'exec'),old)
     if weights is None or 'pooler' not in weights:
         g=torch.Generator(device='cuda').manual_seed(61791)
         def rand(n,k):return (torch.randn((n,k),device='cuda',generator=g)/math.sqrt(k)).bfloat16()
@@ -19,7 +19,7 @@ def lab(deadline,weights,state=None):
             name=label+('vec' if vector else 'sp' if sparse else 'raw');bank=p['sp_prepare'](weights,wr,wk,s,st,sparse,vector);plans[name]=bank
             stats.append((name,bank['stats']))
     def graph(fn):
-        for _ in range(2):fn()
+        for _ in range(2):fn();torch.cuda.synchronize()
         torch.cuda.synchronize();g=torch.cuda.CUDAGraph()
         with torch.cuda.graph(g):fn()
         g.replay();torch.cuda.synchronize();return g
@@ -52,11 +52,23 @@ def lab(deadline,weights,state=None):
         for name in plans:graphs.append(graph(lambda name=name:consume(p['sp_project'](x,plans[name]))))
         rows={n:[] for n in names};maxerr={n:0. for n in plans};probes={n:0. for n in plans}
         for seed in (61791,14357,92003,17453,51613,72577,35111,81901):
-            g=torch.Generator(device='cuda').manual_seed(seed);x.copy_(torch.randn(x.shape,device='cuda',generator=g).bfloat16());x[-1]=0.;x[-1,(seed*131+t)%8192]=16.
+            g=torch.Generator(device='cuda').manual_seed(seed);x.copy_(torch.randn(x.shape,device='cuda',generator=g).bfloat16())
+            if t>1:x[-1]=0.;x[-1,(seed*131+t)%8192]=16.
             ref=x.double()@w.double().T
+            cp=control();cv=cp[0].double().sum(0);ce=float((cv-ref).norm()/ref.norm());assert ce<3e-5,('CONTROL',t,seed,ce)
+            route_a=consume(cp);torch.cuda.synchronize()
             for name,bank in plans.items():
                 got=p['sp_project'](x,bank)[0][0].double();err=float((got-ref).norm()/ref.norm());probe=float((got[-1]-ref[-1]).norm()/ref[-1].norm())
-                assert err<3e-5 and probe<1e-5,(t,name,err,probe);maxerr[name]=max(maxerr[name],err);probes[name]=max(probes[name],probe)
+                assert err<3e-5 and (t==1 or probe<1e-5),(t,name,err,probe);maxerr[name]=max(maxerr[name],err)
+                route_b=consume(p['sp_project'](x,bank));torch.cuda.synchronize()
+                assert torch.equal(route_a[1],route_b[1]) and torch.equal(route_a[3],route_b[3]),('route ids',t,name,seed)
+                assert float((route_a[2]-route_b[2]).norm()/route_a[2].norm())<1e-4,('route weights',t,name,seed)
+                assert float((route_a[0].float()-route_b[0].float()).norm()/route_a[0].float().norm())<.004,('pooled norm',t,name,seed)
+            original=x.clone();x.zero_();x[:,(seed*131+t)%8192]=16.;probe_ref=x.double()@w.double().T
+            cv=control()[0].double().sum(0);assert float((cv-probe_ref).norm()/probe_ref.norm())<1e-5,('CONTROL probe',t,seed)
+            for name,bank in plans.items():
+                got=p['sp_project'](x,bank)[0][0].double();probe=float((got-probe_ref).norm()/probe_ref.norm());assert probe<1e-5,(t,name,'probe',probe);probes[name]=max(probes[name],probe)
+            x.copy_(original)
             vals=times(graphs,12)
             for name,v in zip(names,vals):rows[name].append(v-empty)
         aa=max(abs(b/a-1) for a,b in zip(rows['S15'],rows['AA']))

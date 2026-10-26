@@ -1,9 +1,24 @@
 {
-  "updated_utc": "2026-10-26T01:27:24.537069+00:00",
+  "updated_utc": "2026-10-26T02:17:15.328134+00:00",
   "runs": [
     {
       "kind": "pool",
-      "status": "pending"
+      "job": "b02c4f27e71c4340",
+      "status": "unmeasured",
+      "complete": false,
+      "expected_rows": 48,
+      "rows_found": 0,
+      "host_passed": true,
+      "host_error": null,
+      "receipt": "runs/muse_attention_decode/20261026T015041Z_check_b02c4f27e71c4340.json",
+      "rows": [],
+      "error_lines": [
+        "LAB_ERROR CompilationError: at 6:4:",
+        "AttributeError(\"'NoneType' object has no attribute 'startswith'\")",
+        "AttributeError(\"'NoneType' object has no attribute 'startswith'\")",
+        "LAB_ERROR host supplies weights=None; payloads needing weights must synthesize them (state is also None on import-time hosts)"
+      ],
+      "caveat": "lab validity uses its own gates; the host board score is not the lab result"
     },
     {
       "kind": "all",

@@ -10,6 +10,7 @@ for r in gap['ranking']:
     if r['passed']:
         ratio=f"SGLang/ours {r['our_speedup']:.5f} [{r['speedup_ci'][0]:.5f},{r['speedup_ci'][1]:.5f}]; ours/leader {r['time_ratio_to_component_leader']:.5f}; A:A unavailable"
         scope=f"{r['tests']} tests/{r['shapes']} shapes pass. Leader per-shape times unpublished; aggregate gap only; no layer promotion."
+        if r['role']=='projection':scope+=' Includes board sum/cast/router-add tax; one-reducer/producer-only follow-up queued.'
     else:ratio='unmeasured: component correctness/setup failed';scope=r.get('error') or 'Inspect the receipt before rebuilding this adapter.'
     rows.append((f"P12 S15 {r['role']} component",ratio,'Frozen S15 path behind the board ABI; official paired SGLang control',scope,r['job']))
 result=json.loads((A/'results.json').read_text())

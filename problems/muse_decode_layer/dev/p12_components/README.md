@@ -28,3 +28,8 @@ Leader per-shape times are not published. Ratios below compare aggregate compone
 | moe | 2.02924 | [1.9988011252708926, 2.059678316903508] | 1.25835 | 5 / 6 | `97f5e7f3c3fc4159` |
 
 MoE per-shape us at T1/8/16/32/128/256: **30.878 /72.944 /105.207 /138.927 /207.993 /268.911**. All five required tests and six timed-shape checks passed. This completes the MoE diagnostic; it does not propose a new layer kernel. Attention and projections still await receipts before the stage ranking is complete.
+
+
+Projection receipt `d6ad694a27954c80` passed9tests/30shapes and scored **0.98059x** [0.96588,0.99530], an aggregate **1.65590x** time gap to the component leader. It includes a measured board-adapter sum/cast/router-add chain, unlike fused in-layer consumers. This is a valid board result, not a direct inference of that layer stage's gap. `projection_reduce.py.inc` uses one Triton output reducer (including router hi+lo), preserving every S15 producer. Normal+forced9/30/25 and the exact30shape8seed paired lab pass locally. Follow-up sender **1147249**, MoE priority4.5, payload `917e4ec6`, wrapper `4502b8bb` (481537 bytes), on compact judged host `ac9dd461`. The oversized default-host waiter1130147 was cancelled before acceptance; it consumed no judge job. The follow-up separates A/A2 old adapter, reduced adapter B and producer-only P, each with FP64/probe checks. Promote the new component adapter only if it beats its A:A envelope; layer integration remains separate.
+
+Attention's scored-only waiter939623 was held to tomorrow after scored quota filled while checks remained. Replaced with exact-source check sender776198, accepted **4e108beb9a0a4cdb**. This is the same admitted f38b9ae3 code and completes the diagnostic without waiting for scored capacity.

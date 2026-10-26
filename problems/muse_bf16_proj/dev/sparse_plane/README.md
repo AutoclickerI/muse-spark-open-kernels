@@ -47,3 +47,10 @@ Queue: one attention-host import lab, budget420 s, priority4.5, not-before epoch
 Rebuild: `build.py`, `build_board.py`, `build_lab.py`; screen all named arms with `tools/img python screen.py <arm>`; aggregate with `report.py`. The implementation is in this directory; the only external source dependency is the committed authorized `public_nf/port.py`, `nf_selected.py`, and license. No public-source expansion tool is run.
 
 Final handoff: P10 sender **1134936**, wrapper **1a03dfa6906c8242**, payload **3ec6e318**, source-screen candidate **266ad770**; no accepted H200 job yet. Existing reset sender3526702 /49ce378bb4bbb287 is unchanged. `manifest.json` pins the reproducible source and generated artifact hashes.
+
+
+## Reset receipt and repair
+
+Job `b02c4f27e71c4340` produced no comparison rows: the balanced control failed Triton compilation with `NoneType.startswith` because the executed source namespace lacked `__name__`. This is **unmeasured**, not a sparse-format or geometry loss. The repaired payload supplies stable names for both source namespaces, synchronizes shared-buffer warmups, checks the raw control against FP64, validates fused route/norm outputs, and times random M1 inputs with separate one-hot probes. All48 local comparisons pass; original twelve native units and TASK admissions remain unchanged.
+
+Repair sender **1127183**, prefill priority4.5, payload `4cab544f`, wrapper `f38ad830` (803592 bytes). This is a fresh import-phase lab on a host with quota; it leaves the original receipt intact. No candidate is promoted until the repaired control and eight-seed A:A decision rule pass.

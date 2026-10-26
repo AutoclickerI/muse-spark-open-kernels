@@ -94,7 +94,7 @@ Evidence: `sizes.json`, `native_sizes.json`, `load_bytes.json`, `manifest.json`,
 
 ## Prepared decoder follow-up
 
-The original two sparse-plane batches are still waiting for their judge slots as of the 09:25 reset audit. They remain unchanged. `analyse.py` accepts only complete gated receipts and applies the recorded A:A decision rule; failed or incomplete controls remain unmeasured.
+At the 09:25 reset audit both sparse-plane batches were waiting for judge slots; the pool receipt later failed control setup and is being repaired (sparse_plane README). They remain unchanged. `analyse.py` accepts only complete gated receipts and applies the recorded A:A decision rule; failed or incomplete controls remain unmeasured.
 
 `build_decoder_lab.py` prepares one follow-up with ten native role/shape cells, eight seeds and cold A/A2/scalar/vector/hoisted-view comparisons. It keeps the exact same encoded banks and escape metadata. The vector reader uses a three-step 3-to-4-bit butterfly, PRMT nibble transpose and sign rotation. The view reader additionally loads invariant bank pointers once outside the K loop, issues dense loads before the extension-index chain, and retains NC/no-allocate vector loads. CP staging and all existing MMA/reduction/PDL paths remain intact.
 
@@ -107,4 +107,7 @@ Decision update after full local control validation: the arms are independent of
 
 The grouped Triton reader broadcasts codewords and escape masks across each1024-weight unit, then inverts the native-fragment permutation before the existing dot. It leaves tile geometry, split reductions and PDL ordering intact. Ten matrix bit proofs, all current-path tests,16 direct arithmetic cases over three seeds, normal+forced TASK screens9/30/25 and12 Hopper Triton compile specializations pass. QKV128 NS8 shared memory falls139328→83216 bytes; the new NS8 path runs locally. `combined_admission.json` pins the combined30-cell, eight-seed rehearsal and the680090-byte host.
 
-Combined follow-up sender **602052**, prefill priority **12.1**, behind original all-role sender1557027. Payload `2c8576d0`, wrapper `f2188bce`. It includes ten native scalar/vector/view cells and twenty grouped-point cells, all with explicit control correctness and A:A. No H200 result or layer promotion is claimed yet.
+Combined follow-up accepted as **3a91afeed9ea47fd** from sender602052. The duplicate reprioritized waiter959745 was cancelled before send; one copy remains at the judge. Payload `2c8576d0`, wrapper `f2188bce`. It includes ten native scalar/vector/view cells and twenty grouped-point cells, all with explicit control correctness and A:A. No H200 result or layer promotion is claimed yet.
+
+
+Reset queue update: the original all-role source is unchanged (`d50be2e7`), now sender **959648**, priority **4.6**, after P12/pool. The original reset-prefill predecessors have finished; this avoids newly queued second-round work deferring it indefinitely. No all-role receipt exists yet.

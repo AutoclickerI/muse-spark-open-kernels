@@ -5,7 +5,7 @@ H=Path(__file__).resolve().parent;R=H.parents[3];sys.path[:0]=[str(R/'tools')]
 import local_eval
 import static_cache
 static_cache.install(local_eval)
-role=sys.argv[1];forced='--forced' in sys.argv
+role=sys.argv[1];forced='--forced' in sys.argv;reduce='--reduce' in sys.argv
 loader=local_eval.load_module;calls={}
 def load(name,path):
  m=loader(name,path)
@@ -31,7 +31,7 @@ def load(name,path):
   setattr(m,label,counted)
  return m
 local_eval.load_module=load
-out=H/'screen'/role/('forced' if forced else 'normal');out.mkdir(parents=True,exist_ok=True)
-sys.argv=['local_eval.py',str(H/('cand_s15_'+role+'.py')),'--no-baseline','--reps','2','--inputs','3','--json',str(out/'result.json')]
+out=H/'screen'/role/(('reduce_' if reduce else '')+('forced' if forced else 'normal'));out.mkdir(parents=True,exist_ok=True)
+sys.argv=['local_eval.py',str(H/('cand_s15_'+role+('_reduce' if reduce else '')+'.py')),'--no-baseline','--reps','2','--inputs','3','--json',str(out/'result.json')]
 try:local_eval.main()
 finally:(out/'calls.json').write_text(json.dumps(calls,indent=2)+'\n')
