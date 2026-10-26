@@ -13,11 +13,14 @@ our modules, since the judge gets the one file. The optional third argument is t
 host's already-completed base prepare; it avoids rebuilding a long tuner when a lab measures that state.
 With --phase import (also automatic without prepare), payloads run once after the host's definitions at module import, with weights=None and
 state=None; payloads needing weights must synthesize them. The import budget starts at the wrapper,
-after any import work already present in the best source. Neither kernel nor kernel_fn is changed.
+after any import work already present in the best source. On hosts with a judge-called prepare(),
+import-phase lab diagnostics are buffered until that prepare finishes (also if it raises), so host tuning
+cannot displace them from the receipt's log tail. On attention or a host without prepare(), they print
+at import. Execution stays at import in both cases. Neither kernel nor kernel_fn is changed.
 The judge's image has torch, triton and SGLang's kernels.
 
-The lab file is the host's best scored source (ledger) with prepare() wrapped: the base prepare runs
-first and its state is returned unchanged, so the run still scores, and the board keeps our best anyway.
+The lab file is the host's best scored source (ledger). In prepare-phase labs, the wrapped base prepare
+runs first and its state is returned unchanged, so the run still scores, and the board keeps our best anyway.
 Each payload's source is embedded as a string and executed in its own namespace (a copy of the host
 module's globals, so host functions stay reachable and payload names can't collide), one after another,
 each with an equal share of the time left. Payloads make L2 cold with `lab_cold_l2()` (a read, as the judge
@@ -65,6 +68,11 @@ WRAPPER = '''
 _LAB_PAYLOADS = {payloads!r}
 _lab_ran = False
 _lab_flush_buf = None
+_lab_output = []
+
+
+def _lab_print(line):
+    {print_line}
 
 
 def lab_cold_l2():
@@ -119,10 +127,10 @@ def _lab_run(weights, state, _start, _end, _phase):
                 _out = _head + [f"LAB_TRUNCATED {{len(_lines) - 2 - len(_tail)}} middle lines"] + _tail
             else:
                 _out = _lines
-            print(f"LAB_BEGIN {{_name}} {{_sha}}", flush=True)
+            _lab_print(f"LAB_BEGIN {{_name}} {{_sha}}")
             for _l in _out:
-                print(_l, flush=True)
-            print(f"LAB_END lab_s={{_t.monotonic() - _t0:.1f}} {{_phase}}_s={{_t.monotonic() - _start:.1f}}", flush=True)
+                _lab_print(_l)
+            _lab_print(f"LAB_END lab_s={{_t.monotonic() - _t0:.1f}} {{_phase}}_s={{_t.monotonic() - _start:.1f}}")
 '''
 
 PREPARE_WRAPPER = '''
@@ -141,6 +149,20 @@ IMPORT_WRAPPER = '''
 import time as _lab_time
 _lab_import_start = _lab_time.monotonic()
 _lab_run(None, None, _lab_import_start, _lab_import_start + {budget}, "import")
+'''
+
+IMPORT_PREPARE_WRAPPER = '''
+_lab_base_prepare = prepare
+
+
+def prepare(weights):
+    try:
+        return _lab_base_prepare(weights)
+    finally:
+        # Emit after the host tuner, whose output can exceed the judge's entire log tail.
+        for _line in _lab_output:
+            print(_line, flush=True)
+        _lab_output.clear()
 '''
 
 
@@ -271,13 +293,16 @@ def build(embedded: list, host: str, import_budget: float = IMPORT_BUDGET_S, pha
     # zero-argument prepare() tuner that it calls itself during import; leave that intact.
     if phase not in ("auto", "import"):
         sys.exit("--phase must be auto or import")
-    has_prepare = phase != "import" and host != "muse_attention_decode" and any(
+    has_prepare = host != "muse_attention_decode" and any(
         isinstance(n, ast.FunctionDef) and n.name == "prepare" for n in ast.parse(src).body)
+    prepare_phase = has_prepare and phase != "import"
     out = src.rstrip() + "\n\n" + WRAPPER.format(
         names=", ".join(f"{n} {s}" for n, s, _ in embedded), base=base["job"], payloads=embedded,
-        limit=LIMIT)
-    out += (PREPARE_WRAPPER if has_prepare else IMPORT_WRAPPER).format(
-        budget=300 - MARGIN_S if has_prepare else import_budget)
+        limit=LIMIT, print_line="_lab_output.append(line)" if has_prepare and not prepare_phase else "print(line, flush=True)")
+    out += (PREPARE_WRAPPER if prepare_phase else IMPORT_WRAPPER).format(
+        budget=300 - MARGIN_S if prepare_phase else import_budget)
+    if has_prepare and not prepare_phase:
+        out += IMPORT_PREPARE_WRAPPER
     return out, base["job"]
 
 
