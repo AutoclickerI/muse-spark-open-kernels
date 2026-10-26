@@ -1,0 +1,253 @@
+{
+  "base": "60254883",
+  "receipt": "runs/muse_attention_decode/20261026T053554Z_check_4df30d04a39e433e.json",
+  "points": [
+    {
+      "arm": "R4",
+      "shape": "16x1f",
+      "r": 0.9367847925652005,
+      "se": 0.0014476469358150248,
+      "lo": 0.9333616515138865,
+      "hi": 0.9402079336165146,
+      "seeds": [
+        2671223,
+        2679142,
+        2687061,
+        2694980,
+        2702899,
+        2710818,
+        2718737,
+        2726656
+      ],
+      "nominated": true,
+      "patch": "problems/muse_attention_decode/dev/full_attention/page_ring/R4.patch",
+      "source_sha256": "f176779b49c1306eb4e96f0d401eedcea308b06f1e837eeaf41ecd01235e900f",
+      "cuda_sha256": "cd44b470832bb348f0c7ce8d5b7aebfb7bf914e4f1279d314970f3e79345f049",
+      "page_lookahead": 4,
+      "added_shared": 1024,
+      "patch_sha256": "ecf7830eeef403da0530d654c0e3ccd950a73351de6c0397422c51ae25324148",
+      "cuda_patch": "problems/muse_attention_decode/dev/full_attention/page_ring/R4.cuda.patch",
+      "cuda_patch_sha256": "66d43e61d8bdcbccfbf6ed5342c8678676b6ee9bd788bdfdcb04ebe912bd4314"
+    },
+    {
+      "arm": "R4",
+      "shape": "32x1f",
+      "r": 0.9265845476944818,
+      "se": 0.0015288951228066671,
+      "lo": 0.9229692852098575,
+      "hi": 0.9301998101791061,
+      "seeds": [
+        2671223,
+        2679142,
+        2687061,
+        2694980,
+        2702899,
+        2710818,
+        2718737,
+        2726656
+      ],
+      "nominated": true,
+      "patch": "problems/muse_attention_decode/dev/full_attention/page_ring/R4.patch",
+      "source_sha256": "f176779b49c1306eb4e96f0d401eedcea308b06f1e837eeaf41ecd01235e900f",
+      "cuda_sha256": "cd44b470832bb348f0c7ce8d5b7aebfb7bf914e4f1279d314970f3e79345f049",
+      "page_lookahead": 4,
+      "added_shared": 1024,
+      "patch_sha256": "ecf7830eeef403da0530d654c0e3ccd950a73351de6c0397422c51ae25324148",
+      "cuda_patch": "problems/muse_attention_decode/dev/full_attention/page_ring/R4.cuda.patch",
+      "cuda_patch_sha256": "66d43e61d8bdcbccfbf6ed5342c8678676b6ee9bd788bdfdcb04ebe912bd4314"
+    },
+    {
+      "arm": "R8",
+      "shape": "16x1f",
+      "r": 0.9335677723508757,
+      "se": 0.0012568551695048597,
+      "lo": 0.9305957821370698,
+      "hi": 0.9365397625646816,
+      "seeds": [
+        2671223,
+        2679142,
+        2687061,
+        2694980,
+        2702899,
+        2710818,
+        2718737,
+        2726656
+      ],
+      "nominated": true,
+      "patch": "problems/muse_attention_decode/dev/full_attention/page_ring/R8.patch",
+      "source_sha256": "17bfdfd78f647dce19c5dbdf19e7ceab0096340c3021066116376b532acb9829",
+      "cuda_sha256": "3aefb787a449669bfe1c70d34267edd936db042a7b25ebd7cc1652242b87a76b",
+      "page_lookahead": 8,
+      "added_shared": 2048,
+      "patch_sha256": "5c1d5de7df52a32b5f7e4bf29d42d1e9afe23a6d2594dba4744d6b6417c35b59",
+      "cuda_patch": "problems/muse_attention_decode/dev/full_attention/page_ring/R8.cuda.patch",
+      "cuda_patch_sha256": "64be72c5af254beced8e55a0d1fd4e0a7994a96144bb06a7e5276d4e915975df"
+    },
+    {
+      "arm": "R8",
+      "shape": "32x1f",
+      "r": 0.9238362574958763,
+      "se": 0.001884099159859496,
+      "lo": 0.9193810709311838,
+      "hi": 0.9282914440605687,
+      "seeds": [
+        2671223,
+        2679142,
+        2687061,
+        2694980,
+        2702899,
+        2710818,
+        2718737,
+        2726656
+      ],
+      "nominated": true,
+      "patch": "problems/muse_attention_decode/dev/full_attention/page_ring/R8.patch",
+      "source_sha256": "17bfdfd78f647dce19c5dbdf19e7ceab0096340c3021066116376b532acb9829",
+      "cuda_sha256": "3aefb787a449669bfe1c70d34267edd936db042a7b25ebd7cc1652242b87a76b",
+      "page_lookahead": 8,
+      "added_shared": 2048,
+      "patch_sha256": "5c1d5de7df52a32b5f7e4bf29d42d1e9afe23a6d2594dba4744d6b6417c35b59",
+      "cuda_patch": "problems/muse_attention_decode/dev/full_attention/page_ring/R8.cuda.patch",
+      "cuda_patch_sha256": "64be72c5af254beced8e55a0d1fd4e0a7994a96144bb06a7e5276d4e915975df"
+    },
+    {
+      "arm": "D",
+      "shape": "16x8f",
+      "r": 0.9782708909493392,
+      "se": 0.001882977204939079,
+      "lo": 0.97381835738646,
+      "hi": 0.9827234245122183,
+      "seeds": [
+        2671223,
+        2679142,
+        2687061,
+        2694980,
+        2702899,
+        2710818,
+        2718737,
+        2726656
+      ],
+      "nominated": true,
+      "patch": "problems/muse_attention_decode/dev/full_attention/pvsum/candidate.patch",
+      "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+      "candidate_sha256": "5c8ba960c84753938bed9588105f0e30e18430a633264fa9b8f8e361f6711d53",
+      "cuda_sha256": "404c6e9c8c465cbe306a90ae2e8b60a52363735071d85c855e7b0ba916ed6bf0",
+      "patch_sha256": "b4fa05fffc5171220828f5f2f57170ed270b8893c9d66da6901b024695475673",
+      "promotion": false,
+      "source_sha256": "5c8ba960c84753938bed9588105f0e30e18430a633264fa9b8f8e361f6711d53",
+      "cuda_patch": "problems/muse_attention_decode/dev/full_attention/page_ring/D.cuda.patch",
+      "cuda_patch_sha256": "80c0a2506d460608e1e809ce150fe011eb409125874e2ee4da7a625e02e945bb"
+    },
+    {
+      "arm": "D",
+      "shape": "32x8f",
+      "r": 0.9822801775012111,
+      "se": 0.0013746094124150107,
+      "lo": 0.9790297427489617,
+      "hi": 0.9855306122534605,
+      "seeds": [
+        2671223,
+        2679142,
+        2687061,
+        2694980,
+        2702899,
+        2710818,
+        2718737,
+        2726656
+      ],
+      "nominated": true,
+      "patch": "problems/muse_attention_decode/dev/full_attention/pvsum/candidate.patch",
+      "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+      "candidate_sha256": "5c8ba960c84753938bed9588105f0e30e18430a633264fa9b8f8e361f6711d53",
+      "cuda_sha256": "404c6e9c8c465cbe306a90ae2e8b60a52363735071d85c855e7b0ba916ed6bf0",
+      "patch_sha256": "b4fa05fffc5171220828f5f2f57170ed270b8893c9d66da6901b024695475673",
+      "promotion": false,
+      "source_sha256": "5c8ba960c84753938bed9588105f0e30e18430a633264fa9b8f8e361f6711d53",
+      "cuda_patch": "problems/muse_attention_decode/dev/full_attention/page_ring/D.cuda.patch",
+      "cuda_patch_sha256": "80c0a2506d460608e1e809ce150fe011eb409125874e2ee4da7a625e02e945bb"
+    }
+  ],
+  "policy": "Stage points nominate; no standalone G0 claim from six full shapes. P4 composes and checks paired six-load R on held-out seeds.",
+  "preferred": {
+    "16x1f": "R8",
+    "32x1f": "R8",
+    "16x8f": "D",
+    "32x8f": "D"
+  },
+  "TASK_checks": 491,
+  "A_A": {
+    "1x1f": {
+      "r": 0.998592080425533,
+      "se": 0.004034156539639056,
+      "lo": 0.9890528160395723,
+      "hi": 1.0081313448114937
+    },
+    "16x1f": {
+      "r": 1.0009960282043326,
+      "se": 0.0009659881017862584,
+      "lo": 0.9987118293126714,
+      "hi": 1.003280227095994
+    },
+    "32x1f": {
+      "r": 0.9992690641195172,
+      "se": 0.001051688684510207,
+      "lo": 0.996782215551622,
+      "hi": 1.0017559126874123
+    },
+    "1x8f": {
+      "r": 0.9976653379089264,
+      "se": 0.003437657116745396,
+      "lo": 0.9895365705240475,
+      "hi": 1.0057941052938053
+    },
+    "16x8f": {
+      "r": 0.9966552474866236,
+      "se": 0.0011185026975795345,
+      "lo": 0.9940104088831181,
+      "hi": 0.9993000860901291
+    },
+    "32x8f": {
+      "r": 0.9980842052644214,
+      "se": 0.0010578614347673569,
+      "lo": 0.9955827604615729,
+      "hi": 1.00058565006727
+    }
+  },
+  "controls_note": "Verify16 A:A .996655 CI excludes1; retain drift. Confirm held-out whole-layer G0.",
+  "integration_note": "Root patches apply onto exact S15 60254883; source-only CUDA hunks permit preserving S18 PDL and V-wait removal. Select R8 only decode16/32full, D only verify16/32full. No changed dispatch for d1/v1.",
+  "S18_ports": {
+    "R8": {
+      "S18_source": "problems/muse_decode_layer/cand_r3_best7_s18_95df42fe7b3a.py",
+      "S18_source_sha256": "e04635ec0369348273c945204be0795ca93d47f36e7d57078ce5d025693994c9",
+      "before_cuda_sha256": "aeeb4aa8c00bfff0632ca6e40a7f16a7130b831b1d9f9e7bb4c6e26a4cf7d259",
+      "after_cuda_sha256": "5de7a696264fff0afdadd2fef92690a359de437c78262ca3d7183670f9ae30a0",
+      "patch": "problems/muse_attention_decode/dev/full_attention/page_ring/R8_S18.cuda.patch",
+      "patch_sha256": "5bf55205f510e30ce3ba51354322c60f734f45ebf49f3f57f1aa1b0858357503",
+      "existing_dependency_counts_preserved": true,
+      "correctness": "S15 arm has native TASK proof; S18 composition remains P4 validation",
+      "native_compile": {
+        "registers": 122,
+        "spill_bytes": 0,
+        "c75": false,
+        "report": "problems/muse_attention_decode/dev/full_attention/page_ring/native_S18_VQ8_CUDA_R8_S18.json"
+      }
+    },
+    "D": {
+      "S18_source": "problems/muse_decode_layer/cand_r3_best7_s18_95df42fe7b3a.py",
+      "S18_source_sha256": "e04635ec0369348273c945204be0795ca93d47f36e7d57078ce5d025693994c9",
+      "before_cuda_sha256": "3a642563d31089467fe36c0053445de4b11e7223e44d5addf4112b5a4584f478",
+      "after_cuda_sha256": "36b40412cb5a4d79b1d0afb5f9437dc7d40e66249b1380294c7ee7f4a6ac4d04",
+      "patch": "problems/muse_attention_decode/dev/full_attention/page_ring/D_S18.cuda.patch",
+      "patch_sha256": "2948c3e5a1f73cc26986957ba305d6edc0c1e6a3848638af01fd08d7ee024e3b",
+      "existing_dependency_counts_preserved": true,
+      "correctness": "S15 arm has native TASK proof; S18 composition remains P4 validation",
+      "native_compile": {
+        "registers": 168,
+        "spill_bytes": 32,
+        "S18_baseline_spill_bytes": 24,
+        "c75": false,
+        "report": "problems/muse_attention_decode/dev/full_attention/page_ring/native_D_S18.json"
+      }
+    }
+  }
+}

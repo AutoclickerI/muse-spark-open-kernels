@@ -1,0 +1,48 @@
+--- a/S18_ATTN_PORT_CUDA_SRC.cu
++++ b/S18_ATTN_PORT_CUDA_SRC.cu
+@@ -284,7 +284,26 @@
+   const uint8_t* kbase = p.k_cache + kvg * ROWB + lc * 16;
+   const uint8_t* vbase = p.v_cache + kvg * ROWB + lc * 16;
+ 
++  constexpr int PD=8;
++  __shared__ __align__(128) int page_ring[PD][64];
++  const bool use_ring=(L==1 && !p.window);
++  auto page_issue=[&](int tile){
++    if(threadIdx.x<64){
++      const int key=c_lo+tile*T+threadIdx.x;
++      const int clamped=min(key,max(seq-1,0));
++      const int*src=pt+(clamped>>p.ps_log2);
++      asm volatile("cp.async.ca.shared.global [%0], [%1], 4;" ::"r"(smem_u32(&page_ring[tile%PD][threadIdx.x])),"l"(src):"memory");
++    }
++  };
++  if(use_ring){
++    for(int j=0;j<PD;j++)page_issue(j);
++    cp_commit();cp_wait<0>();__syncthreads();
++  }
+   auto load_rows = [&](int tile, int (&rows)[4]) {
++    if(use_ring){
++      for(int k=0;k<4;k++)rows[k]=tile; // slot index, no global page dependency
++      return;
++    }
+ #pragma unroll
+     for (int k = 0; k < 4; ++k) {
+       const int t = c_lo + tile * T + lt + 16 * k;
+@@ -296,10 +315,14 @@
+     for (int k = 0; k < 4; ++k) {
+       const int t = lt + 16 * k;
+       const int off = slot * TILE_BYTES + t * ROWB + ((lc ^ swz(t)) << 4);
+-      const long long r = rows[k] < 0 ? 0 : rows[k];
+-      cp_async16(smem_u32(sK + off), kbase + r * p.row_bytes, rows[k] < 0 ? 0 : 16);
+-      cp_async16(smem_u32(sV + off), vbase + r * p.row_bytes, rows[k] < 0 ? 0 : 16);
+-    }
++      const int key=c_lo+rows[k]*T+t;
++      const bool valid=use_ring?(key<c_hi):(rows[k]>=0);
++      const int page=use_ring?page_ring[rows[k]%PD][t]:0;
++      const long long r=use_ring?(page*p.ps+(key&(p.ps-1))):(rows[k]<0?0:rows[k]);
++      cp_async16(smem_u32(sK + off), kbase + r * p.row_bytes, valid ? 16 : 0);
++      cp_async16(smem_u32(sV + off), vbase + r * p.row_bytes, valid ? 16 : 0);
++    }
++    if(use_ring){__syncthreads();page_issue(rows[0]+PD);}
+   };
+ 
+   // Every independent global load of the prologue goes out first (page-table rows, queries,

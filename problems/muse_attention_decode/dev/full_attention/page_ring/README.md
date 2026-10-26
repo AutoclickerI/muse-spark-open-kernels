@@ -41,6 +41,65 @@ h200_lab.py build with page_ring/host.py; screen_roof.py --page-ring and
 --forced in the judge image, CUDA_VISIBLE_DEVICES=0. Normal and forced pass480TASK+16host+2static (94.03/74.28s private).
 Wrapperf5989be1,payloaddf468887. Accepted attention-host check
 4df30d04a39e433e,sender2948858,priority3;queue.json/admission.json pin it.
-No ratio or native correctness is inferred until the receipt lands.
+Receipt landed:491/491TASK passed (480fixture/scored+11native profile),
+8seeds8cold,172.8s private. Outer host checker also passes.
 D's known16Bmain spills are retained in this arm; its speed is measured,
 not inferred from fewer scalar additions.
+
+## Measured result and S18 handoff
+
+Ratios are new/S15 time with95%t7 intervals from8paired seed ratios.
+
+|Arm / full shape|Time ratio [95%CI]|
+|---|---:|
+|G / 16x1f|1.156528 [1.137802,1.175255]|
+|G / 32x1f|1.188854 [1.174186,1.203522]|
+|R4 / 16x1f|0.936785 [0.933362,0.940208]|
+|R4 / 32x1f|0.926585 [0.922969,0.930200]|
+|R8 / 16x1f|0.933568 [0.930596,0.936540]|
+|R8 / 32x1f|0.923836 [0.919381,0.928291]|
+|D / 16x8f|0.978271 [0.973818,0.982723]|
+|D / 32x8f|0.982280 [0.979030,0.985531]|
+
+R8 is the point choice at both decode shapes; R4 is also nominated as a
+measured alternative. Both retain3CTA/SM and exact split/cluster plans
+24/2 and12/2. At d16/d32 A->R8 page-issue cycles1703->825/1697->846;
+loop173333->141209/344255->279984. Copy wait grows27->176/25->142,
+so hiding coordinates exposes transport; it is not free bandwidth.
+Logical stage bandwidth R8 is about3.44/3.68TB/s, still below4.58TB/s
+array stream. Clock overhead affects absolute figures; the main wall-time
+ratios use uninstrumented kernels.
+
+D v16/v32 softmax1635->1515/1602->1491cycles per128-keytile; MMAissue
+305->452/305->446 because denominator WGMMA adds issue. Net stage
+time improves2.17/1.77% despite known16Bmain spills and unchanged1CTA/SM.
+This revises the old unmeasured abort to a real TASK-passing point win.
+
+A:A95%t7 by d1/d16/d32/v1/v16/v32:
+.998592[.989053,1.008131]/1.000996[.998712,1.003280]/
+.999269[.996782,1.001756]/.997665[.989537,1.005794]/
+.996655[.994010,.999300]/.998084[.995583,1.000586].
+Verify16's .33% directional control drift remains evidence; it does not
+veto this nomination or establish G0. Unmodified cell wins are not pieces.
+
+P4_HANDOFF.json carries every affected point below1,SE,seeds,CI,exact
+root-applicable patches onto S15 and readable CUDA-only hunks for S18.
+R8source17bfdfd7/patch5c1d5de7; Dsource5c8ba960/patchb4fa05ff.
+Port only targeted full shapes, preserving S18's other attention kernels,
+PDL enables/waits and redundant-V-wait elision. P4 confirms the held-out
+paired six-load G0; this stage-only receipt cannot promote a composition.
+
+Next structural scope is remaining verify softmax max/exp/packing and
+d1/v1 fixed prologue/reduction. The immediate-packing source experiment
+in ../pack/ does not cut native instruction/resource counts and earns no
+standalone H200 run. No extra small-increment follow-up was sent.
+
+S18 source e04635ec compatibility: R8's two source-only hunks apply
+unchanged. D's S15 context includes old full-barrier signatures, so use
+D_S18.cuda.patch2948c3e5, produced by port_s18.py from S18's actual
+post-exec VQ8 source. R8_S18.cuda.patch5bf55205 is the exact offset-adjusted
+R8 patch. All existing kfull/full waits, initializations and PDL waits are
+preserved. Both ports O3sm90a compile; R8q1 remains122regs/zero spills,
+Dhas32Bmain spills vs24B in the unchanged S18 VQ8 (S15 D16B); that
+composition's runtime/TASK validation belongs to P4. Source patch metadata
+and native resources are retained; no S18 gain is inferred from S15 data.

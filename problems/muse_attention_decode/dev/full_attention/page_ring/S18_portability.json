@@ -1,0 +1,35 @@
+{
+  "R8": {
+    "S18_source": "problems/muse_decode_layer/cand_r3_best7_s18_95df42fe7b3a.py",
+    "S18_source_sha256": "e04635ec0369348273c945204be0795ca93d47f36e7d57078ce5d025693994c9",
+    "before_cuda_sha256": "aeeb4aa8c00bfff0632ca6e40a7f16a7130b831b1d9f9e7bb4c6e26a4cf7d259",
+    "after_cuda_sha256": "5de7a696264fff0afdadd2fef92690a359de437c78262ca3d7183670f9ae30a0",
+    "patch": "problems/muse_attention_decode/dev/full_attention/page_ring/R8_S18.cuda.patch",
+    "patch_sha256": "5bf55205f510e30ce3ba51354322c60f734f45ebf49f3f57f1aa1b0858357503",
+    "existing_dependency_counts_preserved": true,
+    "correctness": "S15 arm has native TASK proof; S18 composition remains P4 validation",
+    "native_compile": {
+      "registers": 122,
+      "spill_bytes": 0,
+      "c75": false,
+      "report": "problems/muse_attention_decode/dev/full_attention/page_ring/native_S18_VQ8_CUDA_R8_S18.json"
+    }
+  },
+  "D": {
+    "S18_source": "problems/muse_decode_layer/cand_r3_best7_s18_95df42fe7b3a.py",
+    "S18_source_sha256": "e04635ec0369348273c945204be0795ca93d47f36e7d57078ce5d025693994c9",
+    "before_cuda_sha256": "3a642563d31089467fe36c0053445de4b11e7223e44d5addf4112b5a4584f478",
+    "after_cuda_sha256": "36b40412cb5a4d79b1d0afb5f9437dc7d40e66249b1380294c7ee7f4a6ac4d04",
+    "patch": "problems/muse_attention_decode/dev/full_attention/page_ring/D_S18.cuda.patch",
+    "patch_sha256": "2948c3e5a1f73cc26986957ba305d6edc0c1e6a3848638af01fd08d7ee024e3b",
+    "existing_dependency_counts_preserved": true,
+    "correctness": "S15 arm has native TASK proof; S18 composition remains P4 validation",
+    "native_compile": {
+      "registers": 168,
+      "spill_bytes": 32,
+      "S18_baseline_spill_bytes": 24,
+      "c75": false,
+      "report": "problems/muse_attention_decode/dev/full_attention/page_ring/native_D_S18.json"
+    }
+  }
+}

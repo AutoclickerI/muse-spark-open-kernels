@@ -861,19 +861,37 @@ A:A95%t7 intervals by d1/d16/d32/v1/v16/v32 are [.994217,1.011484]/
 
 | Recipe | Ratio vs control | Mechanism | Leaves open | Receipt |
 |---|---|---|---|---|
-| Whole64-key balanced d1 partial split F |d1F1.004925,95%CI[.996716,1.013134] | No partial-tile overlap; same336CTAs/one launch/all keys; fixed prologue+merge remains | Close balancing alone as a winner; eliminate duplicated normalization and short-split merge work next | `97d6fa2bf2ec499b` |
+| Whole64-key balanced d1 partial split F |d1F1.004925,95%CI[.996716,1.013134] | Less padded tile work; same336CTAs/one launch/all keys/max4tile tail; fixed prologue+merge remains | Close balancing alone as a winner; eliminate duplicated normalization and short-split merge work next | `97d6fa2bf2ec499b` |
 | Quad-row/vector page lookup G |d16F1.163271[1.148947,1.177596],d32F1.182698[1.170122,1.195274] | Same bytes/splits/math, changed ownership and page vector reads; issue remains large | Tested mapping loses; original ownership with asynchronous coordinate lookahead remains | `97d6fa2bf2ec499b` |
 | Native one-launch partial-input v1 P |v1F1.400567[1.391031,1.410102] | Removes FA3 prep/metadata/combine/norm boundaries, retains every key | Tested native replacement loses40%; launch count alone does not explain roof gap, lower native prologue/inner-loop cost needed | `97d6fa2bf2ec499b` |
 | One-head N128 topology H1/H2 | H1v1/v16/v32F1.143737/1.241220/1.350739;H2 1.049733[1.036955,1.062511]/1.214812[1.203296,1.226327]/1.302626[1.296133,1.309120] | API confirms A1,H1/H2 2CTA/SM; half ring/256threads/producer32consumer216regs. Twice residency does not reduce total softmax/issue work | This topology loses despite achieved occupancy. Exact N128 softmax remains largest consumer phase; tensor denominator has not passed TASK yet | `97d6fa2bf2ec499b` |
 
 
-Follow-up4df30d04a39e433e (attention check,sender2948858) packs original-mapping
-R4/R8async page-coordinate rings and Dnative tensor-core denominator,
-A:A/Gcontrol,all6full loads8newseeds8cold;480TASK normal+forced pass locally.
-Native timing pending. D's prior4.77e-4 exact-operand discrepancy against
-an extra1e-6 oracle was not a TASK failure; it had no TASK/timing verdict.
-The new payload retains every TASK gate and tests the unchanged source,
-including its known16Bmain spills, instead of assigning a loss to the old abort.
+### P5b coordinate lookahead and tensor denominator verdict
+
+4df30d04a39e433e passes491TASK (480fixture/scored+11native phase gates),
+8freshseeds2671223+7919*i,8cold rounds,172.8s private. Ratios new/S15 time;
+95%t7 paired-seed intervals. A:A d1/d16/d32/v1/v16/v32:
+.998592[.989053,1.008131]/1.000996[.998712,1.003280]/
+.999269[.996782,1.001756]/.997665[.989537,1.005794]/
+.996655[.994010,.999300]/.998084[.995583,1.000586]. Verify16 directional
+control drift .33% is retained, not a per-load veto. Stage-only data does not
+establish whole-layer G0. Exact handoff: dev/full_attention/page_ring/P4_HANDOFF.json.
+S18-readable R8/D ports are5bf55205/2948c3e5 onto e04635ec; existing
+PDL/K/V waits preserved, Dport native compile succeeds (32Bmain spill).
+S18 composition speed/correctness remains P4, not inferred from S15.
+
+| Recipe | Ratio vs control | Mechanism | Leaves open | Receipt |
+|---|---|---|---|---|
+| R4 asynchronous4tile page-coordinate ring, original row ownership | d16F.936785[.933362,.940208];d32F.926585[.922969,.930200] | Shared coordinates eliminate late global-page dependency; actual3CTA/SM/splits unchanged, all keys; 1024Bshared | Both point winners to P4; R8 slightly better. Remaining KV issue/math overlap and fixed prologues remain | `4df30d04a39e433e` |
+| R8 asynchronous8tile page-coordinate ring | d16F.933568(SE.001257)[.930596,.936540];d32F.923836(.001884)[.919381,.928291] | Pageissue1703->825/1697->846cycles per64tile; copywait27->176/25->142 exposes transport. Same3CTA/SM,24/2 and12/2 split/cluster; 2048Bshared | Preferred d16/d32full to P4: source17bfdfd7/patch5c1d5de7 ontoS15, CUDA hunks preserve S18 PDL. Logical3.44/3.68TB/s still below4.58arraystream; G0 composition open | `4df30d04a39e433e` |
+| Dnative FP8 P*ones denominator co-issued in PV | v16F.978271(SE.001883)[.973818,.982723];v32F.982280(.001375)[.979030,.985531] | Scalar sum removed; exact N128softmax1635->1515/1602->1491cyc, MMAissue305->452/305->446. Same1CTA/SM despite known16Bmain spills; every TASK gate passes | Both points to P4 source5c8ba960/patchb4fa05ff; old extra1e-6 native oracle abort was unmeasured, now positive TASK verdict. Remaining max/exp/packing and denominator-in-original-PV remain; G0 with Vwait elision open | `4df30d04a39e433e` |
+| Repeated quad-row G control |d16F1.156528[1.137802,1.175255];d32F1.188854[1.174186,1.203522] | Reproduces97d6fa2b loss while R changes only page readiness, not ownership | Close vector/ownership form, not asynchronous coordinate prefetch | `4df30d04a39e433e` |
+
+
+| Recipe | Ratio vs control | Mechanism | Leaves open | Receipt |
+|---|---|---|---|---|
+| Immediate P packing into registers I | **Runtime unmeasured**; local normal+forced25fixtures eager/replay and25static pass each | Claimed live-range reduction not obtained: O3ST4 still168regs,+4Bspill,8105->8102static instructions; MUFU.EX2/F2FP/max/shuffle/add/FMA counts identical | No standalone run or P4 nomination; other layouts reducing actual softmax instructions remain | local `dev/full_attention/pack/instructions.json`,`native_I.json` |
 
 
 ## Projections and verify dense

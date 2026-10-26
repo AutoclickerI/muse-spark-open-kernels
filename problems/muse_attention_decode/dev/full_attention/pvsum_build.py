@@ -46,8 +46,8 @@ DI void pv_sum64(float (&o)[9][4],const uint32_t (&a)[8],const uint8_t* VT){
 '''
 
 
-def cuda():
-    c=original
+def cuda(source=None):
+    c=original if source is None else source
     c=one(c,'DI void pv128(float (&o)[8][4]',HELPER+'\nDI void pv128(float (&o)[9][4]')
     c=one(c,'wg_rs(o,a[4*j],a[4*j+1],a[4*j+2],a[4*j+3],va);',
           'wg_rs(*reinterpret_cast<float(*)[8][4]>(o),a[4*j],a[4*j+1],a[4*j+2],a[4*j+3],va);pv_den(o[8],a+4*j);')
@@ -63,8 +63,8 @@ def cuda():
     c=one(c,'    l[rh] = l[rh] * alpha[rh] + (sum0 + sum1);','')
     c=one(c,'      float lt = l[rh];','      float lt = O[8][2*rh]*.25f;')
     c=one(c,'uint8_t* Ks = Qs + 24576;','uint8_t* Ks = Qs + 25600;')
-    c=one(c,'  if (tid < ST) { mb_init(&full[tid], 4);',
-          '  if(tid<32)*(uint4*)(sm+CLKPAD+24576+16*tid)=make_uint4(0x38383838,0x38383838,0x38383838,0x38383838);\n  proxy_fence();\n  if (tid < ST) { mb_init(&full[tid], 4);')
+    c=one(c,'  if (tid < ST) {',
+          '  if(tid<32)*(uint4*)(sm+CLKPAD+24576+16*tid)=make_uint4(0x38383838,0x38383838,0x38383838,0x38383838);\n  proxy_fence();\n  if (tid < ST) {')
     c=one(c,'return CLKPAD + 24576 + ST * 49152;','return CLKPAD + 25600 + ST * 49152;')
     return c
 

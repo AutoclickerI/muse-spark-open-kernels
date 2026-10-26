@@ -20,9 +20,20 @@ for name,shapes in targets.items():
         z=d['summary'][shape]['ratios'][name]
         patch=H/'pvsum/candidate.patch' if name=='D' else (H/'roof' if a.page_ring and name=='G' else o)/(name+'.patch')
         row=dict(arm=name,shape=shape,**z,seeds=d['seeds'],nominated=z['r']<1,patch=str(patch.relative_to(R)),**meta[name]);points.append(row)
+        if a.page_ring and name in ('R4','R8','D'):
+            row['source_sha256']=row.get('source_sha256',row.get('candidate_sha256'))
+            cp=o/(name+'.cuda.patch');row.update(cuda_patch=str(cp.relative_to(R)),cuda_patch_sha256=hashlib.sha256(cp.read_bytes()).hexdigest())
 out=dict(receipt=str(a.receipt),receipt_sha256=hashlib.sha256(a.receipt.read_bytes()).hexdigest(),result=d,points=points,
     policy='Stage points nominate; no standalone G0 claim from six full shapes. P4 composes and checks paired six-load R on held-out seeds.')
 (o/'result.json').write_text(json.dumps(out,indent=2)+'\n')
-(o/'P4_HANDOFF.json').write_text(json.dumps(dict(base='60254883',receipt=str(a.receipt),points=[p for p in points if p['nominated']],policy=out['policy']),indent=2)+'\n')
+handoff=dict(base='60254883',receipt=str(a.receipt),points=[p for p in points if p['nominated']],policy=out['policy'])
+if a.page_ring:
+    handoff.update(preferred={shape:min((p for p in points if p['shape']==shape and p['nominated']),key=lambda p:p['r'])['arm']
+                              for shape in targets['R8']+targets['D'] if any(p['shape']==shape and p['nominated'] for p in points)},
+        TASK_checks=sum(d['counts'].values()),A_A={k:v['ratios']['A2'] for k,v in d['summary'].items()},
+        controls_note='Verify16 A:A .996655 CI excludes1; retain drift. Confirm held-out whole-layer G0.',
+        integration_note='Root patches apply onto exact S15 60254883; source-only CUDA hunks permit preserving S18 PDL and V-wait removal. Select R8 only decode16/32full, D only verify16/32full. No changed dispatch for d1/v1.')
+    if (o/'S18_portability.json').exists():handoff['S18_ports']=json.loads((o/'S18_portability.json').read_text())
+(o/'P4_HANDOFF.json').write_text(json.dumps(handoff,indent=2)+'\n')
 for shape,row in d['summary'].items():print(shape,'A',row['control_us'],'logicalTB/s',row['bytes']/row['control_us']/1e6,'ratios',row['ratios'])
 print('resources',d['resources']);print('profiles',d['profiles']);print('nominations',[p for p in points if p['nominated']])

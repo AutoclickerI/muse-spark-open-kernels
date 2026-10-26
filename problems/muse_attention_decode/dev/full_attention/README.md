@@ -100,3 +100,9 @@ unmeasured D tensor-core denominator. D was blocked by an extra1e-6 exact-sum
 probe, not a TASK failure; this batch gates on the unchanged public TASK checker.
 Native diagnostics remain evidence. All6full loads/8newseeds/A:A and actual
 phase/residency probes are packed together. See page_ring/README.md.
+
+Page/denominator check4df30d04a39e433e passes491TASK. R8decode16/32full
+.933568[.930596,.936540]/.923836[.919381,.928291]; Dverify16/32full
+.978271[.973818,.982723]/.982280[.979030,.985531].
+Exact P4 S18 nomination and source-only CUDA hunks: page_ring/P4_HANDOFF.json.
+A:A v16 .996655[.994010,.999300] drift retained; no whole-layer G0 claim.

@@ -24,6 +24,10 @@ names=('G','R4','R8','D') if args.page_ring else ('H1','H2','F','G','P')
 for name in names:
     path=H/'pvsum/candidate.py' if name=='D' else (H/'roof' if name=='G' else o)/(name+'.py')
     s=path.read_text();a,b=base.splitlines(True),s.splitlines(True)
+    if args.page_ring and name in ('R4','R8','D'):
+        key='VQ8_CUDA' if name=='D' else 'ATTN_PORT_CUDA_SRC'
+        p=''.join(difflib.unified_diff(get(base,key).splitlines(True),get(s,key).splitlines(True),fromfile='a/'+key+'.cu',tofile='b/'+key+'.cu'))
+        (o/(name+'.cuda.patch')).write_text(p)
     arms[name]=dict(edits=[(lo,hi,''.join(b[c:d])) for op,lo,hi,c,d in difflib.SequenceMatcher(None,a,b,autojunk=False).get_opcodes() if op!='equal'],sha256=hashlib.sha256(s.encode()).hexdigest())
 p=R/'problems/muse_attention_decode'
 reference='\n'.join(l for l in (p/'reference.py').read_text().splitlines() if not l.startswith('from checks import'))
