@@ -102,11 +102,28 @@ FA3 375 + GEMM 93; verify-32 sliding 798, Marlin 604.
 
 ### Our kernels on the H200
 
-Incumbent: `problems/muse_decode_layer/cand_r3_best7_s14_final.py`, source **f1c77ce6**.
-S15 **60254883** (`problems/muse_decode_layer/cand_r3_best7_s15.py`,
-`problems/muse_decode_layer/dev/s15/`) is pending; its stage wins are not a
-whole-layer promotion. S14 trial hosts scored 1.7174 / 1.7530 / 1.7324x (`0441f9fc`,
+Incumbent: S15 **60254883** (`problems/muse_decode_layer/cand_r3_best7_s15.py`, `dev/s15/`), scored
+1.800345x (`9c5fc18d`); paired S15/S14 1.0549 / 1.0510 / 1.0276 / 0.9895 / 1.0100 / 1.0227 at d1 / d16 / d32 /
+v1 / v16 / v32, geomean 1.026 (`281b1383`). S14 final f1c77ce6 scored 1.742759x (`9b94c126`).
+S14 trial hosts scored 1.7174 / 1.7530 / 1.7324x (`0441f9fc`,
 `740c63af`, `2bbb626c`); only the last host is exact f1c77ce6.
+
+Reset integration decisions (2026-10-26; stage nominations still require the combined S16 pair):
+
+| Recipe | Result vs control / A:A | Mechanism | Leaves open (and decision) | Receipt |
+|---|---|---|---|---|
+| Exact S14 final f1c77ce6 scored |1.742759x SGLang; unpaired, no A:A | Retained S14 portfolio | Retired by S15 | `9b94c126d450448a` |
+| Exact S15 60254883 scored |1.800345x SGLang; unpaired, no A:A | NF projection rows + last-CTA sliding d1 + register-fold full verify | Frozen incumbent (paired geomean 1.026 over S14, `281b1383`) | `9c5fc18d302c4d40` |
+| Shared-merge global attention on S11 host, versus OLD last/partial | Best new/OLD at d1S/d16S/d32S/d1F:0.995906/1.009411/1.001125/1.121209; full A:A radii0.056417/0.047526/0.018671/0.035314 | Last-CTA shared merge weights and fixed split waves | No new arm admitted; full C128 loses beyond noise; sliding differences are inside observed spread. Other ownership or S15 interactions remain open | `ae6cd27877cc4ee2` |
+| Small-M PAIR epilogue nomination | M8/16/32 PAIR/S14=0.97493/0.97262/0.97932, SE0.00235/0.00357/0.00280; A:A absolute0.415/0.235/0.225us on71.033/81.533/110.753us controls | Two contiguous float2 planes/two writers plus per-run norm accumulation | Nominate M8/16/32 only to P4; M1 overlaps A:A. ONCE variants lose1.235-1.331x at M8-32; new transport remains open | `d650c04ead114119` |
+| Native verify-sliding DSM cluster nomination | B1 C16/control0.719269, SE0.002772, A:A radius0.059278; B16 C8/control0.849109, SE0.003406, A:A0.033439. B32 best C4 loses1.073812 | Distributed output rows across cluster CTAs, avoiding last-CTA serialization | Nominate B1/B16 sliding verify to S16; retain B32. New stage result is not yet an S15 whole-layer gain | `b05713ecf6574ad9` |
+| Full-verify softmax batch on N64/stage6 | B16/B32 mixed25%=1.05012/1.04610; mixed50%=1.08436/1.07352; TC25=1.03473/1.03452; ping=1.15929/1.17091; best gap=1.00004/1.00126. A:A radii0.00438/0.00392 | Polynomial/MUFU mix, TC row sums, two-WG scheduling | No arm nominated; these recipes lose or overlap A:A. S15 N128/stage4 softmax and other schedules remain open | `457f3c73b3214534` |
+| Heavy direct-copy launch and S3 policies | Ordinary direct/control1.1965/1.1381 at M128/256; other policies1.1427-1.2992; max A:A3.120us on182.90/256.67us controls; all TASK PASS | Direct activation copies, cluster/ordinary/serial launches, optional S3 | No heavy arm admitted; closes these transport/launch policies, leaves cheaper reuse and ownership open | `8792099636654bac` |
+| PDL/boundary reset archive | Unmeasured: official host passes, but no LAB_BEGIN/BD_BATCH_XZ85 survives the16000-character receipt tail | Import/setup result displaced by later host logs | No boundary/PDL arm admitted from this receipt; requires a surviving paired archive | `4c86853a953b4eca` |
+
+Original S15 admission wrapper49ce378b was rejected422 before a job existed: its packed source had no
+explicit top-level `kernel_fn`. Entry-only repair2a4d0dde passes normal/forced full-wrapper screens and
+is requeued at priority-1; candidate bytes, seven off arms, sixteen seeds and freeze thresholds are unchanged.
 
 Incumbent pieces and their admission evidence (r > 1 means removing the piece is slower):
 
@@ -387,6 +404,39 @@ native WGMMA is required for FP8 peak (`be19da94`, static). Packed-half exp lowe
 so saves no issue. Native Q-major SS design spent ~990 cycles V transpose/barrier and ~760
 softmax vs QK ~200/PV ~208: issue, not memory, made it lose (`a1679f9c`).
 
+
+### Full-attention reset measurements
+
+`457f3c73b3214534`: native full verify16/32, S14 N64 control,3 fresh seeds ×16 cold rotating
+replays; all probability/cache/TASK gates and native tensor-sum probes pass. A:A means0.99941/0.99947,
+seed ranges0.99562–1.00164 /0.99608–1.00154. Ratios are candidate/control time; no arm is promoted.
+
+| Recipe | Ratio verify16 /32 | Mechanism / evidence | What remains open | Receipt |
+|---|---:|---|---|---|
+|25% FMA-polynomial /MUFU split|1.05012 /1.04610|Exp/sum357.8→386.3 /360.4→387.5 cycles; extra issue outweighs SFU relief|Different software-exp implementation or issue schedule; this compiled split loses|`457f3c73b3214534`|
+|50% FMA-polynomial /MUFU split|1.08436 /1.07352|Exp/sum476.6/473.4 cycles, above native357.8/360.4|Other approximation/reduction implementations; not all mixed-pipe designs|`457f3c73b3214534`|
+|One800-cycle initial consumer-WG stagger|1.00004 /1.00126|Inside A:A spread; existing rescale skip taken70.3/80.5%|Sustained overlap without a fixed initial stagger|`457f3c73b3214534`|
+|25% split +initial stagger|1.05200 /1.04865|Stagger does not hide polynomial issue cost|Other overlap structures|`457f3c73b3214534`|
+|FP8 P×ones tensor-core row sums +25% split|1.03473 /1.03452|Alpha/sum157.4→72.2 /155.7→72.9 cycles; separate WGMMA group/wait remains; pure TC effect not isolated|MUFU-only TC sums, denominator accumulated inside the existing PV group; N128 incumbent|`457f3c73b3214534`|
+|Explicit two-consumer-WG ping-pong|1.15929 /1.17091|Clocked QK wait75.2/75.7 vs13.5/14.4; added synchronization|Other intra-WG overlap schedules; this turn protocol loses|`457f3c73b3214534`|
+|Ping-pong +25% split|1.22654 /1.21961|Both added synchronization and polynomial issue|Independent scheduling/exp implementations|`457f3c73b3214534`|
+
+
+`e4fcf732f35b425d`: native full decode16/32,8 fresh seeds ×8 cold rotating replays;
+all independent probes and TASK/cache gates pass. A:A means0.99964/1.00105,
+seed ranges0.99310–1.00543 /0.99778–1.00871. No arm beats A:A; no P4 promotion.
+Clocked gather/page issue1539/1597 cycles dominates softmax618/615 (instrumentation perturbs wall time).
+
+| Recipe | Ratio decode16 /32 | Mechanism / evidence | What remains open | Receipt |
+|---|---:|---|---|---|
+|attn_main25% FMA/MUFU split|1.00182 /1.00284|Inside A:A spread; exp/sum103→92 /102→91 cycles saves too little|Gather/issue and other software-exp schedules|`e4fcf732f35b425d`|
+|attn_main50% FMA/MUFU split|1.00898 /1.01133|Exp/sum falls but page/issue and total time rise|Different issue/transport structures|`e4fcf732f35b425d`|
+|FP16-P tensor-core row sums|1.00976 /1.00704|Exact half-P denominator probe passes; packing/sum29→95 /29→94 cycles|Denominator fused with existing PV work, no separate MMA/wait|`e4fcf732f35b425d`|
+|TC sums +25% split|1.00814 /1.00896|Packing overhead remains, no overall benefit|Other denominator schedules|`e4fcf732f35b425d`|
+|Native two-WG q_len1 control|1.33968 /1.28368|Padded verify-query work at q_len1; exceeds four-warp incumbent|A q_len1-specialized WG design, not this padded transfer|`e4fcf732f35b425d`|
+|Two-WG25% /50% split|1.39793/1.33255;1.44732/1.37264|Adds polynomial issue on an already slower family|Other WG/Q layouts and exp implementations|`e4fcf732f35b425d`|
+|Two-WG ping /ping25|1.68078/1.63104;1.74657/1.67450|QK wait78/79 cycles plus the padded-query cost|Other overlap protocols|`e4fcf732f35b425d`|
+
 ## Projections and verify dense
 
 Current small-M: balanced split-K Triton GEMVs, lossless coded qkv/pool_router at t1,
@@ -537,6 +587,7 @@ not close a family; incorrect/untimed implementations are suspect or unmeasured.
 
 | Symptom | Cause | Avoid / fix | Evidence |
 |---|---|---|---|
+| Prefill lab passes at ~1.43x but no LAB markers survive | `--phase import --import-budget 550` printed before the unchanged host tuner; its later output displaced diagnostics from the 16,000-character tail, not a prepare timeout (host 113.9–134.5 s; all five compared sources share base `cb8939d0` and one payload) | Buffer import-phase lab diagnostics on hosts with judge-called prepare; emit after host prepare, preserving import execution/deadline and host state | Missing `4c86853a`, `841077ef`, `a05f9863`; working prepare-phase `a39a1f05`, `c773699a`; exact source hashes checked against ledger |
 | Lab small-M MoE slower than judge | Write-flush leaves dirty L2 lines; zero_ adds MoE +1.82 / +4.88 / +2.72 / +1.87 us at M1/8/16/32 | Use `lab_cold_l2()` read flush; write-flushed absolute times are ~2-5 us high | `849e4017` |
 | Local flush makes lab 5x slower, 30/36 rows finish | uint8 sum over 1 GiB costs 39 ms on sm_120; int32 view 11 ms | Use a wider view; price flush cost in replay-heavy labs | commit `13801d3` |
 | Local 22% shared-alignment win becomes 0.6% on H200 | sm_120-only alignment effect, not isolated | Do not rank shared-alignment changes locally | `110599ba` |
