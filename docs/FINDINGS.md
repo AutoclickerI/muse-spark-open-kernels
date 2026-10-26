@@ -1624,6 +1624,39 @@ P4 confirms actual full prepare and held-out G0. First1c5f639111fa4f80
 unmeasured due13150-byte result; exact timestamp codec repair retains all
 samples/no gate changed. [Evidence](../problems/muse_attention_decode/dev/public_hybrid/README.md).
 
+### P5b production graph transfer and vectorized direct partials
+
+S21 native receipt changes the inference from isolated attention-call timings:
+use production `kernel_fn` graphs, with prep, gate and projections inside the
+boundary. Exact source audit and seed/CI reconstruction: [public_vector](../problems/muse_attention_decode/dev/public_vector/README.md).
+Ratios here are **port/S19 whole-load time**, smaller is faster. The old grouped
+no_PUBLIC arm isolates one port only at d16, d32 and v32; two-cell v1/v16 effects
+cannot be separated from that receipt.
+
+| Recipe | Ratio versus control | Mechanism / evidence | Leaves open | Receipt |
+|---|---|---|---|---|
+| d16S public port in production S21 | 1.043149 [1.042282,1.044018],64seeds; A:A .999769 [.999095,1.000444] | Ordinary pack/main remove S19 entry-release edge to independent gate-split GEMM; source proves the serialization edge, not its microseconds | D(PDL) versus V(vector direct) and combined F isolate the timing cause; exact S19 restore711b3075 already P4's | 5864563117fd44b6 |
+| d32S port before9b043487 | .994855 [.993713,.995997],64seeds; A:A1.000041 [.999549,1.000533] | Small actual load gain, much less than isolated .861 call point; port main releases at exit | Accepted direct-input cell changes this baseline, so remeasure onfbaf2793 | 5864563117fd44b6 |
+| v32S port in production S21 | .996492 [.994566,.998422],64seeds; A:A .999377 [.998992,.999762] | BF16 view has no pack; ordinary public main, upstream Lt/downstream O boundaries limit PDL leverage | Vectorized once-per-CTA Q/own-KV and actual native neighbour trace; disclose directional A:A drift | 5864563117fd44b6 |
+| grouped public leave-out | no_PUBLIC/S21 .998709 [.997343,1.000077]; v1 1.023489, v16 .995999 | Per-call gains do not establish a net in-layer port gain; v1S/F and v16S/F are not isolated | Seven independent S19 cell restores in new batch; no per-call nomination claim | 5864563117fd44b6 |
+
+D adds PDL-enabled launches, entry release and a wait after independent metadata/
+CTA setup; Lee history producer proceeds while consumers wait. V uses 16-byte
+plane loads and one query/own-KV global reader per CTA; F composes both. Native
+d1S edits the actual last-CTA `_s16_global_C128_cs_CUDA`, and d1F keeps its native
+launch/dispatch. Both normal/forced production screens pass108 TASK each; exact
+ready candidate passes28 eager+graph each, five exact sm90a units compile and
+eight native-reader cases are bit-exact. Verify spills remain; native two-lane
+correctness and performance are unmeasured, not a closed recipe.
+
+One check is queued as sender3705999, attention host, priority2, not-before
+**2026-10-27 09:00KST /1793059200**: eight fresh seeds, eight symmetric cold rounds,
+432TASK, all production-graph round times and adjacent-kernel profiles retained.
+Payload5479fb1a; controlfbaf2793=S21eacc087b+9b043487. Unsent sender3620849 was
+replaced before dispatch to keep S19's native caches source-owned. All-F review
+patch891d9414/source76dd1aee is ready and unmeasured; no new fix is nominated.
+P4 confirms correct whole-load improving points on disjoint held-out G0 seeds.
+
 ## Projections and verify dense
 
 Current small-M: balanced split-K Triton GEMVs, lossless coded qkv/pool_router at t1,

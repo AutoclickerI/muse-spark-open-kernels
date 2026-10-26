@@ -1,0 +1,59 @@
+{
+  "base_sha256": "fbaf2793b3c32680d352d8e9ac0b669cd0148e6519593bcec1dfd4f779b68488",
+  "base": "S21 eacc087b plus9b043487",
+  "measured_nominees": [
+    {
+      "cell": "d16S",
+      "recipe": "restore S19 (already nominated by P4)",
+      "new_over_current": {
+        "R": 0.9586355366976032,
+        "CI95": [
+          0.9578381460645063,
+          0.9594335911503905
+        ],
+        "n": 64,
+        "log_se": 0.0004074541572387872,
+        "AA_log_se": 0.00033048476808609644,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      },
+      "job": "5864563117fd44b6",
+      "patch": "problems/muse_attention_decode/dev/public_vector/restore_d16S.patch",
+      "patch_sha256": "711b3075f91a30fa6025a324dfa6eb7c08c10837b465d43b7d362318e3004d47"
+    }
+  ],
+  "new_fixes": {
+    "base_sha256": "fbaf2793b3c32680d352d8e9ac0b669cd0148e6519593bcec1dfd4f779b68488",
+    "patch_sha256": "891d94143915b0a130850acc95e25ba33a1143a324e28110172da231d4067fa7",
+    "source_sha256": "76dd1aee9ff4fa68de818d6bbe10ada86e295c23f067c0f94bb95321e4972191",
+    "selection": {
+      "d1S": "V",
+      "d1F": "V",
+      "d16S": "F",
+      "d32S": "F",
+      "v1S": "F",
+      "v1F": "F",
+      "v16S": "F",
+      "v16F": "F",
+      "v32S": "F"
+    },
+    "licenses_sha256": "c91b7a513ad45d811b5658a368060cf32256271545d93c4cb0350404dafe1b4e",
+    "status": "unmeasured; no nominee until native production-graph receipt",
+    "ready_patch": "problems/muse_attention_decode/dev/public_vector/all_F.patch"
+  },
+  "queued": {
+    "pid": 3705999,
+    "priority": 2,
+    "t": 1793022908.9668193,
+    "problem": "muse_attention_decode",
+    "file": "problems/muse_attention_decode/lab/lab_in_graph.py",
+    "sha256": "c833f550a52ff28cd8a105e05c939d9ad3c2004326c3ccb5ed16aa6b0e7c08bd",
+    "note": "h200_lab problems/muse_attention_decode/dev/public_vector/out/in_graph.py: Replaces own unsent3620849; exact S21 eacc087b +9b043487. Seven single-cell S19 restores with source-owned caches; D PDL, V vector/shared direct partials,F combined; native d1S/F. Production graphs8freshseeds8symmetriccold432TASK; every round + CUPTI neighbours.",
+    "not_before": 1793059200.0,
+    "lane": "P5b",
+    "decision": "in-graph attention transfer and vectorized direct partials",
+    "priority_override": false,
+    "until": 1793059200.0,
+    "supersedes_unsent_sender": 3620849
+  },
+  "decision": "Whole-load graph timing only for this attention comparison; selected composition confirmed by P4 on disjoint held-out G0 seeds."
+}

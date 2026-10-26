@@ -1,0 +1,337 @@
+{
+  "base": "S21 eacc087b + 9b043487 = fbaf2793",
+  "prior_job": "5864563117fd44b6",
+  "prior": {
+    "decode 1": {
+      "no_PUBLIC_over_S21": {
+        "R": 1.0066328307296866,
+        "CI95": [
+          1.0052171415478695,
+          1.0080505136855618
+        ],
+        "n": 64,
+        "log_se": 0.0006891009553045462,
+        "AA_log_se": 0.0006891009553045462,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      },
+      "AA": {
+        "R": 1.0066328307296866,
+        "CI95": [
+          1.0052171415478695,
+          1.0080505136855618
+        ],
+        "n": 64,
+        "log_se": 0.0006891009553045462,
+        "AA_log_se": 0.0,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      }
+    },
+    "decode 16": {
+      "no_PUBLIC_over_S21": {
+        "R": 0.9586355366976032,
+        "CI95": [
+          0.9578381460645063,
+          0.9594335911503905
+        ],
+        "n": 64,
+        "log_se": 0.0004074541572387872,
+        "AA_log_se": 0.00033048476808609644,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      },
+      "AA": {
+        "R": 0.9997694666919777,
+        "CI95": [
+          0.9990949009227192,
+          1.0004444879124417
+        ],
+        "n": 64,
+        "log_se": 0.00033048476808609644,
+        "AA_log_se": 0.0,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      }
+    },
+    "decode 32": {
+      "no_PUBLIC_over_S21": {
+        "R": 1.0051720103078936,
+        "CI95": [
+          1.0040185999400228,
+          1.0063267457064726
+        ],
+        "n": 64,
+        "log_se": 0.0005621771857111017,
+        "AA_log_se": 0.00024087247973626107,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      },
+      "AA": {
+        "R": 1.0000407346727946,
+        "CI95": [
+          0.9995489017532173,
+          1.0005328096011623
+        ],
+        "n": 64,
+        "log_se": 0.00024087247973626107,
+        "AA_log_se": 0.0,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      }
+    },
+    "verify 1": {
+      "no_PUBLIC_over_S21": {
+        "R": 1.023489032831601,
+        "CI95": [
+          1.0165987953912354,
+          1.0304259704768064
+        ],
+        "n": 64,
+        "log_se": 0.0033074815713251752,
+        "AA_log_se": 0.00036362253709048664,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      },
+      "AA": {
+        "R": 0.9994948973814963,
+        "CI95": [
+          0.9987529217159129,
+          1.0002374242623766
+        ],
+        "n": 64,
+        "log_se": 0.00036362253709048664,
+        "AA_log_se": 0.0,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      }
+    },
+    "verify 16": {
+      "no_PUBLIC_over_S21": {
+        "R": 0.9959991676087065,
+        "CI95": [
+          0.9929359165374697,
+          0.9990718689445266
+        ],
+        "n": 64,
+        "log_se": 0.0015082481008301999,
+        "AA_log_se": 0.0002983285484486965,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      },
+      "AA": {
+        "R": 1.000648363706313,
+        "CI95": [
+          1.000038877970605,
+          1.0012582209004415
+        ],
+        "n": 64,
+        "log_se": 0.0002983285484486965,
+        "AA_log_se": 0.0,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      }
+    },
+    "verify 32": {
+      "no_PUBLIC_over_S21": {
+        "R": 1.0035200817249952,
+        "CI95": [
+          1.0015803700405066,
+          1.005463549954172
+        ],
+        "n": 64,
+        "log_se": 0.0009473525771013945,
+        "AA_log_se": 0.0001885935527947409,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      },
+      "AA": {
+        "R": 0.9993768492498298,
+        "CI95": [
+          0.9989919987727248,
+          0.9997618479862701
+        ],
+        "n": 64,
+        "log_se": 0.0001885935527947409,
+        "AA_log_se": 0.0,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      }
+    }
+  },
+  "cells": [
+    {
+      "cell": "d16S",
+      "producer_ABI": [
+        "FP32",
+        10,
+        1280
+      ],
+      "current_kernels": [
+        "_pack_kernel",
+        "Lee attnd"
+      ],
+      "current_wait": "none: ordinary CUDA/Triton launch provides completion ordering",
+      "current_release": "implicit kernel exit",
+      "extra_kernels": 1,
+      "successor": "gate_split: entry release, waits only at final Y read",
+      "fixed_wait": "pack: immediately before sum; Lee consumers after CTA initialization, producer gathers history without QKV wait; OP after scalar shape/seq/scale prologue",
+      "fixed_release": "entry (PREEXIT in native Lee SASS)",
+      "fixed_kernels_D": [
+        "_pack_kernel PDL",
+        "Lee attnd PDL"
+      ],
+      "fixed_kernels_F": [
+        "Lee attnd direct-vector PDL"
+      ],
+      "source_mechanism": "ordinary launch blocks independent history producer/prologue and successor PDL overlap; separate ordinary sum/cast launch; in particular the independent gate-split GEMM cannot start during attention",
+      "timing_cause": "unmeasured until D/V/F production graph contrasts land"
+    },
+    {
+      "cell": "d32S",
+      "producer_ABI": [
+        "FP32",
+        1,
+        2304
+      ],
+      "current_kernels": [
+        "Lee attnd"
+      ],
+      "current_wait": "none: ordinary CUDA/Triton launch provides completion ordering",
+      "current_release": "implicit kernel exit",
+      "extra_kernels": 0,
+      "successor": "owned NF O: entry release, dependency wait before activation reads",
+      "fixed_wait": "pack: immediately before sum; Lee consumers after CTA initialization, producer gathers history without QKV wait; OP after scalar shape/seq/scale prologue",
+      "fixed_release": "entry (PREEXIT in native Lee SASS)",
+      "fixed_kernels_D": [
+        "Lee attnd PDL"
+      ],
+      "fixed_kernels_F": [
+        "Lee attnd direct-vector PDL"
+      ],
+      "source_mechanism": "ordinary launch blocks independent history producer/prologue and successor PDL overlap; accepted direct-input cell already removed sum/cast",
+      "timing_cause": "unmeasured until D/V/F production graph contrasts land"
+    },
+    {
+      "cell": "v1S",
+      "producer_ABI": [
+        "FP32",
+        1,
+        2304
+      ],
+      "current_kernels": [
+        "OP _fused_attn"
+      ],
+      "current_wait": "none: ordinary CUDA/Triton launch provides completion ordering",
+      "current_release": "implicit kernel exit",
+      "extra_kernels": 0,
+      "successor": "owned NF O: entry release, dependency wait before activation reads",
+      "fixed_wait": "pack: immediately before sum; Lee consumers after CTA initialization, producer gathers history without QKV wait; OP after scalar shape/seq/scale prologue",
+      "fixed_release": "entry (PREEXIT in native Lee SASS)",
+      "fixed_kernels_D": [
+        "OP _fused_attn PDL"
+      ],
+      "fixed_kernels_F": [
+        "OP _fused_attn direct-vector PDL"
+      ],
+      "source_mechanism": "ordinary launch blocks independent history producer/prologue and successor PDL overlap; accepted direct-input cell already removed sum/cast",
+      "timing_cause": "unmeasured until D/V/F production graph contrasts land"
+    },
+    {
+      "cell": "v1F",
+      "producer_ABI": [
+        "FP32",
+        1,
+        2304
+      ],
+      "current_kernels": [
+        "_pack_kernel",
+        "Lee attnp68"
+      ],
+      "current_wait": "none: ordinary CUDA/Triton launch provides completion ordering",
+      "current_release": "implicit kernel exit",
+      "extra_kernels": 1,
+      "successor": "owned NF O: entry release, dependency wait before activation reads",
+      "fixed_wait": "pack: immediately before sum; Lee consumers after CTA initialization, producer gathers history without QKV wait; OP after scalar shape/seq/scale prologue",
+      "fixed_release": "entry (PREEXIT in native Lee SASS)",
+      "fixed_kernels_D": [
+        "_pack_kernel PDL",
+        "Lee attnp68 PDL"
+      ],
+      "fixed_kernels_F": [
+        "Lee attnp68 direct-vector PDL"
+      ],
+      "source_mechanism": "ordinary launch blocks independent history producer/prologue and successor PDL overlap; separate ordinary sum/cast launch",
+      "timing_cause": "unmeasured until D/V/F production graph contrasts land"
+    },
+    {
+      "cell": "v16S",
+      "producer_ABI": [
+        "FP32",
+        3,
+        2304
+      ],
+      "current_kernels": [
+        "_pack_kernel",
+        "Lee attnp32836"
+      ],
+      "current_wait": "none: ordinary CUDA/Triton launch provides completion ordering",
+      "current_release": "implicit kernel exit",
+      "extra_kernels": 1,
+      "successor": "O at T128/T256: ordinary library completion boundary; native trace confirms exact backend",
+      "fixed_wait": "pack: immediately before sum; Lee consumers after CTA initialization, producer gathers history without QKV wait; OP after scalar shape/seq/scale prologue",
+      "fixed_release": "entry (PREEXIT in native Lee SASS)",
+      "fixed_kernels_D": [
+        "_pack_kernel PDL",
+        "Lee attnp32836 PDL"
+      ],
+      "fixed_kernels_F": [
+        "Lee attnp32836 direct-vector PDL"
+      ],
+      "source_mechanism": "ordinary launch blocks independent history producer/prologue and successor PDL overlap; separate ordinary sum/cast launch",
+      "timing_cause": "unmeasured until D/V/F production graph contrasts land"
+    },
+    {
+      "cell": "v16F",
+      "producer_ABI": [
+        "FP32",
+        3,
+        2304
+      ],
+      "current_kernels": [
+        "_pack_kernel",
+        "Lee attnp324"
+      ],
+      "current_wait": "none: ordinary CUDA/Triton launch provides completion ordering",
+      "current_release": "implicit kernel exit",
+      "extra_kernels": 1,
+      "successor": "O at T128/T256: ordinary library completion boundary; native trace confirms exact backend",
+      "fixed_wait": "pack: immediately before sum; Lee consumers after CTA initialization, producer gathers history without QKV wait; OP after scalar shape/seq/scale prologue",
+      "fixed_release": "entry (PREEXIT in native Lee SASS)",
+      "fixed_kernels_D": [
+        "_pack_kernel PDL",
+        "Lee attnp324 PDL"
+      ],
+      "fixed_kernels_F": [
+        "Lee attnp324 direct-vector PDL"
+      ],
+      "source_mechanism": "ordinary launch blocks independent history producer/prologue and successor PDL overlap; separate ordinary sum/cast launch",
+      "timing_cause": "unmeasured until D/V/F production graph contrasts land"
+    },
+    {
+      "cell": "v32S",
+      "producer_ABI": [
+        "BF16",
+        1,
+        2304
+      ],
+      "current_kernels": [
+        "Lee attnp32836"
+      ],
+      "current_wait": "none: ordinary CUDA/Triton launch provides completion ordering",
+      "current_release": "implicit kernel exit",
+      "extra_kernels": 0,
+      "successor": "O at T128/T256: ordinary library completion boundary; native trace confirms exact backend",
+      "fixed_wait": "pack: immediately before sum; Lee consumers after CTA initialization, producer gathers history without QKV wait; OP after scalar shape/seq/scale prologue",
+      "fixed_release": "entry (PREEXIT in native Lee SASS)",
+      "fixed_kernels_D": [
+        "Lee attnp32836 PDL"
+      ],
+      "fixed_kernels_F": [
+        "Lee attnp32836 direct-vector PDL"
+      ],
+      "source_mechanism": "ordinary launch blocks independent history producer/prologue and successor PDL overlap; upstream Lt already completes ordinarily, so upstream overlap remains bounded",
+      "timing_cause": "unmeasured until D/V/F production graph contrasts land"
+    }
+  ],
+  "limitation": "Prior no_PUBLIC isolates d16S/d32S/v32S only. v1 and v16 each replace both cells; those prior grouped ratios cannot identify the two cell effects. d32S and v1S changed in 9b043487, so prior points there are not the new baseline.",
+  "scope": "Source proves missing PDL and extra nodes; it does not assign a measured number of lost microseconds. New lab profiles include attention, adjacent producer/successor nodes and full kernel_fn times."
+}

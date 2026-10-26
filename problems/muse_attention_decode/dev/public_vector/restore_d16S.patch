@@ -1,0 +1,9 @@
+--- a/problems/muse_decode_layer/cand_r3_best7_s21_final.py
++++ b/problems/muse_decode_layer/cand_r3_best7_s21_final.py
+@@ -56,3 +56,6 @@
+  for name in sorted(_HY_SOURCES):_hy_module(name).setup(torch.device('cuda'))
+ # S21/S22 builds extensions in its prepare pool before synthetic dispatch warmup.
+ _S19_BUILDS.append(_hy_build)
++
++# Restore exact S19 decode16 sliding dispatch; other S21 cells stay intact.
++_PUBLIC_SELECTION.pop((16,1,True))

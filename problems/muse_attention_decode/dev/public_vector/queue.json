@@ -1,0 +1,15 @@
+{
+  "pid": 3705999,
+  "priority": 2,
+  "t": 1793022908.9668193,
+  "problem": "muse_attention_decode",
+  "file": "problems/muse_attention_decode/lab/lab_in_graph.py",
+  "sha256": "c833f550a52ff28cd8a105e05c939d9ad3c2004326c3ccb5ed16aa6b0e7c08bd",
+  "note": "h200_lab problems/muse_attention_decode/dev/public_vector/out/in_graph.py: Replaces own unsent3620849; exact S21 eacc087b +9b043487. Seven single-cell S19 restores with source-owned caches; D PDL, V vector/shared direct partials,F combined; native d1S/F. Production graphs8freshseeds8symmetriccold432TASK; every round + CUPTI neighbours.",
+  "not_before": 1793059200.0,
+  "lane": "P5b",
+  "decision": "in-graph attention transfer and vectorized direct partials",
+  "priority_override": false,
+  "until": 1793059200.0,
+  "supersedes_unsent_sender": 3620849
+}
