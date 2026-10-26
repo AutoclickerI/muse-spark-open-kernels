@@ -1,0 +1,23 @@
+{
+  "utc": "20261026T085441Z",
+  "problem": "muse_attention_decode",
+  "mode": "check",
+  "job": "b1a50bae4feb4ad1",
+  "sha256": "e50f1c060b5a97000795be76c8da2953b13e8bf04a002964da0177dc0650f6df",
+  "file": "problems/muse_attention_decode/lab/lab_setup_tree.py",
+  "source": "runs/muse_attention_decode/20261026T085441Z_check_b1a50bae4feb4ad1.py",
+  "git": "fb02cfb+dirty",
+  "note": "h200_lab problems/muse_attention_decode/dev/setup_tree/out/setup_tree.py: P5 S19 setup residual and parallel merge: 12 fresh seeds x8 cold; public layer TASK plus same-binary Z/ZV/ZR/ZQ/ZI/ZL oracle; native no-spill; exact packed forced screen",
+  "snapshot": "runs/sent/e50f1c060b5a9700/lab_setup_tree.py",
+  "lane": "P5",
+  "decision": "S19: separate QKV/RoPE from copy issue; rank Q-owner broadcast and parallel DSM tree at d16/d32/v16/v32",
+  "priority": 5,
+  "priority_override": false,
+  "payload_sha256": "e2e98dd9c526538825e57fb0aaa8c9e5e86f85e51e35ab4715b88de026626064",
+  "state": "done",
+  "sender_log": "runs/detached/e50f1c060b5a9700.log",
+  "sender_pid": 1227411,
+  "receipt": "runs/muse_attention_decode/20261026T085441Z_check_b1a50bae4feb4ad1.json",
+  "TASK_layer": 216,
+  "TASK_oracle": 96
+}

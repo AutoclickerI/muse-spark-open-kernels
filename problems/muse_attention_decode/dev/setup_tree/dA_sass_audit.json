@@ -1,0 +1,376 @@
+{
+  "source_sha256": "2d829f4b51d49beeff4bdfad2449daab7a6843e0aea4e0ca57f4e776e9fdd8ee",
+  "S19_device_body_identity": true,
+  "ranges": {
+    "query_decode": {
+      "source_lines": [
+        447,
+        492
+      ],
+      "opcodes": {
+        "S2UR": 1,
+        "UMOV": 9,
+        "ULEA": 1,
+        "IMAD.SHL.U32": 14,
+        "LEA": 25,
+        "LOP3.LUT": 20,
+        "ISETP.GT.AND": 32,
+        "BSSY": 44,
+        "BRA": 110,
+        "VIMNMX": 10,
+        "IADD3": 34,
+        "LEA.HI": 2,
+        "ISETP.GE.U32.AND": 2,
+        "IMAD.MOV.U32": 76,
+        "MOV": 46,
+        "ISETP.GE.AND": 37,
+        "VIADD": 15,
+        "STS.128": 30,
+        "ISETP.NE.AND": 29,
+        "BSYNC": 44,
+        "LDC.64": 30,
+        "LEA.HI.X": 8,
+        "LDG.E.64": 10,
+        "IMAD.WIDE.U32": 10,
+        "LDG.E": 18,
+        "I2F.S64": 2,
+        "FMUL": 58,
+        "CALL.REL.NOINC": 18,
+        "STS.64": 7,
+        "BAR.SYNC.DEFER_BLOCKING": 4,
+        "IMAD.IADD": 19,
+        "ACQBULK": 2,
+        "SHF.L.U32": 8,
+        "IMAD": 35,
+        "SEL": 8,
+        "P2R": 6,
+        "ULDC": 10,
+        "USHF.R.S32.HI": 7,
+        "LDS.64": 2,
+        "FFMA": 112,
+        "BRA.DIV": 8,
+        "FSETP.GEU.AND": 8,
+        "MUFU.RSQ": 8,
+        "MUFU.RCP": 16,
+        "FCHK": 16,
+        "STS.U8": 16,
+        "SHF.R.U32.HI": 8,
+        "STS.U16": 16,
+        "SHF.R.S32.HI": 7,
+        "SHF.L.U64.HI": 8,
+        "IMAD.X": 8,
+        "STG.E.U16": 8,
+        "WARPSYNC.ALL": 2,
+        "IMAD.U32": 17,
+        "ULDC.64": 4,
+        "LDC": 8
+      },
+      "examples": [
+        {
+          "line": 455,
+          "sass": "/*1a50*/                   LDG.E.64 R2, desc[UR16][R2.64] ;"
+        },
+        {
+          "line": 455,
+          "sass": "/*1a70*/                   LDG.E R5, desc[UR16][R4.64] ;"
+        },
+        {
+          "line": 472,
+          "sass": "/*3520*/                   MUFU.RSQ R0, R6 ;"
+        },
+        {
+          "line": 477,
+          "sass": "/*3680*/                   LDG.E R5, desc[UR16][R4.64] ;"
+        },
+        {
+          "line": 477,
+          "sass": "/*36a0*/                   MUFU.RCP R3, R5 ;"
+        },
+        {
+          "line": 477,
+          "sass": "/*37a0*/                   LDG.E R5, desc[UR16][R4.64] ;"
+        },
+        {
+          "line": 477,
+          "sass": "/*37c0*/                   MUFU.RCP R0, R5 ;"
+        },
+        {
+          "line": 481,
+          "sass": "/*3970*/                   LDG.E.64 R4, desc[UR16][R4.64] ;"
+        },
+        {
+          "line": 472,
+          "sass": "/*3c20*/                   MUFU.RSQ R0, R6 ;"
+        },
+        {
+          "line": 477,
+          "sass": "/*3d70*/                   LDG.E R5, desc[UR16][R4.64] ;"
+        },
+        {
+          "line": 477,
+          "sass": "/*3d90*/                   MUFU.RCP R3, R5 ;"
+        },
+        {
+          "line": 477,
+          "sass": "/*3e90*/                   LDG.E R5, desc[UR16][R4.64] ;"
+        }
+      ]
+    },
+    "query_verify": {
+      "source_lines": [
+        493,
+        536
+      ],
+      "opcodes": {},
+      "examples": []
+    },
+    "input_pairs": {
+      "source_lines": [
+        228,
+        259
+      ],
+      "opcodes": {
+        "LDC": 2,
+        "BSSY": 2,
+        "P2R": 1,
+        "ISETP.NE.AND": 6,
+        "BRA": 12,
+        "ISETP.GE.AND": 4,
+        "IMAD.MOV.U32": 31,
+        "MOV": 12,
+        "CS2R": 14,
+        "ULDC": 2,
+        "VIMNMX": 2,
+        "UMOV": 4,
+        "USHF.R.S32.HI": 8,
+        "LOP3.LUT": 2,
+        "LDC.64": 2,
+        "IMAD": 20,
+        "SHF.R.S32.HI": 16,
+        "IMAD.WIDE.U32": 16,
+        "IMAD.IADD": 12,
+        "ULDC.64": 8,
+        "UIADD3": 6,
+        "IADD3": 31,
+        "IMAD.X": 12,
+        "LEA": 32,
+        "LEA.HI.X": 32,
+        "LDG.E.64": 24,
+        "IADD3.X": 4,
+        "FADD": 48,
+        "UIMAD": 4,
+        "UIMAD.WIDE.U32": 2,
+        "IMAD.U32": 5,
+        "LEA.HI.X.SX32": 8,
+        "LDG.E": 8,
+        "PRMT": 8,
+        "VIADD": 1
+      },
+      "examples": [
+        {
+          "line": 250,
+          "sass": "/*2690*/                   LDG.E.64 R54, desc[UR16][R54.64] ;"
+        },
+        {
+          "line": 250,
+          "sass": "/*26c0*/                   LDG.E.64 R56, desc[UR16][R56.64] ;"
+        },
+        {
+          "line": 250,
+          "sass": "/*26f0*/                   LDG.E.64 R58, desc[UR16][R58.64] ;"
+        },
+        {
+          "line": 250,
+          "sass": "/*2730*/                   LDG.E.64 R60, desc[UR16][R60.64] ;"
+        },
+        {
+          "line": 250,
+          "sass": "/*27a0*/                   LDG.E.64 R50, desc[UR16][R50.64] ;"
+        },
+        {
+          "line": 250,
+          "sass": "/*2810*/                   LDG.E.64 R62, desc[UR16][R62.64] ;"
+        },
+        {
+          "line": 250,
+          "sass": "/*2850*/                   LDG.E.64 R64, desc[UR16][R64.64] ;"
+        },
+        {
+          "line": 250,
+          "sass": "/*28a0*/                   LDG.E.64 R66, desc[UR16][R66.64] ;"
+        },
+        {
+          "line": 250,
+          "sass": "/*28f0*/                   LDG.E.64 R68, desc[UR16][R68.64] ;"
+        },
+        {
+          "line": 250,
+          "sass": "/*2930*/                   LDG.E.64 R52, desc[UR16][R52.64] ;"
+        },
+        {
+          "line": 250,
+          "sass": "/*2ca0*/                   LDG.E.64 R2, desc[UR16][R2.64] ;"
+        },
+        {
+          "line": 250,
+          "sass": "/*2cd0*/                   LDG.E.64 R4, desc[UR16][R4.64] ;"
+        }
+      ]
+    },
+    "copy_issue": {
+      "source_lines": [
+        634,
+        653
+      ],
+      "opcodes": {
+        "ISETP.GE.AND": 14,
+        "BRA": 3,
+        "SHF.R.S32.HI": 31,
+        "ULDC": 6,
+        "LEA.HI": 2,
+        "ULDC.64": 10,
+        "IMAD": 18,
+        "IMAD.IADD": 17,
+        "VIMNMX": 13,
+        "VIADDMNMX": 10,
+        "IMAD.WIDE.U32": 8,
+        "IADD3": 33,
+        "LEA": 14,
+        "LEA.HI.X": 12,
+        "LDG.E": 12,
+        "VIADD": 11,
+        "LOP3.LUT": 35,
+        "SHF.L.U32": 4,
+        "IMAD.WIDE": 16,
+        "IMAD.SHL.U32": 15,
+        "SHF.L.U64.HI": 12,
+        "IADD3.X": 24,
+        "IMAD.MOV.U32": 2,
+        "ISETP.GT.AND": 1,
+        "QGMMA.64": 3,
+        "UIADD3": 1,
+        "SHF.R.U32.HI": 4
+      },
+      "examples": [
+        {
+          "line": 640,
+          "sass": "/*0520*/                   LDG.E R24, desc[UR16][R6.64] ;"
+        },
+        {
+          "line": 640,
+          "sass": "/*0600*/                   LDG.E R16, desc[UR16][R16.64] ;"
+        },
+        {
+          "line": 640,
+          "sass": "/*0650*/                   LDG.E R21, desc[UR16][R6.64] ;"
+        },
+        {
+          "line": 640,
+          "sass": "/*06a0*/                   LDG.E R22, desc[UR16][R4.64] ;"
+        },
+        {
+          "line": 640,
+          "sass": "/*0dc0*/                   LDG.E R2, desc[UR16][R6.64] ;"
+        },
+        {
+          "line": 640,
+          "sass": "/*0ed0*/                   LDG.E R16, desc[UR16][R16.64] ;"
+        },
+        {
+          "line": 640,
+          "sass": "/*0f60*/                   LDG.E R14, desc[UR16][R6.64] ;"
+        },
+        {
+          "line": 640,
+          "sass": "/*0fb0*/                   LDG.E R21, desc[UR16][R4.64] ;"
+        },
+        {
+          "line": 640,
+          "sass": "/*ad10*/                   LDG.E R20, desc[UR16][R22.64] ;"
+        },
+        {
+          "line": 640,
+          "sass": "/*ad70*/                   LDG.E R24, desc[UR16][R24.64] ;"
+        },
+        {
+          "line": 640,
+          "sass": "/*adf0*/                   LDG.E R0, desc[UR16][R22.64] ;"
+        },
+        {
+          "line": 640,
+          "sass": "/*ae00*/                   LDG.E R26, desc[UR16][R26.64] ;"
+        }
+      ]
+    },
+    "cp_async": {
+      "source_lines": [
+        56,
+        61
+      ],
+      "opcodes": {
+        "LDGSTS.E.BYPASS.128": 24,
+        "VIADD": 2,
+        "IADD3": 1
+      },
+      "examples": [
+        {
+          "line": 57,
+          "sass": "/*0a40*/                   LDGSTS.E.BYPASS.128 [R25+0x1000], desc[UR16][R6.64], !P4 ;"
+        },
+        {
+          "line": 57,
+          "sass": "/*0a80*/                   LDGSTS.E.BYPASS.128 [R25+0x5000], desc[UR16][R16.64], !P4 ;"
+        },
+        {
+          "line": 57,
+          "sass": "/*0b20*/                   LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR16][R20.64], !P3 ;"
+        },
+        {
+          "line": 57,
+          "sass": "/*0b60*/                   LDGSTS.E.BYPASS.128 [R27+0x5000], desc[UR16][R22.64], !P3 ;"
+        },
+        {
+          "line": 57,
+          "sass": "/*0bf0*/                   LDGSTS.E.BYPASS.128 [R25+0x1000], desc[UR16][R4.64], !P2 ;"
+        },
+        {
+          "line": 57,
+          "sass": "/*0c30*/                   LDGSTS.E.BYPASS.128 [R25+0x5000], desc[UR16][R6.64], !P2 ;"
+        },
+        {
+          "line": 57,
+          "sass": "/*0c40*/                   LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR16][R16.64], !P1 ;"
+        },
+        {
+          "line": 57,
+          "sass": "/*0c50*/                   LDGSTS.E.BYPASS.128 [R23+0x5000], desc[UR16][R20.64], !P1 ;"
+        },
+        {
+          "line": 57,
+          "sass": "/*1380*/                   LDGSTS.E.BYPASS.128 [R31+0x3000], desc[UR16][R6.64], !P3 ;"
+        },
+        {
+          "line": 57,
+          "sass": "/*13b0*/                   LDGSTS.E.BYPASS.128 [R31+0x7000], desc[UR16][R16.64], !P3 ;"
+        },
+        {
+          "line": 57,
+          "sass": "/*1440*/                   LDGSTS.E.BYPASS.128 [R33+0x3000], desc[UR16][R20.64], !P2 ;"
+        },
+        {
+          "line": 57,
+          "sass": "/*1470*/                   LDGSTS.E.BYPASS.128 [R33+0x7000], desc[UR16][R22.64], !P2 ;"
+        }
+      ]
+    },
+    "fp8_pair": {
+      "source_lines": [
+        98,
+        100
+      ],
+      "opcodes": {},
+      "examples": []
+    }
+  },
+  "note": "Static instruction sites, not dynamic cycles. Inline helper locations may be outside their call-site ranges; helpers are listed separately."
+}

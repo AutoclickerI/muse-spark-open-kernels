@@ -1,0 +1,189 @@
+{
+  "base_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+  "job": "6b15d130e20f439f",
+  "status": "One weak changed-recipe point for P4 composition; no established shader or G0 gain",
+  "nominees": [
+    {
+      "B": 32,
+      "L": 1,
+      "arm": "H",
+      "control": "S19",
+      "mean": 0.9993729824664498,
+      "SE": 0.0007836125175114492,
+      "CI95": [
+        0.9977027519221051,
+        1.0010432130107945
+      ],
+      "n": 16,
+      "A_A": {
+        "mean": 0.9982770275833681,
+        "SE": 0.0008333401761386577,
+        "CI95": [
+          0.9965008050436407,
+          1.0000532501230956
+        ],
+        "n": 16
+      },
+      "seed_ids": [
+        52000073,
+        52104802,
+        52209531,
+        52314260,
+        52418989,
+        52523718,
+        52628447,
+        52733176,
+        52837905,
+        52942634,
+        53047363,
+        53152092,
+        53256821,
+        53361550,
+        53466279,
+        53571008
+      ]
+    }
+  ],
+  "control_point_alternatives": [
+    {
+      "job": "b1a50bae4feb4ad1",
+      "B": 32,
+      "L": 1,
+      "arm": "RAW",
+      "control": "S19",
+      "mean": 0.998060908882174,
+      "SE": 0.0010853958411565982,
+      "CI95": [
+        0.9956719687429632,
+        1.000449849021385
+      ],
+      "n": 12,
+      "A_A": {
+        "mean": 0.9986335041765229,
+        "SE": 0.001312487790857328,
+        "CI95": [
+          0.9957447380260445,
+          1.0015222703270013
+        ],
+        "n": 12
+      },
+      "seed_ids": [
+        42000037,
+        42104766,
+        42209495,
+        42314224,
+        42418953,
+        42523682,
+        42628411,
+        42733140,
+        42837869,
+        42942598,
+        43047327,
+        43152056
+      ],
+      "note": "Identical S19 device body; module contains only selected L1/QT1/N128 specialization. Control/module-specialization point, not a shader mechanism win.",
+      "source_sha256": "2d829f4b51d49beeff4bdfad2449daab7a6843e0aea4e0ca57f4e776e9fdd8ee",
+      "generator": "s19_patch.patch({(32,1):'dAA'})"
+    },
+    {
+      "job": "6b15d130e20f439f",
+      "B": 32,
+      "L": 1,
+      "arm": "RAW",
+      "control": "S19",
+      "mean": 0.9986372087629107,
+      "SE": 0.0008875609787265142,
+      "CI95": [
+        0.9967454173181475,
+        1.0005290002076739
+      ],
+      "n": 16,
+      "A_A": {
+        "mean": 0.9982770275833681,
+        "SE": 0.0008333401761386577,
+        "CI95": [
+          0.9965008050436407,
+          1.0000532501230956
+        ],
+        "n": 16
+      },
+      "seed_ids": [
+        52000073,
+        52104802,
+        52209531,
+        52314260,
+        52418989,
+        52523718,
+        52628447,
+        52733176,
+        52837905,
+        52942634,
+        53047363,
+        53152092,
+        53256821,
+        53361550,
+        53466279,
+        53571008
+      ],
+      "note": "Identical S19 device body; module contains only selected L1/QT1/N128 specialization. Control/module-specialization point, not a shader mechanism win.",
+      "source_sha256": "2d829f4b51d49beeff4bdfad2449daab7a6843e0aea4e0ca57f4e776e9fdd8ee",
+      "generator": "s19_patch.patch({(32,1):'dAA'})"
+    }
+  ],
+  "selected_candidate": {
+    "base_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+    "candidate_sha256": "557deae06671cadc85816a62bec17a4149c8ea7a6e3bfa8e44857525e4f22d32",
+    "expanded_sha256": "801ec1527fd74591da729fe9e1c7a2cb9b65f996e7c8015f2b07528779246ef2",
+    "selection": {
+      "(32, 1)": "dHA"
+    },
+    "file": "out/s19_selected.py"
+  },
+  "selection": {
+    "(32,1)": "dHA"
+  },
+  "source_sha256": "66ec9069612532847bab1d59c0be41fa7349b5c104d3f1c069dfd89686abd23d",
+  "patch": "P4_d32_page_map.patch",
+  "readable_CUDA_patch": "P4_d32_page_map.cuda.patch",
+  "generator": "python3 problems/muse_attention_decode/dev/setup_tree/s19_patch.py selected",
+  "ratio_vs_matched_native": {
+    "mean": 1.0007461880762456,
+    "SE": 0.0010392938167542406,
+    "CI95": [
+      0.9985309857428217,
+      1.0029613904096695
+    ],
+    "n": 16
+  },
+  "caveats": [
+    "H/S19 .999373 has CI crossing1, A:A.998277 and H/RAW1.000746; no isolated shader win.",
+    "Native v16 H/RAW .997187 improves RAW2 but H/S19 1.001271 does not beat retained FA3; no verify nominee.",
+    "Q broadcast and parallel tree have no point winner.",
+    "Preserve S19 full attention, PDL, all other stages and all unselected shapes. Use a separate selected hook/kernel; shared R2 source also serves untested v1.",
+    "Fold into next held-out six-load P4 batch; no standalone small-gain confirmation."
+  ],
+  "validation": {
+    "native_layer_TASK": 256,
+    "earlier_layer_TASK": 216,
+    "earlier_full_oracle_TASK": 96,
+    "component_TASK": 16,
+    "packed_layer_TASK": 32,
+    "normal_forced": {
+      "normal": {
+        "evidence": "selected_normal_screen.json",
+        "sha256": "964c2062366cf4dede3151b122a53ae89949e2c427e5fbc8f895a0a65f61d16f",
+        "TASK": 13,
+        "graphs": 12,
+        "static": 6
+      },
+      "forced": {
+        "evidence": "selected_forced_screen.json",
+        "sha256": "8ea9ba260a40fdf76dfe93f4ddb009c0179d2b427177caf2d2615a9e653eaf8f",
+        "TASK": 13,
+        "graphs": 12,
+        "static": 6
+      }
+    }
+  },
+  "integration": "Port separate selected hook/kernel or CUDA delta. Integration patch is against expanded frozen S19; keep its frozen artifact unchanged."
+}

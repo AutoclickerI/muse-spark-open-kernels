@@ -1,0 +1,14 @@
+{
+  "cases": 144,
+  "copied_sectors_proved": 204800,
+  "page_sizes": [
+    1,
+    64
+  ],
+  "native_cs": [
+    4,
+    8
+  ],
+  "max_native_tiles": 4,
+  "proof": "For each copy sector, quad owner has identical logical key and physical page/row; duplicates become shuffles. Native windows<=2048 imply<=4 tiles per selected split. Local C1 extends cache to16 tiles; no native arithmetic is inferred from local time."
+}

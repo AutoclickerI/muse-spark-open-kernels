@@ -1,0 +1,312 @@
+{
+ "board": "muse_attention_decode",
+ "call_id": "kc-b1a50bae4feb4ad1",
+ "cluster": "sfo3",
+ "content_hash": "749cc9b7520b39e62d061d822f04a36b4a97d5f2ca5f45de4165942a100e5171",
+ "created_at": 1793004883.221778,
+ "dedicated": false,
+ "duplicate_of": null,
+ "finished_at": 1793005112.935337,
+ "id": "b1a50bae4feb4ad1",
+ "mode": "check",
+ "output": {
+  "log": "/data2/jihoon/worktrees/muse_kernel/p5-setup-tree/runs/sent/e50f1c060b5a9700/profiles/lab_setup_tree.b1a50bae4feb4ad1.log"
+ },
+ "payload_ref": "muse_attention_decode/749cc9b7520b39e62d061d822f04a36b4a97d5f2ca5f45de4165942a100e5171.py",
+ "result": {
+  "checks": {
+   "flagged": [],
+   "ok": true,
+   "rejected": []
+  },
+  "error": null,
+  "evaluator": {
+   "code_sha256": "1d519ebf2014fef91b41ffea9bcd7e9c5066784ef5a2a5e2cf06a8cec554d188",
+   "files": {
+    "challenge/checks.py": "9a046c3c38db28b325dcd1557baecdf6bc9ef941d2175f9a900ba4c230bb8055",
+    "challenge/nvfp4.py": "cfdf37c7bc14b10f7353aba7d4632f4767401b92b4b073941a8030d9a961aaaf",
+    "configs/muse-spark-open.yaml": "98f07230e4e64fe91b7c76d9a3ce04948053c043d494d5f1fae56cfe2de033af",
+    "harness/eval.py": "0051a1bfac67a9f1fad06086b306653c6643b2bb253e15a794aa672312f070a9",
+    "harness/runner.py": "c905e5c80264c6d27620b6fc7d55b162dccdb8ed7282f8a513a4d2e6f2f226f2",
+    "harness/static_checks.py": "c5588b69e9e86229459a525c61b30096f6f13ff2add6cadf98f272c4ac8ca0c2",
+    "harness/worker.py": "950437610f57ddffbc1176b65d9c2ae909c47bf67b1e3fe0716a81946986f568",
+    "problems/muse_attention_decode/baseline.py": "37f51207283f85a65eb393b1dfb1344759d7df0bdec5450e34d24e7139f56ecc",
+    "problems/muse_attention_decode/reference.py": "386f7f67a1d788501e8fb9005d340423d098a0946e23810ba10878228c11a37b",
+    "problems/muse_attention_decode/task.yml": "645f889fbbd52d1d731bf5eb53356aa7ef6eea8fab3073f0a2a3dd582fe6e4bb"
+   },
+   "image": "localhost:30500/kc/judge@sha256:9a7f287b80d772c6f636bbcb57422c619fe326e2aabc53803b85007bca93f68e"
+  },
+  "flags": [],
+  "gpu": "H200",
+  "log_tail": " 'reason': 'H200 28b5c189'}\nBEST5_NT M=256 {'selected': 2, 'reason': 'H200 28b5c189'}\nBEST6_BUILD {\"available\":[],\"rejected\":{}}\nBEST7_PLAN {\"key\":[1,1,2048],\"glue\":\"best6\",\"geometry\":{\"b1\":[\"cl\",8,256,1],\"route\":[\"cl\",8,256,0],\"b2\":[\"cl\",8,256,1]},\"attention\":[\"attn_main\",null],\"moe\":\"nt1_lop3\",\"projection\":{\"qkv_gate\":\"custom\",\"o\":[\"stream\",6,1],\"pool_router\":\"custom\",\"unpooler_slice\":\"custom\"},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[1,1,0],\"glue\":\"best6\",\"geometry\":{\"b1\":[\"cl\",8,256,1],\"route\":[\"cl\",8,256,0],\"b2\":[\"cl\",8,256,1]},\"attention\":[\"attn_main\",null],\"moe\":\"nt1_lop3\",\"projection\":{\"qkv_gate\":\"custom\",\"o\":[\"stream\",6,1],\"pool_router\":\"custom\",\"unpooler_slice\":\"custom\"},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[16,1,2048],\"glue\":\"best6\",\"geometry\":{\"b1\":[\"cl\",8,256,1],\"route\":[\"cl\",8,256,0],\"b2\":[\"cl\",8,256,1]},\"attention\":[\"attn_main\",null],\"moe\":\"nt1_lop3\",\"projection\":{\"qkv_gate\":\"custom\",\"o\":\"custom\",\"pool_router\":\"custom\",\"unpooler\":\"custom\"},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[16,1,0],\"glue\":\"best6\",\"geometry\":{\"b1\":[\"cl\",8,256,1],\"route\":[\"cl\",8,256,0],\"b2\":[\"cl\",8,256,1]},\"attention\":[\"attn_main\",null],\"moe\":\"nt1_lop3\",\"projection\":{\"qkv_gate\":\"custom\",\"o\":\"custom\",\"pool_router\":\"custom\",\"unpooler\":\"custom\"},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[32,1,2048],\"glue\":\"best6\",\"geometry\":{\"b1\":[\"cl\",8,256,1],\"route\":[\"cl\",8,256,0],\"b2\":[\"cl\",8,256,1]},\"attention\":[\"attn_main\",null],\"moe\":\"nt1_lop3\",\"projection\":{\"qkv_gate\":\"custom\",\"o\":\"custom\",\"pool_router\":\"custom\",\"unpooler\":\"custom\"},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[32,1,0],\"glue\":\"best6\",\"geometry\":{\"b1\":[\"cl\",8,256,1],\"route\":[\"cl\",8,256,0],\"b2\":[\"cl\",8,256,1]},\"attention\":[\"attn_main\",null],\"moe\":\"nt1_lop3\",\"projection\":{\"qkv_gate\":\"custom\",\"o\":\"custom\",\"pool_router\":\"custom\",\"unpooler\":\"custom\"},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[1,8,2048],\"glue\":\"best6\",\"geometry\":{\"b1\":[\"cl\",8,256,1],\"route\":[\"cl\",8,256,0],\"b2\":[\"cl\",8,256,1]},\"attention\":[\"layer\",null],\"moe\":\"nt1_lop3\",\"projection\":{\"qkv_gate\":\"custom\",\"o\":\"custom\",\"pool_router\":\"custom\",\"unpooler_slice\":\"custom\"},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[1,8,0],\"glue\":\"best6\",\"geometry\":{\"b1\":[\"cl\",8,256,1],\"route\":[\"cl\",8,256,0],\"b2\":[\"cl\",8,256,1]},\"attention\":[\"layer\",null],\"moe\":\"nt1_lop3\",\"projection\":{\"qkv_gate\":\"custom\",\"o\":\"custom\",\"pool_router\":\"custom\",\"unpooler_slice\":\"custom\"},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[16,8,2048],\"glue\":\"best6\",\"geometry\":{\"b1\":[16,1],\"route\":[4,1],\"b2\":[8,1]},\"attention\":[\"layer\",null],\"moe\":\"hh_m128\",\"projection\":{\"qkv_gate\":[\"vdsk\",[128,64,64,8,4,1],3],\"o\":[\"lt\",0],\"pool_router\":\"cublas\",\"unpooler\":[\"short_lt\",1,0]},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[16,8,0],\"glue\":\"best6\",\"geometry\":{\"b1\":[16,1],\"route\":[4,1],\"b2\":[8,1]},\"attention\":[\"layer\",null],\"moe\":\"hh_m128\",\"projection\":{\"qkv_gate\":[\"vdsk\",[128,64,64,8,4,1],3],\"o\":[\"lt\",0],\"pool_router\":\"cublas\",\"unpooler\":[\"short_lt\",1,0]},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[32,8,2048],\"glue\":\"best6\",\"geometry\":{\"b1\":[16,1],\"route\":[4,1],\"b2\":[16,1]},\"attention\":[\"layer\",null],\"moe\":\"mixed_parallel_m256\",\"projection\":{\"qkv_gate\":[\"lt\",0],\"o\":\"custom\",\"pool_router\":\"custom\",\"unpooler\":[\"short_lt\",0,0]},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[32,8,0],\"glue\":\"best6\",\"geometry\":{\"b1\":[16,1],\"route\":[4,1],\"b2\":[16,1]},\"attention\":[\"layer\",null],\"moe\":\"mixed_parallel_m256\",\"projection\":{\"qkv_gate\":[\"lt\",0],\"o\":\"custom\",\"pool_router\":\"custom\",\"unpooler\":[\"short_lt\",0,0]},\"l2_prefetch\":0,\"dense_chain\":false}\n/opt/sglang/lib/python3.12/site-packages/torch/cuda/graphs.py:630: UserWarning: The CUDA Graph is empty. This usually means that the graph was attempted to be captured on wrong device or stream. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/cuda/CUDAGraph.cpp:249.)\n  super().capture_end_pre()\nLAB_BEGIN setup_tree e2e98dd9c5265388\nP5 S19 Q-owner/DSM-tree and same-binary residual split complete; every layer arm/seed and full-work oracle checked by public TASK.\nLAB_PACKET setup_tree e2e98dd9c5265388 31e4c3708ddb4da414a93956f093b78526259793d05804ce2c32bec59150f01d c-q}s+io1mk^PlMKlhaLexWfB+#O@FSkHqzf(@7ugzD<*8Dc0>Zc;NI2>N%QbF!*g)f8ks7_hN?$j-{jTSP|2IT6K=+u^5i`1x^r^>KUG|2Cf9zP|q9|F&1orrq}8)DL&#)Kb%@-FA3*_x^5t8n;(Zrw`+9JKpv0AIHO6jJLUTE?MidG2Y~AFv0C%ynniVx*awDzJDCwKK|6Zn6_8j<i<YkkD>VFavsLxaqmMIL#}S9?r=y4JH}ef*n1m~!~R%PKN_F+aoi8a_S@a|@!`X1XmcN~uQ8`P6jzU7AMGL3{fIfk{&4IME`)mM`+e?H34S#F*oV;!eay!&=A6cQJRHh6V$Q?&nCIA!<2ac9fW6th+Ye#bXFr6JhoSF#(|hkzzc0QXY&E7Y=6Lj>gk;9F&!gcyuec$T4{4w5esA~Yc*uKfeW>0Zb8q+Am3?21!*QS75X&%xd_33^lj{$t^bnLA`bCl*bBs8XnoXar3#ob&inSpn=aTdOSP#cs#(Eg5Kh$&_or`sdxv$k8phQkY$x=yWOwk62)F<y<3P)qo;N!kTw>N{^d+Yt^ELO{5$cMp)VLX)M*kkvB^GLG&;P;^)>pu3e1gN1{pMo<`ycxs6$36#tjQtSy!{{oC;$j#hv=ebQn&>qrf?&lD`@?uNqc!%}$D?<-#-ZS-gMo=aA0?ErAM5}njIfF0VKj$vz%dSP`{~o!Qr|rsnmPPod*$73`#;+&v)g{(N~fQ{!nP}Z{&#y7tViXK+pCn=@(MN_Gb(?=VC)37KcmS+|GdECI3BRT4TQv>&%02q2{|QHoT;HkRJ;w&1yq79HF{K{^Qkygk}JVlRI*1egG%waVEIsMz=@SzG?)(xK*dI9VtTXNzVB~O;{nTl-2NAKgo}kuV}I>pe%wNh7Sdk3_WP>+{OS5Htnk*Ja0iF}ZtDAS+dn<s<DKmS_PO0#=%jPm)x{qav3G38?ibB*xBao_{kI+L*F67Oym|M47a?~k6le^3?HnAz^B-E@KRn#MJw1GQ8c&!!ch-k>hrj*&i{D<A&hY%yk(;R2FV@1IKiqRBPGUos?Q-Y!lT>h)(sxPHNXobrrj}<ZQ&`C2pQTL87Yiv%S5lm$MDw!GODP>2XUTjC3&~0@YXz(%D@*m&_-Q)T<q5{rWb+*^?6S9?W%ISJxA)IwGd0a8=<AnGFm*Mj#Uy@lf}CTL6Pq)ui7w=<c4>Thaiu3X3g?FV`GVg>Ts>Tqgu+4#(H1k+4D3G|$J<oX+$Hca@}_3@M!w<3Rm|Y9I0{oxxO0J9hBmWvrIh(?D064e8Q@oLu%=Htn^P-srGbN34((Ab7-$QAQLm}+En9M`dRthB|9sQ@(+ys?Dby*e-n!=2Qd+5Yt0}VM6smhIiTWG)xf=^Ng#ONO9tU@_v+&c{oO8HcXi-V+pyVp>`G$SCmMt!{v2U8Yyn$OPJKTB{7PDlJMYD5emkl<N10T6a26*sAU_ZW%)D|7>O|n=f@l`U=34qAq5u>3ewpG^H#j?#|-?6ZtHQL213S|s-P<ak86&94;P{vBl!|)Rd9PHdv&zP?kc~koL8}Jk=VqH=lHc^Q-N?8=iT1N%h5W=~|Q#F8Lo*O{|)8(weGy_}pI;*TadH^@y7A;U!7Dr7do}`UI`cB~u?EW+^Xw5a}_GO15(MQMxG>LEI-#*ih(Pw~iGeEf+pxg{lZU!hf1C*Nq%FO`fW`J@tK)DH^f}a2?_%lE~-M$+ir<>WfEY(|B2*n4lOL{U=Ner?$TPD5c$?^<)T3KCFq@ybFQ+?$s*SaCNiyB^a6h0&>(%WX;(Zx1SdIjEUGNK%MMx)D6;$-`LhwE0(`n0-UKIks^VuGGR(dlGekWlyomZqx%&2#1~%Yh2{<lvFDqZ~N1{PoRwyYL0*>fwzz5PU<s&XN{VOFc2QD@qggvqZt^4hIf!1qbj3PEve;K>4rX1F3^YnvpV>3x`cG@f{9!0S9S<jL4yNf(*EzFF}Uw;5`<Q5d|4<Cs48--Q+WFq_70Fw8D+t1(O#5b^-jE6y+?=nj_5OK+B8P5TE7oEBVi&Ey2#c6wQ^DG_ErXS@KFT$*qJ*Bou35)>xmqP-dw2EAHjb(yUm_EKBS>9q5uiNf^K43p~rUGz9H%A&zxldpKYQb*b~O#dO$tB&JUIZ3)=8xM0ep%Z9u<6@fUpGP+oGk%yQt{fys^=pNII-~Jir%~bF@H%u>@ftc=GCh)@-VmLw(r!ui57ia_F3HY{f9e5G87q)mpE9$Atn2uqQO=N0_$_fWZ4WM)6U``aQmTB$m>5XrrSjGmS^dzwo%_HZuvCywZE<D$TJ&{7gqtXisPc1+;v7O!rGlUt_37i;atU%NWHHqu62S8_``!)1cResM<;ph<5jSkxY#?Ro+6H9i&YZj%!e5BHoEqqLZet<h2cCy5OD@WPD-HYw`B;VJ3rD&7Sa+uAvmexlOwJv%ly5V4wIiq|K-HB2}6tqOgDR|M?LT?JbR8+Q};oL5mity@Zl#ek;)0(ar)v1xFeMNyn6c>X_XI;CFQHvEic?7%WYf!$r&!arr|8r0tQwuO-JG3hL>j7DUTX9KDrX!1DoW7KHm^upIbPnUD4nuBs&`>_;mf=V<yZ9;;#C~+zz9D%OlR^O5j6%kW(`vMUjssnI=`eM4XOstz6Vu4FObFj#HhAqldLeNZBg0cw7v5Pc;P}orGjd77Vr_*26Uqm#5gvA8q!3B#{6s5^q?H}`P_h)#1Owd>`)OP#YWa|<_8H};sK0zA%A?zt!QR1_GtMQR1i;n;N13@Jp2V&!qd$hN0u*ep3k^gv_`n4OtT7~ZG36H#{){Jp#QGfO2Sl)T9jPwxq;??ki??}=_AYe6#)|}oWFv=^JQvIahw>~>PLn(rLG;Ub7yfch0lpv)WLOiOXL+2t-0vme1Ah@7d`=?VrZt>T(pkIC)SRVr7cvR{>xzxkmnXL#6)q)RF#$N~B_VksYFMNoWR|a2M<?<)nW77y6YfPO=`0)r^y%y_lSwaZag~H9Uz7+ObuIl$AoI0!hQ3>LM!_sY$>>R47(s*EyPW_@xD)9yTNcCRXF6lkIYnV6V$*UGUbV1%F*6zQoSDu557>~D*I>lyh2!23s-3*Ht69TSVx1leeIOCzxYpmC=}h%48A94p#g67Ov88G{LL^#RU6YE`%<b`<qKJy$Vr~>h&{-R)sUkQ*6h`euFxm)C7Qtb%2kpw|Oms$}loe00qBd5{$0`$I<$|q(FH;rQ373olMJq(GQ^upED|lWcQ=%)eDl6fPILj`1vKKOm$V3Eb)kJWdK%p@jX7m}(wJ=WMn^9CN%H>=OQH`RzmL*UWX%%iNV0HkdGo$fNU?TG6onW*<7m4Cbki4R9#gQ1>&{$B}z@`zTKR3Qr8n0@hu24&8H}NnHn4nmtQYF42ebUt6M4x9gkk#zKCwLaSlx6^a+5DQ#aBr*T{}`Hs!{h}f6DJo3TY<7%U<8IA!aCo{u!G1SOf8Ge8$HDqHUwr8K<i<%W~MpLx4<GKnkv{z&_d2=K+<gtI&nNHun2|R2iC#s;owS)ruK>|;L^;bW#<F)Prz?o{**HBdNfQ^xsZ9ou`xz-5Qx?Xbr{7pjwg(*7zvak$AQ9_=VS)#u~HM@Sln6ias|w?azvsDV(z3R0?iM$?-lA;2?m<ndTL$onnGS{=BVvreon&gNu0|BiH_iiPhN_T{5H4~n_~FHTq+w&(^YIU<6d8;N&a;Nit+rEdoP_`Qj;0AN*9+Ho6eA&ZHKsJh3o*Z+QFlI0l>WP=ns~lg&{UC3Dhd&_AAf=psz6cf<J-NnYv~+O*B*E%kM&^0~KHNJ_B-gT_|>zXQ`AIA4a_EQodj^E7|mI<1E`sHy5&n4jy>1_ZM6WTr6Gk3Q6ZyA2`m^RaaN}l_p%O9W40exrHx&B*D4mWY#QsCFhC)yCoB^Ya#_2wEAN6f=8vZTq|z*EEfWf#YXMIAOW>25hPe#QSQ$i;0sywMe+H}md9)Ig+0dQ9jNguDb>WGK&cp4Mdn`VW_FC!cW?`=iEyb4KM^sZLH>27RANGnG`TrVbU~k5{>aQ<eOlHiOq9x7(ITdNSz?suM*-G@+TlVyv6Xc=YIx7eo<t5W;-PY;RCp~uMvsk&GT9fM96G5^c7efKj2RQW6)VfC!?sXPpiU%B%DqQ!T)Cb(?~@eVMoK^RNv7qJT5hNjE;5ukB_m2DX|S%oiv$rUWud`cNT8HGv9?hyeIs%DMq<lzyH)tzC>0~*M2ty6X&`2WNIVkHmH&~jBcR{~zXdTNrA@9Vm80NTOa#g+7oa`5mVj?0%j?sZK0GLi#t#nWOt|7ANi=1WN+V6VWs+2HIf0f7aE&2}{V3BA)jyk-H*n9Cs--1Fnu0VE^o`Kh_OU>uskA<7&n=N9{?-y4nDqZOrSeAB30e`O?gh2z+lMf`bGmY188B}sJJZU&=nO8co<wK7VHAQcB`cwM-R_c1%8Nzmrmzcdo`Ms`7MvQV36`v$Mid#>o_31?S(j86g)TnMTE@%@iD*+r_feY;+9n^kKp-b3|MqHZftvH$baid-MqR4arW>V#&_=uVMSb{zhYC?{xavD6<2~&<X<g%6+-8clTdHC<m@;)n(l;3aJ%f`zLQ^%(96w4Yf><?u=$+5Zc%m`3Pu@&1W7nbeWTF+S#@T>UVe-e};XQo(_78vWho{XCwr(Dtei~1k$EW_s@$vVY>)%~FHg}s>-#*-ro4<V+PrrTh{xrVdJp6i(j_>b2JZ=UQz>>|Y4W|3;_nX(>zVA={-Q9S%`Stecr`!8){`>XyhW`Mwc{iSZ95-0we)HWA-*1M~!{ejg>P5GKCck|+-Truc-`{QS`={Gq#?5!-ci)B0!-+3lx4FK<TI1oHUms3CZyK^}?#ExS{{6!{jC&d%yY0W{l6?9Hf7=kP\nLAB_END lab_s=178.5 import_s=178.5\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/submission.py\", line 4, in kernel_fn\n    def kernel_fn(*args):raise RuntimeError('lab-only host')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/submission.py\", line 4, in kernel_fn\n    def kernel_fn(*args):raise RuntimeError('lab-only host')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/submission.py\", line 4, in kernel_fn\n    def kernel_fn(*args):raise RuntimeError('lab-only host')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/submission.py\", line 4, in kernel_fn\n    def kernel_fn(*args):raise RuntimeError('lab-only host')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/submission.py\", line 4, in kernel_fn\n    def kernel_fn(*args):raise RuntimeError('lab-only host')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/submission.py\", line 4, in kernel_fn\n    def kernel_fn(*args):raise RuntimeError('lab-only host')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/submission.py\", line 4, in kernel_fn\n    def kernel_fn(*args):raise RuntimeError('lab-only host')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/submission.py\", line 4, in kernel_fn\n    def kernel_fn(*args):raise RuntimeError('lab-only host')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/submission.py\", line 4, in kernel_fn\n    def kernel_fn(*args):raise RuntimeError('lab-only host')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/submission.py\", line 4, in kernel_fn\n    def kernel_fn(*args):raise RuntimeError('lab-only host')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/submission.py\", line 4, in kernel_fn\n    def kernel_fn(*args):raise RuntimeError('lab-only host')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/submission.py\", line 4, in kernel_fn\n    def kernel_fn(*args):raise RuntimeError('lab-only host')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/submission.py\", line 4, in kernel_fn\n    def kernel_fn(*args):raise RuntimeError('lab-only host')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/submission.py\", line 4, in kernel_fn\n    def kernel_fn(*args):raise RuntimeError('lab-only host')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/submission.py\", line 4, in kernel_fn\n    def kernel_fn(*args):raise RuntimeError('lab-only host')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_attention_decode-wqo4xkmo/run/submission.py\", line 4, in kernel_fn\n    def kernel_fn(*args):raise RuntimeError('lab-only host')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host\n",
+  "machine": {
+   "gpu_after": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 119.79,
+    "power.limit": 700,
+    "temperature.gpu": 32
+   },
+   "gpu_before": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 129.62,
+    "power.limit": 700,
+    "temperature.gpu": 33
+   },
+   "node": "n-djsogg5ih26gwdcnhyhbnqzfkb"
+  },
+  "passed": false,
+  "records": [
+   {
+    "case": {
+     "batch": 1,
+     "ctx": 10,
+     "heads": "tp8",
+     "layer": "sliding",
+     "seed": 2108936280424264119
+    },
+    "event": "test",
+    "index": 0,
+    "message": "RuntimeError: lab-only host",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 3,
+     "ctx": 2047,
+     "heads": "tp8",
+     "layer": "sliding",
+     "seed": 2108968850541041511
+    },
+    "event": "test",
+    "index": 1,
+    "message": "RuntimeError: lab-only host",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 5,
+     "ctx": 5000,
+     "heads": "tp8",
+     "layer": "sliding",
+     "page": 1,
+     "q_len": 8,
+     "seed": 2109001420657818904,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 2,
+    "message": "RuntimeError: lab-only host",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 3000,
+     "heads": "tp8",
+     "layer": "full",
+     "seed": 2109033990774596298
+    },
+    "event": "test",
+    "index": 3,
+    "message": "RuntimeError: lab-only host",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 8,
+     "ctx": 8192,
+     "heads": "dp",
+     "layer": "full",
+     "seed": 2109066560891373693,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 4,
+    "message": "RuntimeError: lab-only host",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 2,
+     "ctx": 100000,
+     "heads": "tp8",
+     "layer": "full",
+     "page": 1,
+     "q_len": 8,
+     "seed": 2109099131008151089
+    },
+    "event": "test",
+    "index": 5,
+    "message": "RuntimeError: lab-only host",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 6000,
+     "dist": "edges",
+     "heads": "tp8",
+     "layer": "sliding",
+     "page": 1,
+     "seed": 2109131701124928486
+    },
+    "event": "test",
+    "index": 6,
+    "message": "RuntimeError: lab-only host",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 6000,
+     "dist": "edges",
+     "heads": "tp8",
+     "layer": "full",
+     "q_len": 8,
+     "seed": 2109164271241705884
+    },
+    "event": "test",
+    "index": 7,
+    "message": "RuntimeError: lab-only host",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 1,
+     "ctx": 1048576,
+     "heads": "tp8",
+     "layer": "full",
+     "q_len": 8,
+     "seed": 2109196841358483283
+    },
+    "event": "test",
+    "index": 8,
+    "message": "RuntimeError: lab-only host",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 3,
+     "ctx": 4000,
+     "heads": "tp8",
+     "kv_scale": 0.015625,
+     "layer": "sliding",
+     "page": 1,
+     "q_len": 8,
+     "seed": 2109392262059147698
+    },
+    "event": "test",
+    "index": 9,
+    "message": "RuntimeError: lab-only host",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 2,
+     "ctx": 9000,
+     "heads": "tp8",
+     "kv_scale": 0.015625,
+     "layer": "full",
+     "seed": 2109424832175925104
+    },
+    "event": "test",
+    "index": 10,
+    "message": "RuntimeError: lab-only host",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 80000,
+     "dist": "soft",
+     "heads": "tp8",
+     "layer": "full",
+     "seed": 2109229411475260683,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 11,
+    "message": "RuntimeError: lab-only host",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 6000,
+     "dist": "soft",
+     "heads": "tp8",
+     "layer": "sliding",
+     "page": 1,
+     "q_len": 8,
+     "seed": 2109261981592038084
+    },
+    "event": "test",
+    "index": 12,
+    "message": "RuntimeError: lab-only host",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 2,
+     "ctx": 20000,
+     "dist": "soft",
+     "heads": "dp",
+     "layer": "full",
+     "q_len": 8,
+     "seed": 2109294551708815486
+    },
+    "event": "test",
+    "index": 13,
+    "message": "RuntimeError: lab-only host",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 80000,
+     "dist": "coherent",
+     "heads": "tp8",
+     "layer": "full",
+     "page": 1,
+     "seed": 2109327121825592889,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 14,
+    "message": "RuntimeError: lab-only host",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 2,
+     "ctx": 20000,
+     "dist": "coherent",
+     "heads": "dp",
+     "layer": "full",
+     "q_len": 8,
+     "seed": 2109359691942370293
+    },
+    "event": "test",
+    "index": 15,
+    "message": "RuntimeError: lab-only host",
+    "status": "fail"
+   }
+  ],
+  "returncode": 112,
+  "score_us": null,
+  "speedup": null,
+  "speedup_ci": null,
+  "status": "ok"
+ },
+ "started_at": 1793004896.2336476,
+ "status": "done",
+ "team": "AutoclickerI"
+}

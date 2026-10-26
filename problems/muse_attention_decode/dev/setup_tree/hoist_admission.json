@@ -1,0 +1,237 @@
+{
+  "rows": [
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 0,
+      "arm": "H",
+      "TASK": true,
+      "message": "relative L2 error 6.788e-02 (worst row 9.127e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 3,
+      "arm": "H",
+      "TASK": true,
+      "message": "relative L2 error 6.788e-02 (worst row 9.127e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 0,
+      "arm": "H",
+      "TASK": true,
+      "message": "relative L2 error 6.506e-02 (worst row 8.961e-02) [bound 0.150: 2.5 x the reference's 0.064 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 3,
+      "arm": "H",
+      "TASK": true,
+      "message": "relative L2 error 6.506e-02 (worst row 8.961e-02) [bound 0.150: 2.5 x the reference's 0.064 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 0,
+      "arm": "H",
+      "TASK": true,
+      "message": "relative L2 error 6.566e-02 (worst row 1.035e-01) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 3,
+      "arm": "H",
+      "TASK": true,
+      "message": "relative L2 error 6.566e-02 (worst row 1.035e-01) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 0,
+      "arm": "H",
+      "TASK": true,
+      "message": "relative L2 error 6.519e-02 (worst row 1.009e-01) [bound 0.150: 2.5 x the reference's 0.064 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 3,
+      "arm": "H",
+      "TASK": true,
+      "message": "relative L2 error 6.519e-02 (worst row 1.009e-01) [bound 0.150: 2.5 x the reference's 0.064 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "splits": 0,
+      "arm": "H",
+      "TASK": true,
+      "message": "relative L2 error 3.531e-02 (worst row 3.531e-02) [bound 0.099: 2.5 x the reference's 0.034 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "splits": 3,
+      "arm": "H",
+      "TASK": true,
+      "message": "relative L2 error 3.531e-02 (worst row 3.531e-02) [bound 0.099: 2.5 x the reference's 0.034 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "splits": 0,
+      "arm": "H",
+      "TASK": true,
+      "message": "relative L2 error 5.437e-02 (worst row 7.327e-02) [bound 0.150: 2.5 x the reference's 0.054 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "splits": 3,
+      "arm": "H",
+      "TASK": true,
+      "message": "relative L2 error 5.437e-02 (worst row 7.327e-02) [bound 0.150: 2.5 x the reference's 0.054 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "splits": 0,
+      "arm": "H",
+      "TASK": true,
+      "message": "relative L2 error 7.156e-02 (worst row 7.620e-02) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "splits": 3,
+      "arm": "H",
+      "TASK": true,
+      "message": "relative L2 error 7.156e-02 (worst row 7.620e-02) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "splits": 0,
+      "arm": "H",
+      "TASK": true,
+      "message": "relative L2 error 7.563e-02 (worst row 1.273e-01) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "splits": 3,
+      "arm": "H",
+      "TASK": true,
+      "message": "relative L2 error 7.563e-02 (worst row 1.273e-01) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+    }
+  ],
+  "TASK": 16,
+  "altered_work": 0,
+  "sources": {
+    "dHA": "f03c07ad52cb6ec8a95b78fcab5492701b16160e8a808417752fe6a7c84e20c1",
+    "vHA": "6260d8788637891d650b9aa0e2810fc52ba94f393d7c5608279c347a900a27dc",
+    "dM": "eeb9540a90d46542e99cf165aabbd7cd44d3d3df6fe4178db60409034f9f1541",
+    "vM": "b4fedddb9ba33644c472e4275f094174abe1b374f39958a72dada659234d0195"
+  },
+  "standin": "Decode C1; verify one CTA/two real WGs; H page registers expand to sixteen tiles locally, native four tiles; native DSM runs only H200"
+}

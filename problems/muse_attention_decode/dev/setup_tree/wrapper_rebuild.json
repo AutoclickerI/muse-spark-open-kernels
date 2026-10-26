@@ -1,0 +1,6 @@
+{
+  "measured_payload_sha256": "e2e98dd9c526538825e57fb0aaa8c9e5e86f85e51e35ab4715b88de026626064",
+  "rebuilt_payload_sha256": "b907ed8a215c08b6b3561152e4f6c495c1a1205c795438cda97b6ed977f1a3d1",
+  "identical_GPU_body_sha256": "8300a9eb7644677ff7e1bb44a6bc14b1ae6840ab8b4a570a566eb99fb8e256f7",
+  "change": "Only dynamic lab lookup became globals()[\"lab\"] for static analysis; measured source is immutable in runs."
+}

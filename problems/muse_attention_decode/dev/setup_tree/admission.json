@@ -1,0 +1,1440 @@
+{
+  "rows": [
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 0,
+      "arm": "A",
+      "TASK": true,
+      "message": "relative L2 error 6.788e-02 (worst row 9.127e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 0,
+      "arm": "Q",
+      "TASK": true,
+      "message": "relative L2 error 6.788e-02 (worst row 9.127e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "M",
+      "TASK": true
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "M2",
+      "TASK": true
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "Z",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "ZV",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "ZR",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "ZQ",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "ZI",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "ZL",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "E",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 3,
+      "arm": "A",
+      "TASK": true,
+      "message": "relative L2 error 6.788e-02 (worst row 9.127e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 3,
+      "arm": "Q",
+      "TASK": true,
+      "message": "relative L2 error 6.788e-02 (worst row 9.127e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 0,
+      "arm": "A",
+      "TASK": true,
+      "message": "relative L2 error 6.506e-02 (worst row 8.961e-02) [bound 0.150: 2.5 x the reference's 0.064 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 0,
+      "arm": "Q",
+      "TASK": true,
+      "message": "relative L2 error 6.506e-02 (worst row 8.961e-02) [bound 0.150: 2.5 x the reference's 0.064 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "M",
+      "TASK": true
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "M2",
+      "TASK": true
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "Z",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "ZV",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "ZR",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "ZQ",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "ZI",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "ZL",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "E",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 3,
+      "arm": "A",
+      "TASK": true,
+      "message": "relative L2 error 6.506e-02 (worst row 8.961e-02) [bound 0.150: 2.5 x the reference's 0.064 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 3,
+      "arm": "Q",
+      "TASK": true,
+      "message": "relative L2 error 6.506e-02 (worst row 8.961e-02) [bound 0.150: 2.5 x the reference's 0.064 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 0,
+      "arm": "A",
+      "TASK": true,
+      "message": "relative L2 error 6.566e-02 (worst row 1.035e-01) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 0,
+      "arm": "Q",
+      "TASK": true,
+      "message": "relative L2 error 6.566e-02 (worst row 1.035e-01) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 0,
+      "arm": "T",
+      "TASK": true,
+      "message": "relative L2 error 6.566e-02 (worst row 1.035e-01) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "M",
+      "TASK": true
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "M2",
+      "TASK": true
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "Z",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "ZV",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "ZR",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "ZQ",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "ZI",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "ZL",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "E",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 3,
+      "arm": "A",
+      "TASK": true,
+      "message": "relative L2 error 6.566e-02 (worst row 1.035e-01) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 3,
+      "arm": "Q",
+      "TASK": true,
+      "message": "relative L2 error 6.566e-02 (worst row 1.035e-01) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 3,
+      "arm": "T",
+      "TASK": true,
+      "message": "relative L2 error 6.566e-02 (worst row 1.035e-01) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 0,
+      "arm": "A",
+      "TASK": true,
+      "message": "relative L2 error 6.519e-02 (worst row 1.009e-01) [bound 0.150: 2.5 x the reference's 0.064 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 0,
+      "arm": "Q",
+      "TASK": true,
+      "message": "relative L2 error 6.519e-02 (worst row 1.009e-01) [bound 0.150: 2.5 x the reference's 0.064 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 0,
+      "arm": "T",
+      "TASK": true,
+      "message": "relative L2 error 6.519e-02 (worst row 1.009e-01) [bound 0.150: 2.5 x the reference's 0.064 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "M",
+      "TASK": true
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "M2",
+      "TASK": true
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "Z",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "ZV",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "ZR",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "ZQ",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "ZI",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "ZL",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "arm": "E",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 3,
+      "arm": "A",
+      "TASK": true,
+      "message": "relative L2 error 6.519e-02 (worst row 1.009e-01) [bound 0.150: 2.5 x the reference's 0.064 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 3,
+      "arm": "Q",
+      "TASK": true,
+      "message": "relative L2 error 6.519e-02 (worst row 1.009e-01) [bound 0.150: 2.5 x the reference's 0.064 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 3,
+      "arm": "T",
+      "TASK": true,
+      "message": "relative L2 error 6.519e-02 (worst row 1.009e-01) [bound 0.150: 2.5 x the reference's 0.064 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "splits": 0,
+      "arm": "A",
+      "TASK": true,
+      "message": "relative L2 error 3.531e-02 (worst row 3.531e-02) [bound 0.099: 2.5 x the reference's 0.034 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "splits": 0,
+      "arm": "Q",
+      "TASK": true,
+      "message": "relative L2 error 3.531e-02 (worst row 3.531e-02) [bound 0.099: 2.5 x the reference's 0.034 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "arm": "M",
+      "TASK": true
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "arm": "M2",
+      "TASK": true
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "arm": "Z",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "arm": "ZV",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "arm": "ZR",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "arm": "ZQ",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "arm": "ZI",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "arm": "ZL",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "arm": "E",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "splits": 3,
+      "arm": "A",
+      "TASK": true,
+      "message": "relative L2 error 3.531e-02 (worst row 3.531e-02) [bound 0.099: 2.5 x the reference's 0.034 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "splits": 3,
+      "arm": "Q",
+      "TASK": true,
+      "message": "relative L2 error 3.531e-02 (worst row 3.531e-02) [bound 0.099: 2.5 x the reference's 0.034 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "splits": 0,
+      "arm": "A",
+      "TASK": true,
+      "message": "relative L2 error 5.437e-02 (worst row 7.327e-02) [bound 0.150: 2.5 x the reference's 0.054 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "splits": 0,
+      "arm": "Q",
+      "TASK": true,
+      "message": "relative L2 error 5.437e-02 (worst row 7.327e-02) [bound 0.150: 2.5 x the reference's 0.054 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "splits": 0,
+      "arm": "T",
+      "TASK": true,
+      "message": "relative L2 error 5.437e-02 (worst row 7.327e-02) [bound 0.150: 2.5 x the reference's 0.054 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "arm": "M",
+      "TASK": true
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "arm": "M2",
+      "TASK": true
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "arm": "Z",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "arm": "ZV",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "arm": "ZR",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "arm": "ZQ",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "arm": "ZI",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "arm": "ZL",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "arm": "E",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "splits": 3,
+      "arm": "A",
+      "TASK": true,
+      "message": "relative L2 error 5.437e-02 (worst row 7.327e-02) [bound 0.150: 2.5 x the reference's 0.054 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "splits": 3,
+      "arm": "Q",
+      "TASK": true,
+      "message": "relative L2 error 5.437e-02 (worst row 7.327e-02) [bound 0.150: 2.5 x the reference's 0.054 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "ctx": 10,
+        "page": 64,
+        "kv_scale": 1.0,
+        "dist": "edges"
+      },
+      "splits": 3,
+      "arm": "T",
+      "TASK": true,
+      "message": "relative L2 error 5.437e-02 (worst row 7.327e-02) [bound 0.150: 2.5 x the reference's 0.054 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "splits": 0,
+      "arm": "A",
+      "TASK": true,
+      "message": "relative L2 error 7.156e-02 (worst row 7.620e-02) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "splits": 0,
+      "arm": "Q",
+      "TASK": true,
+      "message": "relative L2 error 7.156e-02 (worst row 7.620e-02) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "arm": "M",
+      "TASK": true
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "arm": "M2",
+      "TASK": true
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "arm": "Z",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "arm": "ZV",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "arm": "ZR",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "arm": "ZQ",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "arm": "ZI",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "arm": "ZL",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "arm": "E",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "splits": 3,
+      "arm": "A",
+      "TASK": true,
+      "message": "relative L2 error 7.156e-02 (worst row 7.620e-02) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "splits": 3,
+      "arm": "Q",
+      "TASK": true,
+      "message": "relative L2 error 7.156e-02 (worst row 7.620e-02) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "splits": 0,
+      "arm": "A",
+      "TASK": true,
+      "message": "relative L2 error 7.563e-02 (worst row 1.273e-01) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "splits": 0,
+      "arm": "Q",
+      "TASK": true,
+      "message": "relative L2 error 7.563e-02 (worst row 1.273e-01) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "splits": 0,
+      "arm": "T",
+      "TASK": true,
+      "message": "relative L2 error 7.563e-02 (worst row 1.273e-01) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "arm": "M",
+      "TASK": true
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "arm": "M2",
+      "TASK": true
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "arm": "Z",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "arm": "ZV",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "arm": "ZR",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "arm": "ZQ",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "arm": "ZI",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "arm": "ZL",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "arm": "E",
+      "TASK": null
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "splits": 3,
+      "arm": "A",
+      "TASK": true,
+      "message": "relative L2 error 7.563e-02 (worst row 1.273e-01) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "splits": 3,
+      "arm": "Q",
+      "TASK": true,
+      "message": "relative L2 error 7.563e-02 (worst row 1.273e-01) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "splits": 3,
+      "arm": "T",
+      "TASK": true,
+      "message": "relative L2 error 7.563e-02 (worst row 1.273e-01) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+    }
+  ],
+  "TASK": 56,
+  "altered_work": 56,
+  "sources": {
+    "dAA": "ab54831f8e1b6b4ebe217e686ddb5f2eeb95aea2509ad94f1ebe0aa6328fcbdc",
+    "dQA": "bb69d0e4b946406bcab52d2b10ed360076b5e43bf3880ce965740087796b6e1f",
+    "vAA": "8e9e9a29e186499cf548f26f4f6d9d714ece62674d619d71de9aecccd50e4570",
+    "vQA": "203f9728c2daa5ba64643b20017366df8230b6830c167c173039786174996eb9",
+    "vTA": "c585d1ae5f40c60e870c3186dc691254b728ad27ed81e6ef19e102f9df076759",
+    "dM": "eeb9540a90d46542e99cf165aabbd7cd44d3d3df6fe4178db60409034f9f1541",
+    "vM": "b4fedddb9ba33644c472e4275f094174abe1b374f39958a72dada659234d0195"
+  },
+  "standin": "Decode C1; verify one CTA/two real WGs with shared-memory tree and broadcast; native two-CTA DSM runs only H200"
+}

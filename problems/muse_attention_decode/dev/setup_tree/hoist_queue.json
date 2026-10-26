@@ -1,0 +1,22 @@
+{
+  "utc": "20261026T091143Z",
+  "problem": "muse_prefill_layer",
+  "mode": "check",
+  "job": "6b15d130e20f439f",
+  "sha256": "69b5e0f6f2fe2a2f1d36968c71c55d1e877d3943e8946edfb6ca037d2fb1b137",
+  "file": "problems/muse_prefill_layer/lab/lab_hoist.py",
+  "source": "runs/muse_prefill_layer/20261026T091143Z_check_6b15d130e20f439f.py",
+  "git": "fb02cfb+dirty",
+  "note": "h200_lab problems/muse_attention_decode/dev/setup_tree/out/hoist.py: P5 follow-up b1a50bae; attention quota spent, unsent reset waiter1447395 cancelled. Same S19 layer on prefill import. H changes page map only;16newseeds10cold A:A+RAW;16 component/32 packed TASK, normal/forced13TASK12graphs each",
+  "snapshot": "runs/sent/69b5e0f6f2fe2a2f/lab_hoist.py",
+  "lane": "P5",
+  "decision": "S19: does one cooperative physical-page map in registers before PDL remove repeated per-tile page latency at d16/d32/v16/v32?",
+  "priority": 5,
+  "priority_override": false,
+  "payload_sha256": "cac767ecd07fac754478f76607067204c0a8a5bb52709c1677a718388d75ac4c",
+  "state": "done",
+  "sender_pid": 1466444,
+  "cancelled_attention_sender": 1447395,
+  "receipt": "runs/muse_prefill_layer/20261026T091143Z_check_6b15d130e20f439f.json",
+  "TASK_layer": 256
+}

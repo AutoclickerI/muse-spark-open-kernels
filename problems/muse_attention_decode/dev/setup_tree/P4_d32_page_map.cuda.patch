@@ -1,0 +1,40 @@
+--- S19_D8_D4_pruned.cu
++++ S19_D4_page_map.cu
+@@ -631,19 +631,29 @@
+   const int seq=p.seq[b],lo=max(0,seq-p.window+1),nc=seq-lo;
+   const int chunk=((nc+p.ns-1)/p.ns+NK-1)/NK*NK,begin=min(seq,lo+split*chunk),end=min(seq,begin+chunk);
+   const int nt=(end-begin+NK-1)/NK;
++  constexpr int PAGE_GROUPS=1,PAGE_ROWS=NK/(NT/4);
++  int preg[PAGE_GROUPS][PAGE_ROWS];
++#pragma unroll
++  for(int gg=0;gg<PAGE_GROUPS;gg++){
++#pragma unroll
++    for(int j=0;j<PAGE_ROWS;j++){
++      const int tile=4*gg+(tid&3),key=begin+tile*NK+tid/4+(NT/4)*j;
++      const int clamped=min(key,max(seq-1,0));
++      int physical=0;
++      if(tile<nt)physical=p.pt[(int64_t)b*p.pages+(clamped>>p.lg)]*p.ps+(clamped&(p.ps-1));
++      preg[gg][j]=physical;
++    }
++  }
+   auto issue=[&](int tile,int slot) {
+     if(tile<nt) {
+-      constexpr int R=NK/(NT/4);int pages[R];
+-#pragma unroll
+-      for(int j=0;j<R;j++) {
+-        const int key=begin+tile*NK+tid/4+(NT/4)*j,clamped=min(key,max(seq-1,0));
+-        pages[j]=p.pt[(int64_t)b*p.pages+(clamped>>p.lg)];
+-      }
+-      asm volatile("":::"memory");
++      constexpr int R=NK/(NT/4);
+ #pragma unroll
+       for(int j=0;j<R;j++) {
+         const int row=tid/4+(NT/4)*j,key=begin+tile*NK+row,clamped=min(key,max(seq-1,0));
+-        const int physical=pages[j]*p.ps+(clamped&(p.ps-1));
++        int physical=0;
++#pragma unroll
++        for(int gg=0;gg<PAGE_GROUPS;gg++)if(tile/4==gg)
++          physical=__shfl_sync(0xffffffffu,preg[gg][j],(lane&~3)+(tile&3));
+         const int64_t offg=((int64_t)physical*p.HK+kh)*64+16*(tid&3);
+         cp16(K+slot*KB+off(row,16*(tid&3)),p.kc+offg,key<end);
+         cp16(V+slot*KB+off(row,16*(tid&3)),p.vc+offg,key<end);
