@@ -382,6 +382,10 @@ Failed OOM/proof attempts stay local and are not admission. `review/queue.json` 
 send: MoE sender**1191843**,wrapper**`a2344c10505b0e44`**,priority1.2,import budget240s,
 full9000-character allocation; prefill is excluded. All new H200 ratios remain unmeasured.
 
+Review batch accepted as judge**`1da2153a0f5543b9`**,sender1191843,wrapper`a2344c10505b0e44`
+(975,472 bytes after lossless source packing). The first1,432,371-byte wrapper was rejected before a job;
+`review/source_limit_rejection.json` preserves it. No new H200 result is claimed before the receipt.
+
 ## MoE M=128
 
 Current N_full family: NT1 <=8-token experts, N16G4 at 9-16 on a third stream, heavy N32

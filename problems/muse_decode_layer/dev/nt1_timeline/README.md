@@ -69,3 +69,5 @@ No H200 speedup is claimed for this batch before its receipt. Prefill is exclude
 `dd539517bc8344dd`. Complete pipe probes decode with `read_pipe.py`.
 All earlier local source/hash/normal/forced receipts remain in the stage's validation JSONs; GPU0 sm120
 uses explicit stand-ins only for Hopper-only glue. Local timings are never H200 evidence.
+
+Judge accepted job**`1da2153a0f5543b9`** (sender1191843,wrapper`a2344c10505b0e44`); receipt pending.

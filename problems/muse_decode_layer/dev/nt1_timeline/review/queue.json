@@ -12,8 +12,8 @@
   "expanded_payload_sha256": "ae7b3cf18e8cdfe50cf3eb7e430a7adf9b383060dd608a7e3d7b8ab96cff8ad6",
   "sender": 1191843,
   "sender_log": "runs/detached/a2344c10505b0e44.log",
-  "judge_job": null,
-  "state": "waiting for judge slot; all14 exact-hash screens and exact packed16-seed lab pass",
+  "judge_job": "1da2153a0f5543b9",
+  "state": "accepted by judge; all14 screens and exact packed16-seed local lab passed; H200 receipt pending",
   "phase": "import",
   "import_budget_seconds": 240,
   "host": "muse_moe_w4a16",
@@ -23,5 +23,6 @@
   "source_limit_bytes": 1000000,
   "replaces_rejected_sender": 1113484,
   "receipt_archive": "P3A_REVIEW_XZ85; review/read.py decodes complete seed-level records",
-  "nomination": "every valid per-shape point estimate below1; P4 confirms held-out six-load R"
+  "nomination": "every valid per-shape point estimate below1; P4 confirms held-out six-load R",
+  "source": "runs/muse_moe_w4a16/20261026T022534Z_submit_1da2153a0f5543b9.py"
 }

@@ -61,3 +61,5 @@ or `okc_run.py`. The prefill host is excluded for this task.
 The first raw-source wrapper exceeded the server1000000-byte cap and was rejected before a job
 (sender1113484,`source_limit_rejection.json`). Lossless source packing retains expanded SHAae7b3cf1;
 the exact packed payload was rerun on all16 local seeds. The replacement wrapper is975472 bytes.
+
+Judge accepted job**`1da2153a0f5543b9`** (sender1191843,wrapper`a2344c10505b0e44`); receipt pending.
