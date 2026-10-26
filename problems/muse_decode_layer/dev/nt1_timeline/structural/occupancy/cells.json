@@ -1,0 +1,50 @@
+{
+  "SINGLE0": {
+    "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/occupancy/single0_cell.py",
+    "cell_sha256": "079a42614f266f3460e2662291c442a94204f4eca4fffe28517d361f846b250e",
+    "cuda_sha256": "efa0890afa3c495b588d9a340e9c9be46a449f6aa551161c56753d67c36ed8e1",
+    "prefix": "rvc_occ_single0",
+    "kind": "SINGLE",
+    "block": false
+  },
+  "SINGLE1": {
+    "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/occupancy/single1_cell.py",
+    "cell_sha256": "5f7708cf0381eb665e631cc8905454503440b02faa8fa6440da0588029742198",
+    "cuda_sha256": "ad194298f09462c6dded01a212b2b3e8d3510f6f32ecaede3f15b43299cfbfe6",
+    "prefix": "rvc_occ_single1",
+    "kind": "SINGLE",
+    "block": true
+  },
+  "HALF0": {
+    "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/occupancy/half0_cell.py",
+    "cell_sha256": "10e65713ea6431acf55058df790e96804a6f8ed475c925f7553db9cdd5f764d4",
+    "cuda_sha256": "9f1f14f03de498f548bf9a69c85777b58e548d6ca5b8864f654c1c1574fd74af",
+    "prefix": "rvc_occ_half0",
+    "kind": "HALF",
+    "block": false
+  },
+  "HALF1": {
+    "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/occupancy/half1_cell.py",
+    "cell_sha256": "653ad5921ab2d1ec5139a0347f8270296f6e58f06d1becad4d0007a22912959d",
+    "cuda_sha256": "e21c88c661a4c0bc61235d67a8c87027bdad3da78aef206e95c596cf41c60a51",
+    "prefix": "rvc_occ_half1",
+    "kind": "HALF",
+    "block": true
+  },
+  "DOUBLE0": {
+    "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/occupancy/double0_cell.py",
+    "cell_sha256": "9974b7f798e8b60f292659a8a801e23b668f68ca41ccc4178a91f48c58ae79bf",
+    "cuda_sha256": "3300ddc17906eb2ca554467474c4502fb356879edd601336938c8d3fd7d7ae3f",
+    "prefix": "rvc_occ_double0",
+    "kind": "DOUBLE",
+    "block": false
+  },
+  "DOUBLE1": {
+    "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/occupancy/double1_cell.py",
+    "cell_sha256": "41496cdba76a5e9888d556757ba95fa1941cc69446636324e17bbfd67bdf4c9e",
+    "cuda_sha256": "b008252483ecdddedbad3c0784a77bec2c5d417d3981cda9a6f2356de604b754",
+    "prefix": "rvc_occ_double1",
+    "kind": "DOUBLE",
+    "block": true
+  }
+}

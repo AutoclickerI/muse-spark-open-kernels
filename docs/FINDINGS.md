@@ -537,6 +537,34 @@ H200 executes the actual64KiB table decoder and both raw depths;local sm120 full
 
 P4 S18 handoff `dev/nt1_timeline/point_nominations.json` retains all eligible d7 FAST/INDEX/FLUSH1 alternatives and48dc SPLIT2 M32/S15;no decoder point winner. Next largest open structural test:reclaim dead route/reduction scratch so extra raw lookahead can retain2CTA residency,first by exact code/lifetime/resource audit. Fused dependency ownership remains open after ordered-launch costs erased the spin savings.
 
+### P3a three full slots at two CTAs (2026-10-26)
+
+**`cdd07707a6974cac`**,sender3240664,wrapper5daf36f333fec1e5 completes16fresh seeds at M8/16/32,624paired ratios48A:A. All official/native TASK gates pass,no failed arms,worst total/row .002372/.002532. Candidate/control time below;95% CI is descriptive Student-t15 across seed pairs. A:A mean absolute .487/.275/.357us,max1.904/.848/1.120. BASE is exact c49 PAIR M8/PAIR+BLOCK M16/32.
+
+Cheapest local sizing used exact sm90a ptxas plus CUDA13 cuda_occupancy.h:233472B shared/SM,1024B driver reservation/block,128B allocation granularity,65536registers/SM,256threads. Two CTAs allow115712 useful shared bytes and128registers/thread after allocation rounding. Every18H200 resource row matches the offline count;actual local bytes0 throughout.
+
+| Layout | Dynamic shared bytes,M8/M16/M32 | Registers,M8/M16/M32 | Actual CTAs |
+|---|---|---|---|
+| BASE2 |84176/84496/85136|125/125/125|2|
+| SINGLE2 /SINGLE3 |78608/78672/78800 /115488/115552/115680|125/121/121|2/2|
+| HALF2 /HALF3 |77968/78224/78736 /114848/115104/115616|122/122/122|2/2|
+| DOUBLE2 /DOUBLE3 |78608/78672/78800 /115488/115552/115680|125/125/125|2/2|
+
+| Recipe | /BASE [95% CI],M8;M16;M32 | Mechanism / decision | Leaves open | Receipt |
+|---|---|---|---|---|
+| SINGLE2 | 1.030108 [1.023816,1.036401]; 1.025072 [1.020376,1.029768]; 1.033352 [1.029474,1.037230] | One4KiB reduction buffer;route scratch aliases;exact16bit offsets/8bit reverse indices;inverse route rebuilt after math. Extra reuse and reconstruction barriers. | Other scratch schedules that preserve the old overlap without rebuilding route. | `cdd07707a6974cac` |
+| SINGLE3 | 1.058302 [1.050464,1.066139]; 1.066341 [1.062101,1.070581]; 1.057700 [1.054786,1.060615] | Same SINGLE layout with3fullrawslots;actually2CTAs,125/121regs,zero local. Loses versus BASE andS15. | Producer issue independent of consumer barriers;L2 lookahead without extra shared footprint;L1/shared carveout contribution is unmeasured. | `cdd07707a6974cac` |
+| HALF2 | 1.046150 [1.039883,1.052417]; 1.037873 [1.031985,1.043760]; 1.042459 [1.039524,1.045395] | One2KiB paired-warp reduction,expert-byte scratch aliases. Extra store/add/reuse barriers;FP32 sum order changes legally. | Other reduction mappings without these barriers;no precision or work reduction. | `cdd07707a6974cac` |
+| HALF3 | 1.067235 [1.061502,1.072969]; 1.078475 [1.073110,1.083839]; 1.071193 [1.069244,1.073142] | Same HALF layout with3fullrawslots;actually2CTAs,122regs,zero local. Loses versus BASE andS15. | Asynchronous lookahead without this shared/L1 footprint and extra reduction synchronization. | `cdd07707a6974cac` |
+| DOUBLE2 | 1.010738 [1.005133,1.016343]; 1.008580 [1.004133,1.013027]; 1.008283 [1.005613,1.010954] | Two2KiB paired-warp reduction buffers plus exact compact/rebuilt route. /BASE loses; /S15 .983936/.981001/.981782 point alternatives to P4,not incremental wins over PAIR/BLOCK. | P4 whole-layer R for the alternative;producer/transport changes that preserve original reduction overlap. | `cdd07707a6974cac` |
+| DOUBLE3 | 1.026589 [1.018336,1.034841]; 1.044325 [1.039645,1.049005]; 1.035255 [1.032020,1.038491] | Same DOUBLE layout with3fullrawslots;actually2CTAs,125regs,zero local. Loses versus BASE andS15. | Timed warp-cooperative L2 lookahead at2rawslots or a separate producer;this closes only the tested3slot/scratch schedule. | `cdd07707a6974cac` |
+
+This changes the residency diagnosis:keeping2CTAs does not make these deeper-lookahead schedules win. All6arms lose to BASE;all3depth3arms also lose to S15. BASE-normalized depth3/depth2 contrasts are SINGLE1.02747/1.04036/1.02363,HALF1.02021/1.03920/1.02758,DOUBLE1.01587/1.03549/1.02677. These are quotients of separately BASE-paired seed ratios,not direct depth3/depth2 timing pairs;`depth_contrast.json` retains SE/CI/seeds. No inference isolates L1/shared carveout,producer issue or barrier time. The360810b1 loads-only oracle also removes math/readiness/finalizer and does not prove a depth-only shortage.
+
+All6selectors pass348native TASK/current-input/capture checks,includingM9/M24,all8localroutes,nonzero local starts andchanged replay inputs. All6normal/forced deep-layout whole-layer screens pass13TASK/12shapes/27static each;two-slot controls share exact CUDA andget native selector/capture checks. Explicit local3→2slot stand-in is absent from the H200 payload;H200 runs actual3slots. Fourfullrawslots alone need147456B>115712B,so no4slot arm was sent.
+
+P4 S18 receives DOUBLE2 at M8/16/32 versusS15,all16seed ratios/SE/CI andexact `structural/occupancy/double2.patch` SHA2564cfcbab352a334d254b98ab01be9777e5d68a0fa720d8e826fd06e59abbae795 in `point_nominations.json`. No win versus strong BASE andno3slot nomination. Next structural hypothesis:timed warp-cooperative L2 lookahead before raw-copy waits,retaining2rawslots to avoid extra shared footprint;first count/audit producer issue andsynchronization. No standalone sub1% confirmation run.
+
 ## MoE M=128
 
 Current N_full family: NT1 <=8-token experts, N16G4 at 9-16 on a third stream, heavy N32

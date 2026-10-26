@@ -1,0 +1,62 @@
+{
+  "SINGLE2": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3a_occupancy/single2.py",
+    "candidate_sha256": "c7d04709ac49fbdde675cf96ae1a0824cba3d11f082247d7b50a88a582cb64be",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/occupancy/single2.patch",
+    "patch_sha256": "46dfcedea6f7a8735f05de205d3f184ec64630cd466c8438e70d1f0d6da229e0",
+    "prefix": "rvc_occ_single2",
+    "depth": 2,
+    "kind": "SINGLE"
+  },
+  "SINGLE3": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3a_occupancy/single3.py",
+    "candidate_sha256": "c9c04b006b634d8a33c4a4d567abd14c519c4ed350295defceb5b17f8eebda28",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/occupancy/single3.patch",
+    "patch_sha256": "c0a65049d672c54815607d8e0af4a9e4aea2c739f7094735bcf0595a1c863671",
+    "prefix": "rvc_occ_single3",
+    "depth": 3,
+    "kind": "SINGLE"
+  },
+  "HALF2": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3a_occupancy/half2.py",
+    "candidate_sha256": "53ff826560cce7ad11757d9098d1e1c4e01d1f13eb4ff4f9d0ebf5c6016839d6",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/occupancy/half2.patch",
+    "patch_sha256": "abc37bfa32d17096f407aae620515d162f068f709e1339a0e8caa6ea224df78b",
+    "prefix": "rvc_occ_half2",
+    "depth": 2,
+    "kind": "HALF"
+  },
+  "HALF3": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3a_occupancy/half3.py",
+    "candidate_sha256": "8b7f6670a9cf8ae4b653688fa862b0571caedba35f7d9139602a99d9b5231f14",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/occupancy/half3.patch",
+    "patch_sha256": "d179f62ecf6d9fc1306cbe1ee16e47d056c0aaf7541758f3af7c91298538cd6f",
+    "prefix": "rvc_occ_half3",
+    "depth": 3,
+    "kind": "HALF"
+  },
+  "DOUBLE2": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3a_occupancy/double2.py",
+    "candidate_sha256": "7780fac0e6d16d48e057f8bb30f8b3f830b79b488f28568851ad3be46c7e5aef",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/occupancy/double2.patch",
+    "patch_sha256": "4cfcbab352a334d254b98ab01be9777e5d68a0fa720d8e826fd06e59abbae795",
+    "prefix": "rvc_occ_double2",
+    "depth": 2,
+    "kind": "DOUBLE"
+  },
+  "DOUBLE3": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3a_occupancy/double3.py",
+    "candidate_sha256": "1eb523d4340e3b724d9249c12a9f43207f056a837b933bdb661f3dc8f3e167fc",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/occupancy/double3.patch",
+    "patch_sha256": "98cdc48850b04e1d58a2da2c7348f266c0078e5b9600ef917a5154fb9a820aad",
+    "prefix": "rvc_occ_double3",
+    "depth": 3,
+    "kind": "DOUBLE"
+  }
+}

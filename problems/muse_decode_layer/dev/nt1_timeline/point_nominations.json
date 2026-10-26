@@ -3960,6 +3960,192 @@
         "weights": "475353+7919*seed",
         "routing": "479000+M+97*seed"
       }
+    },
+    {
+      "M": 8,
+      "arm": "DOUBLE2",
+      "control": "S15",
+      "ratio": 0.9839364375,
+      "SE": 0.002774320442271633,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0011645,
+      "AA_SE": 0.0025809345319735117,
+      "AA_mean_abs_us": 0.487,
+      "AA_max_abs_us": 1.904,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9780231134540842,
+        0.9898497615459159
+      ],
+      "job": "cdd07707a6974cac",
+      "batch": "three raw slots at two CTAs",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_occupancy/double2.py",
+        "candidate_sha256": "7780fac0e6d16d48e057f8bb30f8b3f830b79b488f28568851ad3be46c7e5aef",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/occupancy/double2.patch",
+        "patch_sha256": "4cfcbab352a334d254b98ab01be9777e5d68a0fa720d8e826fd06e59abbae795"
+      },
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "675353+7919*seed",
+        "routing": "679000+M+97*seed"
+      }
+    },
+    {
+      "M": 16,
+      "arm": "DOUBLE2",
+      "control": "S15",
+      "ratio": 0.9810010625,
+      "SE": 0.003971688783826461,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.000574625,
+      "AA_SE": 0.0014787909810466836,
+      "AA_mean_abs_us": 0.275,
+      "AA_max_abs_us": 0.848,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.97253560824661,
+        0.9894665167533899
+      ],
+      "job": "cdd07707a6974cac",
+      "batch": "three raw slots at two CTAs",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_occupancy/double2.py",
+        "candidate_sha256": "7780fac0e6d16d48e057f8bb30f8b3f830b79b488f28568851ad3be46c7e5aef",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/occupancy/double2.patch",
+        "patch_sha256": "4cfcbab352a334d254b98ab01be9777e5d68a0fa720d8e826fd06e59abbae795"
+      },
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "675353+7919*seed",
+        "routing": "679000+M+97*seed"
+      }
+    },
+    {
+      "M": 32,
+      "arm": "DOUBLE2",
+      "control": "S15",
+      "ratio": 0.9817824375,
+      "SE": 0.0030666264063961674,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.000482625,
+      "AA_SE": 0.0013772012769714046,
+      "AA_mean_abs_us": 0.357,
+      "AA_max_abs_us": 1.12,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9752460780396868,
+        0.9883187969603133
+      ],
+      "job": "cdd07707a6974cac",
+      "batch": "three raw slots at two CTAs",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_occupancy/double2.py",
+        "candidate_sha256": "7780fac0e6d16d48e057f8bb30f8b3f830b79b488f28568851ad3be46c7e5aef",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/occupancy/double2.patch",
+        "patch_sha256": "4cfcbab352a334d254b98ab01be9777e5d68a0fa720d8e826fd06e59abbae795"
+      },
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "675353+7919*seed",
+        "routing": "679000+M+97*seed"
+      }
     }
   ],
   "patches": {
@@ -7418,5 +7604,223 @@
       "AA_rows": 48
     },
     "status": "Measured;every valid point winner exported;no A:A or per-shape CI veto;P4 confirms whole-layer R"
+  },
+  "occupancy_rows": [
+    {
+      "M": 8,
+      "arm": "DOUBLE2",
+      "control": "S15",
+      "ratio": 0.9839364375,
+      "SE": 0.002774320442271633,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0011645,
+      "AA_SE": 0.0025809345319735117,
+      "AA_mean_abs_us": 0.487,
+      "AA_max_abs_us": 1.904,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9780231134540842,
+        0.9898497615459159
+      ],
+      "job": "cdd07707a6974cac",
+      "batch": "three raw slots at two CTAs",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_occupancy/double2.py",
+        "candidate_sha256": "7780fac0e6d16d48e057f8bb30f8b3f830b79b488f28568851ad3be46c7e5aef",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/occupancy/double2.patch",
+        "patch_sha256": "4cfcbab352a334d254b98ab01be9777e5d68a0fa720d8e826fd06e59abbae795"
+      },
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "675353+7919*seed",
+        "routing": "679000+M+97*seed"
+      }
+    },
+    {
+      "M": 16,
+      "arm": "DOUBLE2",
+      "control": "S15",
+      "ratio": 0.9810010625,
+      "SE": 0.003971688783826461,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.000574625,
+      "AA_SE": 0.0014787909810466836,
+      "AA_mean_abs_us": 0.275,
+      "AA_max_abs_us": 0.848,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.97253560824661,
+        0.9894665167533899
+      ],
+      "job": "cdd07707a6974cac",
+      "batch": "three raw slots at two CTAs",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_occupancy/double2.py",
+        "candidate_sha256": "7780fac0e6d16d48e057f8bb30f8b3f830b79b488f28568851ad3be46c7e5aef",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/occupancy/double2.patch",
+        "patch_sha256": "4cfcbab352a334d254b98ab01be9777e5d68a0fa720d8e826fd06e59abbae795"
+      },
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "675353+7919*seed",
+        "routing": "679000+M+97*seed"
+      }
+    },
+    {
+      "M": 32,
+      "arm": "DOUBLE2",
+      "control": "S15",
+      "ratio": 0.9817824375,
+      "SE": 0.0030666264063961674,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.000482625,
+      "AA_SE": 0.0013772012769714046,
+      "AA_mean_abs_us": 0.357,
+      "AA_max_abs_us": 1.12,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9752460780396868,
+        0.9883187969603133
+      ],
+      "job": "cdd07707a6974cac",
+      "batch": "three raw slots at two CTAs",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_occupancy/double2.py",
+        "candidate_sha256": "7780fac0e6d16d48e057f8bb30f8b3f830b79b488f28568851ad3be46c7e5aef",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/occupancy/double2.patch",
+        "patch_sha256": "4cfcbab352a334d254b98ab01be9777e5d68a0fa720d8e826fd06e59abbae795"
+      },
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "675353+7919*seed",
+        "routing": "679000+M+97*seed"
+      }
+    }
+  ],
+  "occupancy_followup": {
+    "queue": {
+      "utc": "20261026T060528Z",
+      "problem": "muse_moe_w4a16",
+      "mode": "check",
+      "job": "cdd07707a6974cac",
+      "sha256": "5daf36f333fec1e5f39421d6af275391264d11992ea4c6606a5aa28c1da57821",
+      "file": "problems/muse_moe_w4a16/lab/lab_moe_p3a_occupancy.py",
+      "source": "runs/muse_moe_w4a16/20261026T060528Z_check_cdd07707a6974cac.py",
+      "git": "7640a02+dirty",
+      "note": "h200_lab prof/lab/moe_p3a_occupancy.py: P3a isolate3fullrawslots without2to1residency loss: SINGLE single4KiB reduction+deadroutealias/exact8bitreverse16bitoffset/rebuildinverse timed;HALF single2KiB pairedwarp partials+eflatalias;DOUBLE2x2KiB partials+routealias. Eachlayout depth2/3 versus c49 PAIR/PAIRBLOCK BASE and S15,all16freshseeds M8/16/32,624paired ratios48AA,TASK before/after readflushABBA. Cheapest exactsm90a count plus CUDAoccupancy predictsall3layouts2CTAs including1KiBdriverreservation,121-125regs0spills,3slotshared114848-115680B;4rawslotscannotfit2. Actualruntime resource rows retained. All6selectors348nativeTASK/capture/nearby/all8 tests andall6normalforced13TASK12shape27static wholelayer screens pass;depth2controlsidenticalCUDA. Explicitlocaldepth3to2 standin absent from payload. Exact packedlocal16seeds allTASK8071chars44.3s;975131bytewrapper. No depthbottleneck inferred from overlap oracle;test netcompaction cost versuslookahead. Every pointwinner exactpatch/CI/SE/seeds to P4 S18;wholelayerR confirms.",
+      "snapshot": "runs/sent/5daf36f333fec1e5/lab_moe_p3a_occupancy.py",
+      "sender": 3240664,
+      "sender_log": "runs/detached/5daf36f333fec1e5.log",
+      "payload": "prof/lab/moe_p3a_occupancy.py",
+      "payload_sha256": "89c398a7dca72b7f69f941f8466e12dee29b9d83800d7c22e2b58d5bd1c8f475",
+      "state": "complete16seeds/allTASK/sourceaudit;all layouts actually2CTA;all lose versus BASE;DOUBLE2M8/16/32 S15 alternatives",
+      "receipt": "runs/muse_moe_w4a16/20261026T060528Z_check_cdd07707a6974cac.json"
+    },
+    "source_audit": {
+      "verified": true,
+      "job": "cdd07707a6974cac",
+      "wrapper_sha256": "5daf36f333fec1e5f39421d6af275391264d11992ea4c6606a5aa28c1da57821",
+      "payload_sha256": "89c398a7dca72b7f69f941f8466e12dee29b9d83800d7c22e2b58d5bd1c8f475",
+      "exact_cells": 8,
+      "paired_rows": 624,
+      "AA_rows": 48
+    },
+    "status": "Measured;every valid point winner exported. Per-shape CI andA:A describe uncertainty;P4 confirms held-out six-load R"
   }
 }

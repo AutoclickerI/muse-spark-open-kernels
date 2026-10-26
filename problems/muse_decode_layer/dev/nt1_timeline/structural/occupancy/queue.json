@@ -1,0 +1,18 @@
+{
+  "utc": "20261026T060528Z",
+  "problem": "muse_moe_w4a16",
+  "mode": "check",
+  "job": "cdd07707a6974cac",
+  "sha256": "5daf36f333fec1e5f39421d6af275391264d11992ea4c6606a5aa28c1da57821",
+  "file": "problems/muse_moe_w4a16/lab/lab_moe_p3a_occupancy.py",
+  "source": "runs/muse_moe_w4a16/20261026T060528Z_check_cdd07707a6974cac.py",
+  "git": "7640a02+dirty",
+  "note": "h200_lab prof/lab/moe_p3a_occupancy.py: P3a isolate3fullrawslots without2to1residency loss: SINGLE single4KiB reduction+deadroutealias/exact8bitreverse16bitoffset/rebuildinverse timed;HALF single2KiB pairedwarp partials+eflatalias;DOUBLE2x2KiB partials+routealias. Eachlayout depth2/3 versus c49 PAIR/PAIRBLOCK BASE and S15,all16freshseeds M8/16/32,624paired ratios48AA,TASK before/after readflushABBA. Cheapest exactsm90a count plus CUDAoccupancy predictsall3layouts2CTAs including1KiBdriverreservation,121-125regs0spills,3slotshared114848-115680B;4rawslotscannotfit2. Actualruntime resource rows retained. All6selectors348nativeTASK/capture/nearby/all8 tests andall6normalforced13TASK12shape27static wholelayer screens pass;depth2controlsidenticalCUDA. Explicitlocaldepth3to2 standin absent from payload. Exact packedlocal16seeds allTASK8071chars44.3s;975131bytewrapper. No depthbottleneck inferred from overlap oracle;test netcompaction cost versuslookahead. Every pointwinner exactpatch/CI/SE/seeds to P4 S18;wholelayerR confirms.",
+  "snapshot": "runs/sent/5daf36f333fec1e5/lab_moe_p3a_occupancy.py",
+  "sender": 3240664,
+  "sender_log": "runs/detached/5daf36f333fec1e5.log",
+  "payload": "prof/lab/moe_p3a_occupancy.py",
+  "payload_sha256": "89c398a7dca72b7f69f941f8466e12dee29b9d83800d7c22e2b58d5bd1c8f475",
+  "state": "complete16seeds/allTASK/sourceaudit;all layouts actually2CTA;all lose versus BASE;DOUBLE2M8/16/32 S15 alternatives",
+  "receipt": "runs/muse_moe_w4a16/20261026T060528Z_check_cdd07707a6974cac.json"
+}

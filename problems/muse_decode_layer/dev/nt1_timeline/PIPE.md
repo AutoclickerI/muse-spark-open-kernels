@@ -224,3 +224,11 @@ pass;static counts are not timing evidence. Receipt11b3849eb86749df completes16s
 LUT2 1.175/1.191/1.222 versus BASE. LUT1 has2CTAs,so1CTA residency alone is not the cause.
 No decoder point nominee;other direct packed decoders andlower-footprint overlap remain open. Full CI/resources
 andremaining alternatives are in that README.
+
+
+Three-slot/two-CTA receipt **cdd07707a6974cac** now rejects occupancy loss as a sufficient explanation:
+all3layouts fit andactuallyretain2CTAs,121–125regs/zero local,114848–115680B shared,butalllose to BASE.
+SINGLE3 1.0583/1.0663/1.0577,HALF3 1.0672/1.0785/1.0712,DOUBLE3 1.0266/1.0443/1.0353 atM8/16/32.
+Matched2slot layouts lose less;BASE-normalized3/2contrasts all>1,notdirect3/2timingpairs. L1/shared carveout,
+barrier andproducer-issue costs are not isolated. Only DOUBLE2/S15 .98394/.98100/.98178 alternatives go P4.
+Next structural path:producer L2 lookahead while retaining2rawslots,withissue/order proof first.

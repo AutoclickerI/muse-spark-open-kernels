@@ -117,5 +117,15 @@ is an exact-patch alternative in `point_nominations.json`. Fused dependency/low-
 [structural/dequant/README.md](structural/dequant/README.md) records11b3849eb86749df:the exact64KiB
 lane-bank table decoder loses at allM8/16/32,LUT1 1.18504/1.14567/1.12330,LUT2 1.17463/1.19059/1.22229
 versus c49. No P4 decoder nominee. All16seeds/TASK/AA/source gates pass;the loss closes justthese layouts.
-The next structural hypothesis is recovering3-slot lookahead without losing2CTA residency,by reclaiming
-phase-local route/reduction scratch after auditing lifetimes/resources. No standalone sub1% run is sent.
+That hypothesis is now measured below. No standalone sub1% run is sent.
+
+
+## Three-slot occupancy hypothesis:measured
+
+[structural/occupancy/README.md](structural/occupancy/README.md) records **cdd07707a6974cac**,sender3240664:
+all3compact layouts actually keep2CTAs at3rawslots,121–125registers,zero local bytes,114848–115680B shared.
+All16seeds/TASK/AA/source pass. SINGLE3/BASE1.05830/1.06634/1.05770,HALF3 1.06724/1.07847/1.07119,
+DOUBLE3 1.02659/1.04433/1.03526 atM8/16/32;matching2slot arms also lose versus BASE. This changes the earlier
+residency diagnosis:holding2CTAs is insufficient,andloads-only also removes math/synchronization.
+DOUBLE2/S15 .983936/.981001/.981782 remains a P4 alternative atall3M,exact patch4cfcbab3,seeds/SE/CI
+in `point_nominations.json`;no3slot nominee. Other producer/reduction schedules andL2 lookahead remain open.

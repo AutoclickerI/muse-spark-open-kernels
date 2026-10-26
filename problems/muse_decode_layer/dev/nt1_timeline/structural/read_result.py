@@ -9,12 +9,12 @@ assert sha(source)==queue['sha256'];nodes=ast.parse(source).body
 emb=next(ast.literal_eval(n.value) for n in nodes if isinstance(n,ast.Assign) and any(getattr(t,'id',None)=='_LAB_PAYLOADS' for t in n.targets));name,psha,body=next(e for e in emb if e[1]==payload['sha256'][:16]);assert sha(body)==payload['sha256']
 blob=next(n.args[0].value for n in ast.walk(ast.parse(body)) if isinstance(n,ast.Call) and getattr(n.func,'attr','')=='b85decode');expanded=lzma.decompress(base64.b85decode(blob)).decode();assert sha(expanded)==payload['expanded_sha256']
 cells=json.loads((D/'cells.json').read_text())
-if D.name=='dequant':cells={**{k:v for k,v in json.loads((S/'cells.json').read_text()).items() if k.startswith('FUSED')},**cells}
+if D.name in ('dequant','occupancy'):cells={**{k:v for k,v in json.loads((S/'cells.json').read_text()).items() if k.startswith('FUSED')},**cells}
 for spec in cells.values():
  cell=(R/spec['cell']).read_text();assert sha(cell)==spec['cell_sha256'] and cell in expanded
  cuda=next(ast.literal_eval(n.value) for n in ast.parse(cell).body if isinstance(n,ast.Assign) and getattr(n.targets[0],'id','').endswith('_CUDA'));assert sha(cuda)==spec['cuda_sha256']
 for arm in json.loads((D/'manifest.json').read_text()):assert (D/(arm.lower()+'_selector.py.inc')).read_text() in expanded
-if D.name=='dequant':assert (S/'base_selector.py.inc').read_text() in expanded
+if D.name in ('dequant','occupancy'):assert (S/'base_selector.py.inc').read_text() in expanded
 assert result['job']==queue['job'] and result['measured'] and not result['invalid'];rec=result['seed_level_record'];assert not rec['failures'] and rec['seeds']==16
 assert rec['weights_seed']==payload['weights_seed'] and rec['route_seed']==payload['route_seed'];assert len(rec['rows'])==payload['max_pairs'] and len(rec['AA_rows'])==48
 for row in result['summary']:

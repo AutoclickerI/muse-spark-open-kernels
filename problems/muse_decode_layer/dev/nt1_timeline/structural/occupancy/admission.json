@@ -1,0 +1,47 @@
+{
+  "payload_sha256": "89c398a7dca72b7f69f941f8466e12dee29b9d83800d7c22e2b58d5bd1c8f475",
+  "candidates": {
+    "SINGLE2": "c7d04709ac49fbdde675cf96ae1a0824cba3d11f082247d7b50a88a582cb64be",
+    "SINGLE3": "c9c04b006b634d8a33c4a4d567abd14c519c4ed350295defceb5b17f8eebda28",
+    "HALF2": "53ff826560cce7ad11757d9098d1e1c4e01d1f13eb4ff4f9d0ebf5c6016839d6",
+    "HALF3": "8b7f6670a9cf8ae4b653688fa862b0571caedba35f7d9139602a99d9b5231f14",
+    "DOUBLE2": "7780fac0e6d16d48e057f8bb30f8b3f830b79b488f28568851ad3be46c7e5aef",
+    "DOUBLE3": "1eb523d4340e3b724d9249c12a9f43207f056a837b933bdb661f3dc8f3e167fc"
+  },
+  "native_component_TASK_checks": 348,
+  "whole_layer_normal_forced_screens": 6,
+  "each_screen": {
+    "TASK": 13,
+    "shapes": 12,
+    "static": "all pass"
+  },
+  "two_slot_controls": "Same CUDA as corresponding three-slot candidate;all6selectors native component/capture-gated",
+  "offline_H200_all_three_slot_layouts_resident": 2,
+  "registers": {
+    "SINGLE0": 125,
+    "SINGLE1": 121,
+    "HALF0": 122,
+    "HALF1": 122,
+    "DOUBLE0": 125,
+    "DOUBLE1": 125,
+    "BASE0": 125,
+    "BASE2": 125
+  },
+  "standin": "local native compact-scratch math with explicit3to2 raw depth;actual3slots H200,absent from payload",
+  "packed_lab": {
+    "seeds": 16,
+    "M": [
+      8,
+      16,
+      32
+    ],
+    "AA": 48,
+    "pairs": 624,
+    "chars": 8071,
+    "seconds": 44.320193141000345,
+    "all_TASK_pass": true
+  },
+  "wrapper_sha256": "5daf36f333fec1e5f39421d6af275391264d11992ea4c6606a5aa28c1da57821",
+  "source_bytes": 975131,
+  "status": "Measuredcdd07707a6974cac:all16seeds/TASK/AA/source pass,actual all2CTA;all versusBASE lose;DOUBLE2versusS15 point alternatives"
+}
