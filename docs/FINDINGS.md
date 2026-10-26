@@ -608,8 +608,9 @@ LDGSTS 40→8; hints 1.0027, metadata 1.0032 (A:A 1.0007), tiles 0.887. Confirma
 
 Recipe ratios are candidate/control (lower is faster), except the explicitly labelled component speedups. Full shape/seed evidence and code pins: `problems/muse_bf16_proj/dev/sparse_all/results.json` and `problems/muse_decode_layer/dev/p12_components/leader_gap.json`.
 
-| Recipe | Ratio and control spread | Mechanism | Leaves open | Receipt job |
+| Recipe | Ratio and control spread | Mechanism | What remains open / decision | Receipt job |
 |---|---|---|---|---|
+| P12 S15 attention component | SGLang/ours 1.64698 [1.62228,1.67169]; ours/leader 1.76667; A:A unavailable | Frozen S15 path behind the board ABI; official paired SGLang control | 16 tests/12 shapes pass. Leader per-shape times unpublished; aggregate gap only; no layer promotion. | 4e108beb9a0a4cdb |
 | P12 S15 projection component | SGLang/ours 0.98059 [0.96588,0.99530]; ours/leader 1.65590; A:A unavailable | Frozen S15 path behind the board ABI; official paired SGLang control | 9 tests/30 shapes pass. Leader per-shape times unpublished; aggregate gap only; no layer promotion. Includes board sum/cast/router-add tax; one-reducer/producer-only follow-up queued. | d6ad694a27954c80 |
 | P12 S15 moe component | SGLang/ours 2.02924 [1.99880,2.05968]; ours/leader 1.25835; A:A unavailable | Frozen S15 path behind the board ABI; official paired SGLang control | 5 tests/6 shapes pass. Leader per-shape times unpublished; aggregate gap only; no layer promotion. | 97f5e7f3c3fc4159 |
 | P10 pool sparse batch | unmeasured: failed or incomplete control/gate | No recipe loss or promotion inferred | LAB_ERROR CompilationError: at 6:4:; AttributeError("'NoneType' object has no attribute 'startswith'"); AttributeError("'NoneType' object has no attribute 'startswith'"); LAB_ERROR host supplies weights=None; payloads needing weights must synthesize them (state is also None on import-time hosts) | b02c4f27e71c4340 |
