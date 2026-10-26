@@ -1,17 +1,23 @@
 # S16 integration
 
 Frozen incumbent: [cand_r3_best7_s16_final.py](../../cand_r3_best7_s16_final.py), shipped
-**4ca750a5**, expanded **ee5fe249**. Scored **1.818167x**, job **93c6e7425c484608**.
-Held-out check **a8c66a6d5dfc4fc2**: R **1.002048**,95% CI **[1.000129,1.003971]**
-over preparation-corrected prior S16,16 seeds/1536 public TASK checks. A:A R1.003917,
-95% CI[1.002555,1.005282], seed range0.997737-1.007026. It passes the predeclared
-max-SE gate, but A:A's mean exceeds the apparent gain: this is marginal evidence,
-not a robust0.205% estimate. frozen.json and s16_report.json preserve that caveat.
+**d2b83953**, expanded **1468be3e**: guarded nearby dispatch on prior scored S16.
+Native check **e26bc28cfe8449f5** passes all320 TASK checks at80 shapes,2 seeds and
+captured replays, plus the packed host's official tests. The check host scored1.813381x;
+this exact final has no scored submission yet. Scored-shape dispatch is unchanged.
 
-Prior nine-piece S16 shipped1d0c8893/expanded435df5f7 scored1.824219x (c6cc2874),
-and won over S15 at R1.008291,95% CI[1.005790,1.010799] (37c2879f,2304 TASK).
-Its full promotion is archived in batches/504e1fa66298bf9e/promotion.json. Unpaired
-scores do not rank the small difference between these sources.
+Nearby timing **a793c99e** meets the owner criterion: all six nearby/scored speedup
+gaps shrink substantially. Standalone guarded S15n native proofc03a3ae8 passes268,
+prior-S16 mergee9438827 passes268, and the exact current mergee26bc28c passes320.
+Thus the whole guarded range patch is promoted for nearby behavior, without claiming a
+new scored-shape speedup. frozen.json records the exact decision and native source identity.
+
+Previous scored S16 shipped4ca750a5/expandedee5fe249 scored1.818167x (93c6e742).
+Its held-out R1.002048,95% CI[1.000129,1.003971] passes1536 TASK checks at16 seeds
+(a8c66a6d). A:A R1.003917 exceeds the apparent gain: marginal evidence under the
+predeclared max-SE rule, not a robust0.205% estimate. prior_scored_frozen.json preserves it.
+Earlier nine-piece S16 shipped1d0c8893 scored1.824219x (c6cc2874); R1.008291 over S15,
+95% CI[1.005790,1.010799] (37c2879f,2304 TASK). Unpaired scores do not rank these differences.
 
 ## Promotion
 
@@ -35,7 +41,7 @@ CI is descriptive. Owner97e98f3 froze exact60254883; no conditional S15c was sen
 | Prior S16 435df5f7 / shipped1d0c8893 | Normal/forced13 TASK/12 graphs/30 expanded checks; paired wrapper504e1fa6 passes2304 TASK per mode | Scored c6cc2874ab994ee9, check37c2879f62554dff; later superseded |
 | Follow-up e3a919c5 / shipped6b5df6a8 | Normal/forced13 TASK/12 graphs/26 expanded checks | Scored cff1d0f93ce14a2f=1.811842x; comparison c096a2c5200447e9 is unmeasured (private prepare gate), repaired retry is screening |
 | Guarded nearby on prior S16,6e43a367 | Normal/forced143 fixtures per mode; native268/268 TASK at67 shapes | Native job e94388270a9e4c8e; superseded base |
-| Guarded nearby on current S16,1468be3e | Exact packed decode host,80 shapes including13 official and B64/B65;320 private TASK checks per mode | Screening, then one native check; not promoted yet |
+| Guarded nearby on current S16,1468be3e | Exact packed decode host,80 shapes including13 official and B64/B65;320 private TASK checks per mode | Native e26bc28cfe8449f5 passes320/320 plus official host tests; promoted |
 
 Follow-up e3a919c5 retains PAIR and attention release, adds OLD last-CTA at decode16
 sliding, direct-partials at decode32 sliding, and cooperative QT4/C16 at verify1 sliding.
@@ -118,6 +124,6 @@ Preparation-only retry: expandedee5fe249/shipped4ca750a5 scored1.818167x at93c6e
 Paired a8c66a6d5dfc4fc2 used exactly the failed c096 seeds/weights/router with published
 TASK preparation semantics on both arms; all1536 native TASK checks pass, so ee5fe249 is frozen.
 
-Next: read all pending
-receipts through h200_lab.py, apply the six-load gate, and add guarded nearby only
-after native correctness. Measured rows are also in docs/FINDINGS.md, integration section.
+Next: orchestrator may score the frozen nearby file or use it as the base of the larger
+lever composition. No additional small-gain experiment is pending in this lane.
+Measured rows are also in docs/FINDINGS.md, integration section.

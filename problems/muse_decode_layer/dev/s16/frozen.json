@@ -1,37 +1,51 @@
 {
   "name": "S16",
-  "expanded_sha256": "ee5fe24973f440e5c0daf34c9a65ca4848fc03dd661bd08b6d92b40280cab745",
-  "shipped_sha256": "4ca750a529a4d3d590c00d75247fb6a05eef3924a60686abb380145f1c3649ef",
   "file": "problems/muse_decode_layer/cand_r3_best7_s16_final.py",
-  "scored_job": "93c6e7425c484608",
-  "scored_speedup": 1.8181671134225192,
-  "confirmation_job": "a8c66a6d5dfc4fc2",
-  "R": 1.0020482070348178,
-  "CI95": [
-    1.0001294837912067,
-    1.0039706113006819
-  ],
-  "TASK_pass": true,
-  "seeds": 16,
+  "expanded_sha256": "1468be3efe39e034db7efca0f83a441a79d022217683f18579f7b2df546dde68",
+  "shipped_sha256": "d2b83953cb4ceff52809b6312465fa8565e389d1643324c947cb3d6de5f79c00",
+  "native_check_job": "e26bc28cfe8449f5",
+  "native_check_host_speedup": 1.8133813961017746,
+  "native_TASK_checks": 320,
+  "shapes": 80,
+  "nearby_timing_job": "a793c99eb9d447df",
+  "scored_dispatch_unchanged": true,
+  "promotion_basis": "Explicit nearby criterion: all six nearby/scored gaps closer; scored dispatch unchanged; current exact merge public TASK/native replay check passes. No scored-shape gain claimed.",
   "previous": {
     "name": "S16",
-    "expanded_sha256": "435df5f78a0d157f979b4b472865a139a28ac333fe275b1aebc0055a76dbf6d3",
-    "shipped_sha256": "1d0c8893c1a833756a175d875c78d0815cf39455a27e9c268698691f78e6cf80",
+    "expanded_sha256": "ee5fe24973f440e5c0daf34c9a65ca4848fc03dd661bd08b6d92b40280cab745",
+    "shipped_sha256": "4ca750a529a4d3d590c00d75247fb6a05eef3924a60686abb380145f1c3649ef",
     "file": "problems/muse_decode_layer/cand_r3_best7_s16_final.py",
-    "scored_job": "c6cc2874ab994ee9",
-    "scored_speedup": 1.8242191333945108,
-    "confirmation_job": "37c2879f62554dff",
-    "R": 1.0082910847169426,
+    "scored_job": "93c6e7425c484608",
+    "scored_speedup": 1.8181671134225192,
+    "confirmation_job": "a8c66a6d5dfc4fc2",
+    "R": 1.0020482070348178,
     "CI95": [
-      1.0057898640129264,
-      1.010798525512485
+      1.0001294837912067,
+      1.0039706113006819
     ],
     "TASK_pass": true,
     "seeds": 16,
-    "previous": "S15 60254883"
+    "previous": {
+      "name": "S16",
+      "expanded_sha256": "435df5f78a0d157f979b4b472865a139a28ac333fe275b1aebc0055a76dbf6d3",
+      "shipped_sha256": "1d0c8893c1a833756a175d875c78d0815cf39455a27e9c268698691f78e6cf80",
+      "file": "problems/muse_decode_layer/cand_r3_best7_s16_final.py",
+      "scored_job": "c6cc2874ab994ee9",
+      "scored_speedup": 1.8242191333945108,
+      "confirmation_job": "37c2879f62554dff",
+      "R": 1.0082910847169426,
+      "CI95": [
+        1.0057898640129264,
+        1.010798525512485
+      ],
+      "TASK_pass": true,
+      "seeds": 16,
+      "previous": "S15 60254883"
+    },
+    "baseline_original_sha256": "435df5f78a0d157f979b4b472865a139a28ac333fe275b1aebc0055a76dbf6d3",
+    "baseline_preparation_fixed_sha256": "98de23cbc6eacb92de031d70105837fbeabae8f35dbfcaeb712136c7552d316c",
+    "AA_R": 1.0039173997594548,
+    "interpretation": "Passes the predeclared max-SE CI gate; A:A mean exceeds apparent gain, so this is marginal evidence, not a robust .205pct estimate."
   },
-  "baseline_original_sha256": "435df5f78a0d157f979b4b472865a139a28ac333fe275b1aebc0055a76dbf6d3",
-  "baseline_preparation_fixed_sha256": "98de23cbc6eacb92de031d70105837fbeabae8f35dbfcaeb712136c7552d316c",
-  "AA_R": 1.0039173997594548,
-  "interpretation": "Passes the predeclared max-SE CI gate; A:A mean exceeds apparent gain, so this is marginal evidence, not a robust .205pct estimate."
+  "scored_job": null
 }

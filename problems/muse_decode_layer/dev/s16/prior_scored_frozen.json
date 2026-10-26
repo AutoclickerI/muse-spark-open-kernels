@@ -1,0 +1,37 @@
+{
+  "name": "S16",
+  "expanded_sha256": "ee5fe24973f440e5c0daf34c9a65ca4848fc03dd661bd08b6d92b40280cab745",
+  "shipped_sha256": "4ca750a529a4d3d590c00d75247fb6a05eef3924a60686abb380145f1c3649ef",
+  "file": "problems/muse_decode_layer/cand_r3_best7_s16_final.py",
+  "scored_job": "93c6e7425c484608",
+  "scored_speedup": 1.8181671134225192,
+  "confirmation_job": "a8c66a6d5dfc4fc2",
+  "R": 1.0020482070348178,
+  "CI95": [
+    1.0001294837912067,
+    1.0039706113006819
+  ],
+  "TASK_pass": true,
+  "seeds": 16,
+  "previous": {
+    "name": "S16",
+    "expanded_sha256": "435df5f78a0d157f979b4b472865a139a28ac333fe275b1aebc0055a76dbf6d3",
+    "shipped_sha256": "1d0c8893c1a833756a175d875c78d0815cf39455a27e9c268698691f78e6cf80",
+    "file": "problems/muse_decode_layer/cand_r3_best7_s16_final.py",
+    "scored_job": "c6cc2874ab994ee9",
+    "scored_speedup": 1.8242191333945108,
+    "confirmation_job": "37c2879f62554dff",
+    "R": 1.0082910847169426,
+    "CI95": [
+      1.0057898640129264,
+      1.010798525512485
+    ],
+    "TASK_pass": true,
+    "seeds": 16,
+    "previous": "S15 60254883"
+  },
+  "baseline_original_sha256": "435df5f78a0d157f979b4b472865a139a28ac333fe275b1aebc0055a76dbf6d3",
+  "baseline_preparation_fixed_sha256": "98de23cbc6eacb92de031d70105837fbeabae8f35dbfcaeb712136c7552d316c",
+  "AA_R": 1.0039173997594548,
+  "interpretation": "Passes the predeclared max-SE CI gate; A:A mean exceeds apparent gain, so this is marginal evidence, not a robust .205pct estimate."
+}
