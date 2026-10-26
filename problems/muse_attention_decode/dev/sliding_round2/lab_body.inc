@@ -67,9 +67,11 @@ def lab(deadline,weights,state=None):
         for seed in SEEDS:
             if time.monotonic()>deadline-8:raise TimeoutError(('incomplete round2',label,seed,len(times['A'])))
             if seed!=SEEDS[0]:cs_copy(data,mk(seed))
-            for graph in graphs.values():graph.replay()
-            torch.cuda.synchronize();checker=eh_checker(data,weights)
+            checker=eh_checker(data,weights)
             for n in variants:
+                # Check the cache this arm just wrote. Replaying every arm
+                # first lets the last writer mask another arm's store error.
+                graphs[n].replay();torch.cuda.synchronize()
                 ok,msg=checker(out[n]);assert ok,(label,n,seed,msg);counts[n]+=1
                 # Keep all output drift and reference messages, including exact
                 # route membership changes; no A-relative cutoff replaces TASK.

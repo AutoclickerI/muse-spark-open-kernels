@@ -5,8 +5,8 @@ import build_packet,kernels
 H=Path(__file__).resolve().parent
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('mode',choices=('dsm','history'))
-    ap.add_argument('--selection',required=True,type=json.loads,help='DSM {batch:cluster}; history {"qt":1|2|4}')
+    ap=argparse.ArgumentParser();ap.add_argument('mode',choices=('dsm','history','selected'))
+    ap.add_argument('--selection',required=True,type=json.loads,help='DSM {batch:cluster}; history {"qt":1|2|4}; selected {"batch,q_len":[kind,qt,splits]}')
     a=ap.parse_args();body=(H/'out/body.py').read_text()
     cut=body.index('SEEDS=tuple(');body=body[:cut]+(H/'lab_body.inc').read_text()
     body=body.replace('SEEDS=tuple(4194319+104729*i for i in range(16))','SEEDS=tuple(7101149+104729*i for i in range(24))')
@@ -19,7 +19,7 @@ def main():
             arms[(b,8)]={'RESET':('dsm_old',qt,c),'COOP':('dsm',qt,c),
                          'HALF':('dsm',qt,max(1,c//2)),'DOUBLE':('dsm',qt,min(16,c*2))}
         cases=tuple(arms)
-    else:
+    elif a.mode=='history':
         qt=int(a.selection['qt']);assert qt in (1,2,4)
         # Reuse the exact reset early-history shader for a held-out confirmation,
         # and test its held-out whole-layer result.
@@ -29,6 +29,14 @@ def main():
         assert hashlib.sha256(oldcuda.encode()).hexdigest()=='0e07854b0a329f411d21ae9c18583646dccaff456a7fbdfe446608e14de58d58'
         body+='\nKERNELS["early"]='+repr(oldcuda)+'\n'
         arms={(1,1):{'EARLY':('early',qt,16),'LAST':('last',qt,16)}};cases=tuple(arms)
+    else:
+        # Confirm only winners actually selected by the native receipt.
+        # This uses the same exact-S14 capture/checker and held-out seeds.
+        arms={tuple(map(int,k.split(','))):{'SELECTED':tuple(v)} for k,v in a.selection.items()}
+        assert arms and all(k in ((16,1),(32,1),(1,8)) for k in arms)
+        assert all(v[0] in ('last','early','dsm','dsm_old') and v[1] in (1,2,4,8)
+                   and 1<=v[2]<=32 for row in arms.values() for v in row.values())
+        cases=tuple(arms)
     # Replace only metadata constants, preserving shared capture, TASK gates,
     # cold inputs and all fixed public-checker math.
     body+='\nARMS='+repr(arms)+'\nCASES='+repr(cases)+'\n'
@@ -43,7 +51,11 @@ def main():
             if key not in used:lines[n.lineno-1:n.end_lineno]=[]
     body=''.join(lines)
     body=body.replace("END shapes=%d/3 seeds=%d",'END shapes=%d/'+str(len(cases))+' seeds=%d')
+    # h200_lab's generic wrapper retains 9000 characters, less than the
+    # original round2 board's 15000. Keep the complete archive within it.
+    body=body.replace('>13500:', '>7000:').replace("<14500,'round2 receipt would truncate'", "<8800,'follow-up receipt would truncate'")
     compile(body,'round2_followup','exec');packet=build_packet.boot(body)
+    packet+='\n_P5_FOLLOWUP_LAB=lab\ndef lab(deadline,weights,state=None):\n    return _P5_FOLLOWUP_LAB(deadline,weights,state)\n'
     p=H/'out'/('followup_'+a.mode+'.py');p.write_text(packet)
     print(p,hashlib.sha256(packet.encode()).hexdigest(),'cases',cases)
 if __name__=='__main__':main()

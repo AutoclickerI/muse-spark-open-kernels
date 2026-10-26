@@ -41,9 +41,47 @@ Files (one entry per retained direct file):
 
 Handoff: [s11_last_decode1.patch](s11_last_decode1.patch), SHA256 `96e2c5b3e94d7a8588e3ea0cb8442dbe856b0ad9831416690390b3dcff70325b`, applies onto S11 acda6c62.
 
-Pending H200 senders (not judge-accepted at handoff):
+## Receipt decisions
 
-- PID 2411468, wrapper `0ccc25484dbe5810`, [lab_p5_global_attention.py](../../../muse_decode_layer/lab/lab_p5_global_attention.py); [sender log](../../../../runs/detached/0ccc25484dbe5810.log). Reset 2026-10-26 09:00/09:01 KST; dispatch metadata: `runs/waiting/2411468.json`.
-- PID 3038721, wrapper `f1c270e6e12b7cb2`, [p5_dsm_board.py](out/p5_dsm_board.py); [sender log](../../../../runs/detached/f1c270e6e12b7cb2.log). Reset 2026-10-26 09:00/09:01 KST; dispatch metadata: `runs/waiting/3038721.json`.
+`ae6cd27877cc4ee2` (wrapper `0ccc2548`) completed. The global lab's
+captured whole-layer arms check only finiteness; its attention/store gate
+uses one full-QKV fixture before capture. It does not establish replay TASK
+correctness. Raw C128 ratios d1S/d16S/d32S/d1F are
+0.98987/0.99595/1.00529/1.07796, with A:A
+1.00514/0.98012/1.00524/1.01041 (seed SE
+0.00475/0.00359/0.00210/0.00298). Sliding output drift reaches0.58 and
+route membership changes. These whole-layer recipes are **unmeasured**;
+no loss closes a family and no arm goes to P4 from this receipt.
+Round2 independently tests d16/d32 sliding with full TASK gates.
 
-Next: Collect the global/full-verify host and native DSM sweep; select competitive settings before sending the prepared DSM whole-layer pair. Evidence: 7e93cc81af17489a, 9d9a01e1f6db4d79.
+The earlier eight-seed stage receipt `2f8b702dc76b42fd` has LAST ratios
+0.9307/1.0523/1.0718 at decode1/16/32 and0.9030/0.8618/0.7997 at
+verify1/16/32; A:A is0.9856/0.9890/0.9884/0.9968/0.9923/0.9894.
+MASK is bitwise equal; FAST loses verify (1.0503/1.4051/1.2840).
+All eight per-shape stage/partial gates passed. These close only those
+stage recipes. Verify1's incremental whole-layer decision remains round2;
+verify16/32 are tested by the native DSM and resident-history packets.
+Decode1 full one-head st3/st4 loses1.4240/1.3879 with A:A0.99029,
+SE0.00174 (`58d6a59603564014`), so that schedule is closed.
+
+Native DSM **b05713ecf6574ad9** completed. Verify1 C16 is0.71927 vsA
+and0.74918 vsA2; verify16 C8 is0.84911 vsA and0.86657 vsA2.
+A:A means are0.96012/0.97988 (SE0.00336/0.00328; ranges
+0.94072-0.97302/0.96656-0.99095). These gains exceed both control drift
+and three seed standard errors. All8 gates per shape pass: maximum stage
+errors0.02213/0.02121/0.02066 at B1/16/32, partial error0.
+Verify32's best C4 loses1.07381 vsA (1.08299 vsA2); A:A0.99157,
+SE0.00309, range0.97661-1.00294. That closes only this DSM recipe atB32.
+The selected24-seed S14 confirmation packs RESET/COOP/HALF/DOUBLE only
+for **B1:C16 and B16:C8**, with immediate per-arm cache checks.
+No new P4 promotion yet. Existing handoff evidence remains
+`7e93cc81af17489a`, `9d9a01e1f6db4d79`.
+
+`repair_global_lab.py` reconstructs ae6cd278's exact host and payload from
+its immutable source receipt, adding captured TASK20pct-margin/cache gates
+for every arm/seed and a hard failure on incomplete sampling. Kernels and
+plans are unchanged. Its4-shape x8-arm x2-fresh-seed local admission passes.
+The unrelated native N128 verify prepare uses the existing frozen N64
+stand-in locally; decode shaders execute their actual sm120 math shims.
+The repaired packet embeds S11 independently and uses attention import
+hosting, so later decode prepare output cannot displace its archive.

@@ -133,6 +133,34 @@ the gain to exceed the observed A:A drift and three standard errors. It makes
 no promotion or submission automatically. The decoder was exercised on the
 real local archive; those local timings do not establish native rankings.
 
+## Receipt responses
+
+The frozen reset admission above remains in `admission.json`; current
+response sources and queue identities are in `response_admission.json`.
+DSM receipt **b05713ecf6574ad9** selects **B1:C16 and B16:C8** only:
+stage ratios0.71927/0.84911 vsA,0.74918/0.86657 vsA2. B32's bestC4
+loses1.07381, so it is excluded. The24-held-out-seed whole-layer packet
+is **768d8105**, sender **114722**, priority1, attention import hosting.
+It packs RESET/COOP/HALF/DOUBLE; selected-shape local admission passes
+all gates, two fresh seeds x2 cold rounds, with native DSM explicitly C1
+locally. There is no new P4 promotion from stage timing alone.
+
+Follow-ups now validate each arm's new cache immediately after that arm
+replays. The original round2 packet is immutable and retains its original
+gate order. Follow-ups also export an explicit `lab` for h200_lab admission
+and cap their retained output at8800 characters (generic wrapper limit9000).
+These fix admission/measurement gaps without changing CUDA math.
+`followups.py selected --selection '{"16,1":["last",1,8]}'` prepares
+one selected native winner per round2 shape with24 held-out seeds; send
+only shapes that pass the receipt's A/A2 and correctness decision.
+The three-shape local selected-mode smoke passed; its default arms are
+functional examples, not measured selections.
+
+The global lab **ae6cd27877cc4ee2** has no captured-path TASK gates and is
+unmeasured. Its exact-kernel repaired4-shape/8-arm packet is **da61a8f2**,
+sender **112961**, priority5; see `../cluster_sliding/README.md`.
+History, round2 and resident-history reset decisions still await receipts.
+
 Final local admission: **100 fresh-input/partial/counter cells**, **24 sm90a
 specializations**, **80 exact index-coverage cases**. Exact board wrapper:
 normal/forced each **16 TASK /12 graph shapes /7 static checks**. Default
