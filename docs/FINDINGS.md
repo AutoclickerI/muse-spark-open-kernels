@@ -838,6 +838,54 @@ Transport history:c43111f584854b05 is unmeasured(schema/output oversize);da1fb2e
 controls but scalar STREAM/per-tile ACT sink measure costlier implementations,not pure-byte/activation
 oracles. initial_* keeps that evidence. All rows above use only corrected5ee35b941ccb4171.
 
+### P3a operand/issue oracle batch: queued, not measured (2026-10-26)
+
+Read the public MoE P4/P3a handoff and matched-ABI mechanisms first: no whole-port/hybrid winner;
+operatorstack's register-only raw loads and bit-permuted decode do not establish a transferable small-M
+speedup. Read mixed_wgmma DIRECT/TRANS/WS/CTA2 losses and bounded CHUNK winners;this batch copies
+none of their decoded-weight sharing/WGMMA producer-consumer designs. Compute/operand work ranks first.
+Old MATH changes126→47regs atM8–32 plus operands/weight transport;max(MATH,STREAM) is not a proved
+critical-path roof. No global hardware-pipe saturation is inferred from that comparison.
+
+Source-derived issued warp-HMMA from5ee35b94's actual CTA tile/expert histograms and32SASS sites:
+mean M1/8/16/32 **516096/1400832/1474560/2187264**;useful column fractions
+**.125/.27145/.48769/.69069**. Per-seed counts and95%CIs are in operand/sizing.json. This is an exact
+schedule-count reconstruction,not NVPerf counters. The useful equivalent does not implement N<8 BF16 MMA.
+Wasted-HMMA nominal service at TASK989TFLOP/s with full wall credit models six-loadR1.01097;not measured
+exposed savings. Prior ACT−LOOP referenceR1.02126 and epilogue referenceR1.01580 overlap this scenario.
+Pure occupancy upside from lowering registers at fixed two CTAs isR1.00000;latency/scheduling stays open.
+
+| Recipe | Ratio / us / CI | Mechanism | Leaves open | Receipt / sender |
+|---|---|---|---|---|
+| FRAG_SMEM / BASE_PAD | H200 pending M1/8/16/32 | Synthetic BF16 fragments prelaid in8KiB two-plane shared bank;segment-cached Bf,extra8320B reservation controlled | Real64KiB activation bank,packing/publication and capacity cost;not a production candidate | sender3637718,wrappere1710fb3 |
+| FRAG_REG / BASE | H200 pending | Pack-free register constants remove gathers/addressing and lower lifetime;64regs atM8+ | Joint operand/register ceiling,not exclusive global-load latency | same pending batch |
+| FRAG_JIT / FRAG_SMEM | H200 pending | Same shared pattern,one K-group live;63vs117regs,more LDS per tile | Correct cached/shared layout must pay its working-set and transport costs | same pending batch |
+| ACC_FREE / ACC_CTRL | H200 pending | Both128regs atM8+,32HMMA and matched live-result sinks;FREE zeroes C to remove recurrence | Wrong math oracle only;independent correct accumulator scheduling | same pending batch |
+| PAD_USEFUL / PAD_CTRL | H200 pending | Both retain all weight/decode work with matched sinks;only r of8 K-warps issue HMMA to match useful-N budget | Skips required K work;not a legal narrow-N implementation or nominee | same pending batch |
+| L1/L2/L3 + HIST | H200 pending | Same matched decode/MMA/epilogue cuts and minimal work/finish observer | Epilogue resource127→128regs retains2CTAs;no occupancy-only saving | same pending batch |
+| LAZY / BASE | H200 pending;native leaf only | Original BF16 activation loads moved per K-group/tile,126→96regs atM8+;repeats global reads | Correct but no production graph measured;stage point cannot establish S21 transfer | same pending batch |
+| BF16 conversion removal | Dropped before timing:zero convertible instructions in this fill | S19 loads BF16 bits directly into uint4/Bf for HMMA | Fragment/address/lifetime work still exists | actual frozen S19 source62ea5bf4 |
+
+All56 exact sm90a arm/shape counts give2CTA/zero stack/spills;all HMMA-bearing arms retain32sites,
+L1 none. ACC_FREE's first compiler output collapsed to one HMMA;matched live-result sinks fixed this
+before send. Real full Bf cache65536B plus two raw slots needs150672B atM32 and fails2CTA;one slot
+fits113808B,but repeated shared loads/publication and the known one-slot penalty must be paid. Await
+the FRAG_JIT bound before admitting that build. Original read/publish/acquire ordering stays in all arms.
+
+Exact payloadf4a1f883:448native control TASK checks plus162LAZY native nearby/local_start/skew/changed
+captured-input checks pass (leaf worst total/row.002392/.002451). Local packet8985B fits11700B;all1920
+rounds,96NVML snapshots and work/finish records retained. Local sm120 timing is not H200 evidence.
+All five hosts exhausted quota;actual MoE check sender**3637718** waits for**10-27 09:00KST**,
+wrappere1710fb3ff91fcb6a430acf5bede584ae4172ae08188823f94d673034f636301,no judge job assigned yet.
+A prior outer-payload AST admission error spent no judge quota;literal lab wrapper was fixed and both
+exact native screens rerun. See [REPORT](../problems/muse_decode_layer/dev/nt1_timeline/structural/operand/REPORT.md).
+
+Decision remains active. New oracle timings,CIs and the largest buildable term are pending the receipt.
+Production base pinned to S21 expanded109c0135/shipmenteacc087b. After ranking,include all timed
+packing/producer cost and pair the correct build in its complete12-shape production graphs with fresh
+seeds under promotion.evaluate;TASK only and held-out six-loadR lower bound>1 judge it. No per-call
+transfer or new G0 claim;all83previous nominations remain unchanged. No production build is declared measured.
+
 ## MoE M=128
 
 Current N_full family: NT1 <=8-token experts, N16G4 at 9-16 on a third stream, heavy N32

@@ -1,0 +1,29 @@
+{
+  "state": "waiting for 2026-10-27 09:00 KST quota reset;no judge job assigned",
+  "job": null,
+  "sender_pid": 3637718,
+  "wrapper_sha256": "e1710fb3ff91fcb6a430acf5bede584ae4172ae08188823f94d673034f636301",
+  "payload_sha256": "f4a1f8835eed7835e9119b11c54bb40231f03b9c76ce8206ffda80d4ed583bb9",
+  "rows": [],
+  "oracle_outputs_ignored": true,
+  "production_build_measured": false,
+  "production_plan": {
+    "base": "S21",
+    "expanded_sha256": "109c0135b9a445b88b2efd1ebb73f15002a332ce553c8e50afb5557d6816398d",
+    "shipped": "problems/muse_decode_layer/cand_r3_best7_s21_final.py",
+    "shipped_sha256": "eacc087bd59b3cd58ee6b7690913868d86a8deb2ad1ff50040329ece62f7c8a4",
+    "protocol": {
+      "name": "palindromic-cohort-v1",
+      "rounds": 16,
+      "seed_count": 64,
+      "aggregation": "arithmetic-mean-all-rounds",
+      "selective_retiming": false
+    },
+    "criterion": "TASK.md only;whole production graph times across all12 shapes;T=46*t_sliding+16*t_full;G0 held-out six-load R lower bound>1",
+    "selection_scope": "Oracles are selection data only;do not nominate a correct leaf from per-call times",
+    "next": "Choose the largest buildable measured oracle term,include all timed packing and producer costs,local normal/forced glue plus native leaf screens,then one fresh S21 paired production-graph lab under promotion.evaluate",
+    "status": "awaiting oracle receipt;no production build or G0 result yet"
+  },
+  "report": "problems/muse_decode_layer/dev/nt1_timeline/structural/operand/REPORT.md",
+  "previous_point_nominees_unchanged": 83
+}

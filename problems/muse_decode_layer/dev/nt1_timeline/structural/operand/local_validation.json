@@ -1,0 +1,45 @@
+{
+  "payload_sha256": "f4a1f8835eed7835e9119b11c54bb40231f03b9c76ce8206ffda80d4ed583bb9",
+  "wire_bytes": 8985,
+  "all_native": true,
+  "complete": true,
+  "checks": {
+    "gates": {
+      "BASE": [
+        0.0024213241413235664,
+        0.002486136741936207
+      ],
+      "AA": [
+        0.0024213241413235664,
+        0.002486136741936207
+      ],
+      "BASE_PAD": [
+        0.0024213241413235664,
+        0.002486136741936207
+      ],
+      "ACC_CTRL": [
+        0.0024213241413235664,
+        0.002486136741936207
+      ],
+      "PAD_CTRL": [
+        0.0024213241413235664,
+        0.002486136741936207
+      ],
+      "HIST": [
+        0.0024213241413235664,
+        0.002486136741936207
+      ],
+      "LAZY": [
+        0.0024213241413235664,
+        0.002486136741936207
+      ]
+    },
+    "failures": [],
+    "diagnostics": "FRAG*,ACC_FREE,PAD_USEFUL,L1-L3 ignored outputs;not production nominees"
+  },
+  "round_samples": 1920,
+  "resource_rows": 60,
+  "rows": 32,
+  "static_path": "runs/screen/p3a_operand/static.json",
+  "timing_scope": "sm120 transport/correctness only;not H200 oracle timings"
+}

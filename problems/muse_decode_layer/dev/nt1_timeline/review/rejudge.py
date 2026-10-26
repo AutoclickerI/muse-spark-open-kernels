@@ -148,6 +148,10 @@ if (lad/'results.json').exists():
  info=dict(base='S19 62ea5bf4',job=lr['job'],status='active;EARLY slot-release placement loses at M8/16/32;activation/MMA scheduling and M32 load-side gap remain material',source_audit=lr['source_audit'],report=str((lad/'REPORT.md').relative_to(R)),ceilings=json.loads((lad/'ceiling.json').read_text()),tested=lr['candidate'],next='Pack-free BF16 operand-layout oracle,then correct timed packing only if exposed benefit supports cost;keep two CTAs',whole_layer_R='Not measured for EARLY;no stage point winner')
  result['ladder_followup']=info
  (lad/'P4_HANDOFF.json').write_text(json.dumps(dict(**info,rows=new,gate=result['gate'],exact_tested_patch=spec,validation=str((lad/'early/validation.json').relative_to(R))),indent=2)+'\n')
+operand=P/'structural/operand'
+if (operand/'P4_HANDOFF.json').exists():
+ hand=json.loads((operand/'P4_HANDOFF.json').read_text());assert hand['rows']==[]
+ result['operand_followup']=hand
 (P/'point_nominations.json').write_text(json.dumps(result,indent=2)+'\n')
 h=json.loads((P/'p4_ilp_handoff.json').read_text());h.update(measured_winner_M=[8,16,32],nominate_rows=[[b,q,w] for b,q in ((1,8),(16,1),(32,1)) for w in (True,False)],M8='point-estimate nominee: ratio .99055 SE .00181 n32; no A:A veto',policy='Per-shape point winners nominate; P4 composes and confirms held-out six-load R.');h.update(comparison_to_PAIR_verified=True,direct_PAIR_receipt=direct['job'],direct_comparison=direct['rows'],direct_ranking='PAIR is faster at M8/M16/M32; ILP is retained as an alternative versus S14')
 (P/'p4_ilp_handoff.json').write_text(json.dumps(h,indent=2)+'\n')

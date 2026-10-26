@@ -147,5 +147,12 @@ lines += ['', 'Candidate ratio intervals use promotion.py on the eight paired se
           'measure those costlier recipes, not the requested pure-byte/activation oracles. initial_* snapshots retain '
           'that evidence; no row above mixes their times with the corrected cohort. Local final exact payload packets '
           'are 7,480/2,143 bytes versus declarations 8,600/2,800. Sources and receipts are retained in runs/.', '']
+if (D.parent / 'operand/queue.json').exists():
+    follow = json.loads((D.parent / 'operand/queue.json').read_text())
+    lines += ['## Active operand follow-up', '',
+              f"Matched operand/issue batch queued as sender **{follow['sender_pid']}**, wrapper "
+              f"**{follow['wrapper_sha256'][:16]}**, for the10-27 09:00KST quota reset. "
+              'New H200 us/CIs are pending. [Oracle arms, resource budgets and production-graph decision]'
+              '(../operand/REPORT.md). No per-call result is treated as a transferred S21 score.', '']
 (D / 'REPORT.md').write_text('\n'.join(lines))
 print('reported', r['job'], c)

@@ -98,3 +98,7 @@ One padded 8-token×4096 BF16 block is 64 KiB; at 32 experts×4 blocks a bank re
 Final 5ee35b941ccb4171: wrapper 3d867fbfa88b681128c76c760b1f80e8a96ef8fb9ef85ac809f7639ac6814281, both checksummed packets, embedded cell identities, all 2,048 round times, 96 NVML snapshots, 60 resource rows and work/finish records verified. All correctness-bearing BASE/AA/BSINK/HIST/EARLY controls pass. Timing-only cuts return ignored outputs. The host passed=false is the declared lab-only prepare stop; it is not a failed native control.
 
 c43111f584854b05 is unmeasured: schema/output transport failed and replaced the timing archive with an explicit oversize packet. da1fb2eeb0d3443d has valid controls, but its scalar STREAM and per-tile ACT sink measure those costlier recipes, not the requested pure-byte/activation oracles. initial_* snapshots retain that evidence; no row above mixes their times with the corrected cohort. Local final exact payload packets are 7,480/2,143 bytes versus declarations 8,600/2,800. Sources and receipts are retained in runs/.
+
+## Active operand follow-up
+
+Matched operand/issue batch queued as sender **3637718**, wrapper **e1710fb3ff91fcb6**, for the10-27 09:00KST quota reset. New H200 us/CIs are pending. [Oracle arms, resource budgets and production-graph decision](../operand/REPORT.md). No per-call result is treated as a transferred S21 score.

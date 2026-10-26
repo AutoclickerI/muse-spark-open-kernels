@@ -4,8 +4,12 @@ Current state: **active**. Matched S19 receipt **5ee35b941ccb4171** assigns the 
 the prior lane-wide parking conclusion is superseded. [Full ladder, CIs and audit](structural/ladder/REPORT.md).
 MMA+activation adds8.79/12.10/19.71us at M8/16/32 (modeled combined six-load ceilingR1.04014);
 M32 L0−STREAM adds15.70us (R1.01234 alone). EARLY slot release loses1.45/2.00/2.05%,all95%CIs above1;
-no new P4 winner. Next ranked bound: pack-free/coalesced BF16 activation-operand layout,with timed
-packing budget<3.57us at full ACT−LOOP reference credit. No precision/prepare changes;keep two CTAs.
+no new P4 winner. [Operand oracle batch](structural/operand/REPORT.md) is queued for10-27 09:00KST,
+sender3637718,wrappere1710fb3ff91fcb6:shared/register fragments,N-padding,accumulator recurrence,
+register lifetime and epilogue controls,all two-CTA/zero spills. H200 us/CIs pending because every host
+has zero quota. 448native control gates+162changed-capture/nearby LAZY leaf checks pass;no new P4 nominee.
+After its receipt,select the largest buildable term and judge the correct build in frozen S21's production
+graphs on all six loads. Per-call gains alone do not establish transfer. Timed packing remains part of the build.
 Sizing uses frozen S19 expanded `62ea5bf4`; earlier evidence below uses S14/S15 as labeled.
 S19 keeps PAIR M8 and PAIR+BLOCK M16/32. No new whole-layer kernel is frozen here.
 
