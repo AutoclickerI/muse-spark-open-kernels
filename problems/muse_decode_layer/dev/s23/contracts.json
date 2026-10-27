@@ -1,0 +1,169 @@
+{
+ "passed": true,
+ "checks": [
+  {
+   "check": "S22_base_contracts",
+   "ok": true,
+   "count": 1617
+  },
+  {
+   "check": "host_extends_S22_hybrid_off_base",
+   "ok": true
+  },
+  {
+   "check": "incumbent_identity",
+   "ok": true
+  },
+  {
+   "check": "incumbent_is_S22_phase1_shipment",
+   "ok": true
+  },
+  {
+   "check": "helper_verbatim",
+   "ok": true,
+   "helper": "problems/muse_bf16_proj/dev/public_ports/port_body.py.inc"
+  },
+  {
+   "check": "helper_verbatim",
+   "ok": true,
+   "helper": "problems/muse_bf16_proj/dev/public_ports/night/body.py.inc"
+  },
+  {
+   "check": "MIT_notice_shipped",
+   "ok": true
+  },
+  {
+   "check": "ports_match_P10_selection",
+   "ok": true
+  },
+  {
+   "check": "night_matches_P10_selection",
+   "ok": true
+  },
+  {
+   "check": "hybrid_d32S_disabled",
+   "ok": true
+  },
+  {
+   "check": "bank_delta_last",
+   "ok": true
+  },
+  {
+   "check": "one_change",
+   "ok": true,
+   "arm": "off_PORT2",
+   "diff": [
+    "-S23_PORTS={(1, 'unpooler_slice'): 'P', (16, 'qkv_gate'): 'N', (16, 'gate'): 'P', (256, 'qkv_gate'): 'N', (256, 'unpooler'): 'N'}",
+    "+S23_PORTS={(16, 'qkv_gate'): 'N', (16, 'gate'): 'P', (256, 'qkv_gate'): 'N', (256, 'unpooler'): 'N'}"
+   ]
+  },
+  {
+   "check": "rows_cover_change",
+   "ok": true,
+   "arm": "off_PORT2",
+   "tokens": [
+    1
+   ]
+  },
+  {
+   "check": "one_change",
+   "ok": true,
+   "arm": "off_PORT4",
+   "diff": [
+    "-S23_PORTS={(1, 'unpooler_slice'): 'P', (16, 'qkv_gate'): 'N', (16, 'gate'): 'P', (256, 'qkv_gate'): 'N', (256, 'unpooler'): 'N'}",
+    "+S23_PORTS={(1, 'unpooler_slice'): 'P', (16, 'gate'): 'P', (256, 'qkv_gate'): 'N', (256, 'unpooler'): 'N'}"
+   ]
+  },
+  {
+   "check": "rows_cover_change",
+   "ok": true,
+   "arm": "off_PORT4",
+   "tokens": [
+    16
+   ]
+  },
+  {
+   "check": "one_change",
+   "ok": true,
+   "arm": "off_PORT6",
+   "diff": [
+    "-S23_PORTS={(1, 'unpooler_slice'): 'P', (16, 'qkv_gate'): 'N', (16, 'gate'): 'P', (256, 'qkv_gate'): 'N', (256, 'unpooler'): 'N'}",
+    "+S23_PORTS={(1, 'unpooler_slice'): 'P', (16, 'qkv_gate'): 'N', (256, 'qkv_gate'): 'N', (256, 'unpooler'): 'N'}"
+   ]
+  },
+  {
+   "check": "rows_cover_change",
+   "ok": true,
+   "arm": "off_PORT6",
+   "tokens": [
+    16
+   ]
+  },
+  {
+   "check": "one_change",
+   "ok": true,
+   "arm": "off_PORT11",
+   "diff": [
+    "-S23_PORTS={(1, 'unpooler_slice'): 'P', (16, 'qkv_gate'): 'N', (16, 'gate'): 'P', (256, 'qkv_gate'): 'N', (256, 'unpooler'): 'N'}",
+    "+S23_PORTS={(1, 'unpooler_slice'): 'P', (16, 'qkv_gate'): 'N', (16, 'gate'): 'P', (256, 'unpooler'): 'N'}"
+   ]
+  },
+  {
+   "check": "rows_cover_change",
+   "ok": true,
+   "arm": "off_PORT11",
+   "tokens": [
+    256
+   ]
+  },
+  {
+   "check": "one_change",
+   "ok": true,
+   "arm": "off_PORT14",
+   "diff": [
+    "-S23_PORTS={(1, 'unpooler_slice'): 'P', (16, 'qkv_gate'): 'N', (16, 'gate'): 'P', (256, 'qkv_gate'): 'N', (256, 'unpooler'): 'N'}",
+    "+S23_PORTS={(1, 'unpooler_slice'): 'P', (16, 'qkv_gate'): 'N', (16, 'gate'): 'P', (256, 'qkv_gate'): 'N'}"
+   ]
+  },
+  {
+   "check": "rows_cover_change",
+   "ok": true,
+   "arm": "off_PORT14",
+   "tokens": [
+    256
+   ]
+  },
+  {
+   "check": "one_change",
+   "ok": true,
+   "arm": "off_P16",
+   "diff": [
+    "-S23_NIGHT=('P16',)",
+    "+S23_NIGHT=()"
+   ]
+  },
+  {
+   "check": "rows_cover_change",
+   "ok": true,
+   "arm": "off_P16",
+   "tokens": [
+    16
+   ]
+  },
+  {
+   "check": "one_change",
+   "ok": true,
+   "arm": "off_HYd32S",
+   "diff": [
+    "-_HY_SELECTION = {(1, 8, True): 'F'}",
+    "+_HY_SELECTION = {(32, 1, True): 'F', (1, 8, True): 'F'}"
+   ]
+  },
+  {
+   "check": "rows_cover_change",
+   "ok": true,
+   "arm": "off_HYd32S"
+  }
+ ],
+ "source_sha256": "b939b92793ce11fa4589a92f62c6a1db444310cea22719ba9163c23db1b62c1d"
+}

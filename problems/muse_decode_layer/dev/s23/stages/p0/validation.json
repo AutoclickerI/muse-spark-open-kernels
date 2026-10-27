@@ -1,0 +1,83 @@
+{
+  "source_sha256": "b939b92793ce11fa4589a92f62c6a1db444310cea22719ba9163c23db1b62c1d",
+  "shipped_sha256": "b2d9a6dd0e498393d122cf699ad8f24264600c236fbf22290f65f1b955108b2e",
+  "contracts": 25,
+  "packed": {
+    "wrapper_sha256": "3b4aff3b3759d3ce2c0b7fdcd9f5f9bc360413117304c5cb2415baabfbae5526",
+    "payload_sha256": "5a4f57ad85d729b36adfb8d1e2ecf4d78ec1c43bab9dda38904f0e593500860a",
+    "source_sha256": "b939b92793ce11fa4589a92f62c6a1db444310cea22719ba9163c23db1b62c1d",
+    "complete": true,
+    "failures": [],
+    "TASK": 3136,
+    "nearby": 260,
+    "arm_TASK": {
+      "A": 768,
+      "A2": 768,
+      "INC": 768,
+      "off_PORT2": 128,
+      "off_PORT4": 128,
+      "off_PORT6": 128,
+      "off_PORT11": 128,
+      "off_PORT14": 128,
+      "off_P16": 128,
+      "off_HYd32S": 64
+    },
+    "archive_round_trip_exact": true,
+    "tail_with_4000_suffix_pass": true,
+    "wire_bytes": 8938,
+    "import_s": 242.7,
+    "host_prepare_s": 2.74163
+  },
+  "transport": {
+    "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/dev/s23/generated/wrapper.py",
+    "sha256": "3b4aff3b3759d3ce2c0b7fdcd9f5f9bc360413117304c5cb2415baabfbae5526",
+    "tier": "wrapper",
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "dynamic state contract: requires changed-unit/H200 checks"
+      },
+      {
+        "name": "wrapper_lab-only",
+        "ok": true,
+        "packets": 1
+      }
+    ]
+  },
+  "normal": {
+    "TASK": 13,
+    "graphs": 12,
+    "passed": true
+  },
+  "forced": {
+    "TASK": 13,
+    "graphs": 12,
+    "passed": true
+  }
+}
