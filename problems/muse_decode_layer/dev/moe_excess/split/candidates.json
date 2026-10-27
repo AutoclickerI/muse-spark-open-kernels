@@ -1,0 +1,18 @@
+{
+  "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+  "base_file": "problems/muse_decode_layer/cand_r3_best7_s22_final.py",
+  "arms": {
+    "PF": {
+      "sha256": "7ec26ec6afc42ebc32a61fdcd4ec3c549d590b8e2884958e6ef6627f08dde307",
+      "shipped_sha256": "009bbce7298eb1f32c61224a915d2fc9f404772be9b70bba5a43045bccfb6e06",
+      "rows": [
+        "v16S",
+        "v16F",
+        "v32S",
+        "v32F"
+      ],
+      "mechanism": "L0N - PFN / weight bytes in flight: in-kernel L2 bulk prefetch of each branch weight stream ahead of its ring",
+      "kind": 0
+    }
+  }
+}

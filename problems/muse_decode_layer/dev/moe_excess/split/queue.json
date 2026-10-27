@@ -11,5 +11,12 @@
     "wrapper_sha256": "b885f019f09b07e7c92deae915b524d25a4b9f7982da13cf3bd169ace2f7f37a",
     "source": "runs/muse_prefill_layer/20261027T014740Z_check_c67e0a1ecb984506.py"
   },
-  "command": "tools/h200_lab.py send out/split_{J,I}.py --lab-only --import-budget 840 --check --lane P3b"
+  "command": "tools/h200_lab.py send out/split_{J,I}.py --lab-only --import-budget 840 --check --lane P3b",
+  "PF_prod": {
+    "job": "8e23096fa1f34984",
+    "host": "muse_moe_w4a16",
+    "wrapper_sha256": "8ff96bfb48744842febcbf12d09dfe8f12cae921e115757e37b342f12450f505",
+    "payload": "out/p3b_split_prod.py",
+    "command": "tools/h200_lab.py send out/p3b_split_prod.py --host muse_moe_w4a16 --lab-only --import-budget 850 --check --lane P3b"
+  }
 }

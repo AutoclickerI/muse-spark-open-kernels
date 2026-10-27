@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "mode": "normal",
+  "wrapper_sha256": "8ff96bfb48744842febcbf12d09dfe8f12cae921e115757e37b342f12450f505",
+  "payload_sha256": "339d511d0f5dbad4f6787046bb1ce0375180d69536c777b6886e6a11e4b29d4f",
+  "TASK": 2560,
+  "nearby": 390,
+  "protocol": {
+    "name": "palindromic-cohort-v1",
+    "rounds": 16,
+    "seed_count": 64,
+    "aggregation": "arithmetic-mean-all-rounds",
+    "selective_retiming": false
+  },
+  "exact_tail_transport": true,
+  "wire_bytes": 7366,
+  "elapsed_s": 274.52,
+  "limitation": "Local sm120/stand-ins; no native performance claim"
+}
