@@ -1,0 +1,32 @@
+[
+  [
+    1,
+    "unpooler_slice",
+    "P"
+  ],
+  [
+    8,
+    "unpooler_slice",
+    "N"
+  ],
+  [
+    16,
+    "qkv_gate",
+    "N"
+  ],
+  [
+    16,
+    "gate",
+    "P"
+  ],
+  [
+    256,
+    "qkv_gate",
+    "N"
+  ],
+  [
+    256,
+    "unpooler",
+    "N"
+  ]
+]

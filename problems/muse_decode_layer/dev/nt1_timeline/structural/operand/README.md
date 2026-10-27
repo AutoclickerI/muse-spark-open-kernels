@@ -1,9 +1,13 @@
 # P3a operand and MMA issue assignment
 
-**Active, H200 timing pending.** One15-arm MoE-host check is held for10-27 09:00KST because all five
-hosts exhausted quota. Actual sender3637718,launcher3637457,wrappere1710fb3ff91fcb6. `queue.json`
-pins the pending send and exact payloadf4a1f883. Do not rebuild or mutate the queued source.
-[REPORT.md](REPORT.md) has all arms,resource budgets,modeled ceilings and the pending us/CI table.
+**Measured, receipt `33f5c4c105374311` (exact S19, stage-only diagnostic; no candidate).** M8/16/32
+conditional savings, us: MMA+activation 8.6/12.5/19.3 (modeled M8-32 six-load R1.0399
+[1.0358,1.0441]); accumulator recurrence 4.5/4.5/6.9 (R1.0157); epilogue NOWAIT 4.4/5.3/6.8
+(R1.0163); pack-free register 2.5/4.0/5.0 (R1.0110); shared fragment 2.4/3.3/3.2 (R1.0087);
+useful-N MMA 3.1/1.2/1.3 (R1.0064); Bf register lifetime -0.4/0.0/0.9 (R1.0011). These overlap and
+are not additive. The correct LAZY leaf loses (152.2 vs 96.7 us at M32). The S22 builds that priced
+these terms all lose in the production graph: [builds22](../builds22/README.md). Full tables:
+[REPORT.md](REPORT.md); `read.py <receipt>` reproduces `results.json`.
 
 The batch separates shared/register pack-free BF16 fragments,Bf register lifetime,accumulator
 recurrence,useful-N HMMA instruction count and epilogue pressure. It retains exact S19 BASE/AA,

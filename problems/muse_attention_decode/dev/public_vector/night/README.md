@@ -56,24 +56,22 @@ sm120 cannot execute the native Hopper WGMMA/DSM/PDL paths. Stand-ins
 exercise their arithmetic, Python dispatch, allocation, capture and pointer
 glue; native TASK, two-CTA residency and speed remain unmeasured.
 
-## One dependent paired check
+## One paired check (sent 10-27)
 
-Diagnostic sender **3831549** stays unchanged: attention/check, PLAN rank2,
-not-before **1793059200 /2026-10-27 09:00 KST**. `dispatch.py` waits on that
-sender's completion event, reads the exact receipt through `h200_lab.py`,
-then sends **one** paired production-graph check on the attention host with
-`--lane P5b --decision "S22 outcome candidates after in-graph attention diagnostic"`.
-Dependent worker **691620** and sealed admission **0e3e8aa7** are recorded
-in `queue.json`; its status is waiting on the real diagnostic-completion event.
-It does not consume a quota slot or send a second diagnostic overnight.
+The in-graph diagnostic `32889c27aa2840e4` is **unmeasured**: its 16 public TASK cases each called
+the lab-only `kernel_fn` stub, and their 6,916 characters of tracebacks pushed the head of the
+LAB_PACKET line out of the judge's 16,000-character tail. `tools/h200_lab.py` now makes the
+attention lab-only stub replay the packet before each traceback (local emulation: an 11,474-byte
+packet survives 16 judge-length tracebacks; without replay it is lost). The dependency worker
+stopped on that unmeasured receipt and sent nothing. By the rule below an unmeasured diagnostic
+prunes nothing, so all six arms went in one paired check: job **10c8f0762f7246de** (attention host,
+`--lane P5b`, payload `3262bcf8`, wrapper `a12a145d` in `lab_manifest.json`). Read it with
+`read.py <receipt>`.
 
-Decision rule: remove CHAIN only if every changed cell's diagnostic D
-new/control lower95CI is >=1; remove DIRECT only if all six F and both
-native d1 V cells meet that condition. A partial/uncertain loss retains the
-whole candidate, allowing per-cell choice. STAGE/LANE1/SOFTMAX/OCHAIN are
-new implementations and are not refuted by another recipe's loss. Failed
-native controls or TASK are unmeasured; the worker stops for inspection.
-No arms or measured rounds are selected after this paired check begins.
+Decision rule (diagnostic pruning, now moot): remove CHAIN only if every changed cell's diagnostic D
+new/control lower95CI is >=1; remove DIRECT only if all six F and both native d1 V cells meet that
+condition. A partial/uncertain loss retains the whole candidate. STAGE/LANE1/SOFTMAX/OCHAIN are new
+implementations and are not refuted by another recipe's loss.
 
 The paired batch uses P4 **ec754e5**: fixed64 disjoint held-out input seeds,
 new weight/router seeds,16 forward/exact-reverse cold rounds, arithmetic

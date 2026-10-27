@@ -1,5 +1,5 @@
 {
-  "status": "waiting on parent sender completion event",
+  "status": "complete: next lab 72f273a83e6d4de5 read; S22 handoff in ../P4_HANDOFF.json",
   "parent_sender": 3966799,
   "parent_lineage": 3347492,
   "one_shot": true,
@@ -19,5 +19,410 @@
     "until": 1793059260.0
   },
   "send_via": "tools/h200_lab.py normal sender; --lane P10; PLAN rank",
-  "fixed_code_sha256": "028aec3cadb6d8d256cbcf443505da5fb65deea8bab6f20cebbedfc1eda44ad4"
+  "fixed_code_sha256": "028aec3cadb6d8d256cbcf443505da5fb65deea8bab6f20cebbedfc1eda44ad4",
+  "parent_receipt": "runs/muse_bf16_proj/20261027T001237Z_submit_f66e20e76c714cc8.json",
+  "parent_job": "f66e20e76c714cc8",
+  "selection": {
+    "parent": "f66e20e76c714cc8",
+    "parent_receipt_job": "f66e20e76c714cc8",
+    "points": [
+      [
+        1,
+        "unpooler_slice",
+        "P"
+      ],
+      [
+        8,
+        "unpooler_slice",
+        "N"
+      ],
+      [
+        16,
+        "qkv_gate",
+        "N"
+      ],
+      [
+        16,
+        "gate",
+        "P"
+      ],
+      [
+        256,
+        "qkv_gate",
+        "N"
+      ],
+      [
+        256,
+        "unpooler",
+        "N"
+      ]
+    ],
+    "pool": {
+      "16": "CW8_S2"
+    },
+    "kept": [
+      {
+        "arm": "PORT2",
+        "points": [
+          [
+            1,
+            "unpooler_slice",
+            "P"
+          ]
+        ],
+        "measured": true,
+        "R": [
+          1.001708722378884,
+          0.9989746072361254,
+          1.0044503205803308
+        ]
+      },
+      {
+        "arm": "PORT3",
+        "points": [
+          [
+            8,
+            "unpooler_slice",
+            "N"
+          ]
+        ],
+        "measured": true,
+        "R": [
+          1.000272668988163,
+          0.997542473483153,
+          1.0030103368241199
+        ]
+      },
+      {
+        "arm": "PORT4",
+        "points": [
+          [
+            16,
+            "qkv_gate",
+            "N"
+          ]
+        ],
+        "measured": true,
+        "R": [
+          1.0003438657097368,
+          0.9976134758767448,
+          1.0030817284055362
+        ]
+      },
+      {
+        "arm": "PORT6",
+        "points": [
+          [
+            16,
+            "gate",
+            "P"
+          ]
+        ],
+        "measured": true,
+        "R": [
+          1.0000913427090041,
+          0.9973616421252369,
+          1.002828514269158
+        ]
+      },
+      {
+        "arm": "PORT11",
+        "points": [
+          [
+            256,
+            "qkv_gate",
+            "N"
+          ]
+        ],
+        "measured": true,
+        "R": [
+          1.0006295174877096,
+          0.99789834798211,
+          1.0033681619900194
+        ]
+      },
+      {
+        "arm": "PORT14",
+        "points": [
+          [
+            256,
+            "unpooler",
+            "N"
+          ]
+        ],
+        "measured": true,
+        "R": [
+          1.0006899966166813,
+          0.9979586620362464,
+          1.0034288066456234
+        ]
+      }
+    ],
+    "dropped": [
+      {
+        "arm": "PORT0",
+        "points": [
+          [
+            1,
+            "qkv3",
+            "O"
+          ]
+        ],
+        "measured": true,
+        "R": [
+          0.9928835840754537,
+          0.9901735567176303,
+          0.9956010285655873
+        ]
+      },
+      {
+        "arm": "PORT1",
+        "points": [
+          [
+            1,
+            "gate",
+            "P"
+          ]
+        ],
+        "measured": true,
+        "R": [
+          0.9883338123545844,
+          0.9856362033769549,
+          0.9910388044763914
+        ]
+      },
+      {
+        "arm": "PORT5",
+        "points": [
+          [
+            16,
+            "qkv3",
+            "N"
+          ]
+        ],
+        "measured": true,
+        "R": [
+          0.9997302328226984,
+          0.9970015178707682,
+          1.0024664160534178
+        ]
+      },
+      {
+        "arm": "PORT7",
+        "points": [
+          [
+            32,
+            "gate",
+            "N"
+          ]
+        ],
+        "measured": true,
+        "R": [
+          0.9977753817755504,
+          0.9950520024942902,
+          1.0005062147322878
+        ]
+      },
+      {
+        "arm": "PORT8",
+        "points": [
+          [
+            32,
+            "o",
+            "P"
+          ]
+        ],
+        "measured": true,
+        "R": [
+          0.9991238992948309,
+          0.9963968393007174,
+          1.0018584230382441
+        ]
+      },
+      {
+        "arm": "PORT9",
+        "points": [
+          [
+            32,
+            "pool_router",
+            "P"
+          ]
+        ],
+        "measured": true,
+        "R": [
+          0.9951796849999296,
+          0.9924633905465258,
+          0.9979034137381927
+        ]
+      },
+      {
+        "arm": "PORT10",
+        "points": [
+          [
+            128,
+            "unpooler",
+            "N"
+          ]
+        ],
+        "measured": true,
+        "R": [
+          0.9998427183983409,
+          0.9971136964225137,
+          1.002579209493258
+        ]
+      },
+      {
+        "arm": "PORT12",
+        "points": [
+          [
+            256,
+            "o",
+            "P"
+          ]
+        ],
+        "measured": true,
+        "R": [
+          0.9995559068202543,
+          0.9968276676826526,
+          1.0022916129343789
+        ]
+      },
+      {
+        "arm": "PORT13",
+        "points": [
+          [
+            256,
+            "pool_router",
+            "O"
+          ]
+        ],
+        "measured": true,
+        "R": [
+          0.9996604719015278,
+          0.9969319473586324,
+          1.0023964642020782
+        ]
+      }
+    ],
+    "pool_verdict": {
+      "16": {
+        "selected": "CW8_S2",
+        "choices": [
+          [
+            1.0,
+            null
+          ],
+          [
+            1.000688590412658,
+            "CW8_WAIT"
+          ],
+          [
+            1.0060130568205377,
+            "CW8_EARLY"
+          ],
+          [
+            1.022516667695899,
+            "CW8_S2"
+          ],
+          [
+            1.0177739863761222,
+            "CW8_S2_WAIT"
+          ],
+          [
+            0.9720396096266931,
+            "CW4_EARLY"
+          ],
+          [
+            1.0116128610952049,
+            "CW4_S2"
+          ],
+          [
+            0.895132214333551,
+            "TW256_S2"
+          ],
+          [
+            0.9025842277007954,
+            "TW256_S2_E"
+          ],
+          [
+            0.9175814703156477,
+            "TW128_S3"
+          ],
+          [
+            0.9136392914419077,
+            "TW128_S3_E"
+          ]
+        ]
+      },
+      "32": {
+        "selected": null,
+        "choices": [
+          [
+            1.0,
+            null
+          ],
+          [
+            0.9681326534020455,
+            "CW8_WAIT"
+          ],
+          [
+            0.9705313302628498,
+            "CW8_EARLY"
+          ],
+          [
+            0.9769013794348763,
+            "CW8_S2"
+          ],
+          [
+            0.9718925561203339,
+            "CW8_S2_WAIT"
+          ],
+          [
+            0.9425172441913957,
+            "CW4_EARLY"
+          ],
+          [
+            0.9677680097197983,
+            "CW4_S2"
+          ],
+          [
+            0.8759481959314119,
+            "TW256_S2"
+          ],
+          [
+            0.8820192441019893,
+            "TW256_S2_E"
+          ],
+          [
+            0.8948491033114715,
+            "TW128_S3"
+          ],
+          [
+            0.8856590726526077,
+            "TW128_S3_E"
+          ]
+        ]
+      }
+    },
+    "limits": "Selection means, not G0 promotion. All point CIs disclosed; mean-positive uncertain points remain exploratory. Parent pool schedule uses its changed-load mean to dispatch each T, then the new whole-graph batch prices the composition."
+  },
+  "payload_sha256": "5fe237b29abd591a4020927fab7fde568de8957bac2f418ab236bbcab58db98d",
+  "wrapper_sha256": "b9f8960e9a3b9e92b8b7e313772fbafa577c6faf8aaffec4f955f82012b943fb",
+  "next_senders": [
+    {
+      "pid": 460813,
+      "priority": 5,
+      "t": 1793061836.9475064,
+      "problem": "muse_bf16_proj",
+      "file": "problems/muse_bf16_proj/lab/lab_night_gap.py",
+      "sha256": "b9f8960e9a3b9e92b8b7e313772fbafa577c6faf8aaffec4f955f82012b943fb",
+      "note": "h200_lab /home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/public_ports/night/out/night_gap.py: After exact3347492 native receipt: selected S21 port/pool portfolio; Q16/Q32/O16/P16/P32/U16/U32 coded DSM and tiled-TMA early weights;8disjoint seeds,all cyclic+reverse2N rounds,TASK every arm,selected prepare costs.",
+      "not_before": 0,
+      "lane": "P10",
+      "decision": "small-M carrier portfolio and seven leave-outs after 3347492",
+      "priority_override": false
+    }
+  ],
+  "next_job": "72f273a83e6d4de5",
+  "next_receipt": "runs/muse_bf16_proj/20261027T004358Z_submit_72f273a83e6d4de5.json"
 }

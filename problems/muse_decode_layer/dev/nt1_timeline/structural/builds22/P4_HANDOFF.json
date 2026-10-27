@@ -1,228 +1,1500 @@
 {
   "base": "S22 4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
-  "job": null,
-  "rows": [],
-  "state": "queued behind diagnostic;no judge job assigned",
-  "sender_pid": 984504,
-  "wrapper_sha256": "ab36c11e7cb7ea6cb1f7fdddde9e822b0a53550b66db80ca161a8f38b5c07a25",
-  "candidate_sources": {
+  "job": "f6970526aa6f4a28",
+  "rows": [
+    {
+      "arm": "EPI4",
+      "job": "f6970526aa6f4a28",
+      "batch": "P3a S22 production graph",
+      "M": 1,
+      "shapes": [
+        [
+          1,
+          1,
+          true
+        ]
+      ],
+      "ratio": 0.9912435955872292,
+      "SE": 0.0013315236445419867,
+      "seeds": 64,
+      "seed_ids": [
+        267310003,
+        267414732,
+        267519461,
+        267624190,
+        267728919,
+        267833648,
+        267938377,
+        268043106,
+        268147835,
+        268252564,
+        268357293,
+        268462022,
+        268566751,
+        268671480,
+        268776209,
+        268880938,
+        268985667,
+        269090396,
+        269195125,
+        269299854,
+        269404583,
+        269509312,
+        269614041,
+        269718770,
+        269823499,
+        269928228,
+        270032957,
+        270137686,
+        270242415,
+        270347144,
+        270451873,
+        270556602,
+        270661331,
+        270766060,
+        270870789,
+        270975518,
+        271080247,
+        271184976,
+        271289705,
+        271394434,
+        271499163,
+        271603892,
+        271708621,
+        271813350,
+        271918079,
+        272022808,
+        272127537,
+        272232266,
+        272336995,
+        272441724,
+        272546453,
+        272651182,
+        272755911,
+        272860640,
+        272965369,
+        273070098,
+        273174827,
+        273279556,
+        273384285,
+        273489014,
+        273593743,
+        273698472,
+        273803201,
+        273907930
+      ],
+      "CI95": [
+        0.988485540066072,
+        0.9940093465879352
+      ],
+      "AA_log_SE": 0.001364294,
+      "whole_six_load_R": 0.9983473930220127,
+      "whole_six_load_CI95": [
+        0.9978793110849832,
+        0.9988156945253738
+      ],
+      "whole_lab_gate": false,
+      "exact_patch": {
+        "base": "problems/muse_decode_layer/dev/s22/generated/s22.py",
+        "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+        "candidate": "runs/screen/p3a_builds22/epi4.py",
+        "candidate_sha256": "573a95f81abaec215f780bd772e4eeded206de547aecc83860017a4fdacc8b4d",
+        "shipped": "runs/screen/p3a_builds22/epi4_packed.py",
+        "shipped_sha256": "1f39b5f33b51565d057c35a06d2194034e1f93b7008a1e04c2b3479f3a3fd9ed",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/epi4.patch",
+        "patch_sha256": "0e25ad2575fd3bbecf2db50ac9e527765b9bd96ef3f17dffcfafe5a09ca4b809",
+        "variants": [
+          {
+            "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/epi40_cell.py",
+            "cell_sha256": "9ffcc0e7dbe12b30cbfce3fcc0bb4ea524cba93a283a336ad1b557f62e09987a",
+            "cuda_sha256": "4e594c720d4abbf822cddd6760792b2e835b82f7c4c4758eb6fa7d222f2f4f61",
+            "prefix": "b22_epi40",
+            "arm": "EPI4",
+            "M": [
+              1
+            ]
+          },
+          {
+            "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/epi41_cell.py",
+            "cell_sha256": "bf9c5c34d51440861a7676317376d15a8c50b5a1a15db08538347576a37bd2e0",
+            "cuda_sha256": "f05f40a71ea4d83aa22a30ddc78038b510302fd09bf3272ce739588e8c2de215",
+            "prefix": "b22_epi41",
+            "arm": "EPI4",
+            "M": [
+              8
+            ]
+          },
+          {
+            "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/epi42_cell.py",
+            "cell_sha256": "34a9f6d9c638f9ee0421dad8804f5649b65f23448f26698f35d5acd2e161fb99",
+            "cuda_sha256": "b7da4f5f3fdd99c9b0beef50e1878f3d67927d1da17811b5d345ae05233e9239",
+            "prefix": "b22_epi42",
+            "arm": "EPI4",
+            "M": [
+              16,
+              32
+            ]
+          }
+        ]
+      },
+      "handoff": true,
+      "scope": "Whole-layer shape point nomination;P4 composes and confirms on new seeds;M16/M32 share a native source specialization"
+    }
+  ],
+  "outcomes": {
     "CACHE1": {
-      "base": "problems/muse_decode_layer/dev/s22/generated/s22.py",
-      "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
-      "candidate": "runs/screen/p3a_builds22/cache1.py",
-      "candidate_sha256": "b1d7811c05d3d1b69afa901b691e142abcf9fa64e57bd8211031391fdfd341d4",
-      "shipped": "runs/screen/p3a_builds22/cache1_packed.py",
-      "shipped_sha256": "fa5ef5b6a5bcd20165d1cd691d451c4458ab65da6374931ac11e25883613f80f",
-      "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/cache1.patch",
-      "patch_sha256": "24cdec8690046fe3b96775259157b1ef949ae8fb53588aeb834075ded0d1024d",
-      "variants": [
+      "measured": true,
+      "source_sha256": "b1d7811c05d3d1b69afa901b691e142abcf9fa64e57bd8211031391fdfd341d4",
+      "whole_graph": true,
+      "R": 0.9612501487405907,
+      "CI95": [
+        0.9600666845859755,
+        0.9624350717390838
+      ],
+      "n": 64,
+      "log_se": 0.0006032073626078938,
+      "AA_log_se": 0.00022962675449680471,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "per_seed_R": [
+        0.9604233590891208,
+        0.9662892689602548,
+        0.959224248547283,
+        0.9623723253459185,
+        0.9578279764049173,
+        0.949604389285555,
+        0.9648778289062873,
+        0.9557342466540064,
+        0.9663372481962232,
+        0.9604133662411608,
+        0.9647614832758922,
+        0.9621159898338929,
+        0.9688538239256527,
+        0.9557881352835528,
+        0.9625073174724763,
+        0.9623163239257239,
+        0.9558832450623351,
+        0.9575709265301211,
+        0.9561915239018232,
+        0.9628808604000059,
+        0.9527084449671741,
+        0.9627291316925859,
+        0.9602394862534593,
+        0.960592658317642,
+        0.9659805902230559,
+        0.965377923324977,
+        0.9597636799839463,
+        0.9559673664593475,
+        0.963703462476394,
+        0.9654800008154135,
+        0.9539759894807806,
+        0.9629981753125931,
+        0.9604231513959218,
+        0.9591161189817431,
+        0.9573689206452592,
+        0.9633362759216905,
+        0.9645424125928866,
+        0.9592404529743719,
+        0.9572088650196191,
+        0.9629398249073409,
+        0.9590941958215823,
+        0.9523143474577028,
+        0.957252044451454,
+        0.968113821294364,
+        0.9671266042514576,
+        0.9585040442189249,
+        0.9575934435310149,
+        0.9536969386403824,
+        0.9588399864511994,
+        0.9715446477385546,
+        0.9643709644881677,
+        0.9611735198792654,
+        0.9647744031735991,
+        0.9613535118462834,
+        0.9680453783851681,
+        0.9615726781896519,
+        0.9703285712685128,
+        0.9661933071565874,
+        0.9623457079892395,
+        0.9565271648297655,
+        0.9653855716488721,
+        0.9659623818203205,
+        0.9657612546851975,
+        0.9571731640629281
+      ],
+      "lab_gate": false,
+      "TASK_nearby_pass": true,
+      "official_TASK_pending": true,
+      "freeze_gate": false,
+      "loads": {
+        "decode 1": {
+          "R": 0.9614806174816205,
+          "CI95": [
+            0.9553862840623415,
+            0.9676138261709812
+          ],
+          "n": 64,
+          "log_se": 0.003113480670168051,
+          "AA_log_se": 0.0010403285555375496,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 16": {
+          "R": 0.941612687995794,
+          "CI95": [
+            0.9400785682580578,
+            0.943149311272542
+          ],
+          "n": 64,
+          "log_se": 0.0007984016856855883,
+          "AA_log_se": 0.00033398873332835975,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 32": {
+          "R": 0.9434032959051667,
+          "CI95": [
+            0.9423648626519832,
+            0.9444428734535845
+          ],
+          "n": 64,
+          "log_se": 0.0005392632077350816,
+          "AA_log_se": 0.0003904583487324254,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 1": {
+          "R": 0.9246023432560266,
+          "CI95": [
+            0.9220825186841418,
+            0.9271290538882634
+          ],
+          "n": 64,
+          "log_se": 0.0013362516219196016,
+          "AA_log_se": 0.0004197790629718773,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 16": {
+          "R": 1.0000032548038342,
+          "CI95": [
+            0.999375910862401,
+            1.0006309925514587
+          ],
+          "n": 64,
+          "log_se": 0.00024925581828318214,
+          "AA_log_se": 0.0003072706070730015,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 32": {
+          "R": 0.9989687253322048,
+          "CI95": [
+            0.9975496200350265,
+            1.0003898494360712
+          ],
+          "n": 64,
+          "log_se": 0.0006960682866957854,
+          "AA_log_se": 0.00016328075493916977,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        }
+      },
+      "prepare_upper_s": 191.160697,
+      "prepare_note": "Shared host prepare+arm delta is a conservative bound,not a separate cold prepare measurement",
+      "shapes": [
         {
-          "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/cache10_cell.py",
-          "cell_sha256": "7d43117ec47c2875d0860e3ac4e129d5ebe5db2a270024ae561a2087e422dd5d",
-          "cuda_sha256": "1a04022a074d180fa46c4e575e0a60d368a688196fb7c73e7bc4fe5610017979",
-          "prefix": "b22_cache10",
-          "arm": "CACHE1",
-          "M": [
-            1
-          ]
+          "label": "d1S",
+          "M": 1,
+          "time_ratio": 1.0381537612514165,
+          "time_CI95": [
+            1.030432809717443,
+            1.0459325652644915
+          ],
+          "log_SE": 0.003655187,
+          "AA_log_SE": 0.001364294,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
         },
         {
-          "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/cache11_cell.py",
-          "cell_sha256": "3ca3cb5c62906723c2c102502fd09f796de3494e3d412616405645050f99a18c",
-          "cuda_sha256": "b165bf1f37c3c773e62ddaf31f7eb3cf5b19d0bd59d5e91389ad8d916028a06b",
-          "prefix": "b22_cache11",
-          "arm": "CACHE1",
-          "M": [
-            8
-          ]
+          "label": "d1F",
+          "M": 1,
+          "time_ratio": 1.0417537635157446,
+          "time_CI95": [
+            1.0344905723448046,
+            1.0490679497826245
+          ],
+          "log_SE": 0.003425794,
+          "AA_log_SE": 0.001161885,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
         },
         {
-          "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/cache12_cell.py",
-          "cell_sha256": "e47ca146f15c7759fffeec226eea21833d061be153f041f34a7b6889433f65c8",
-          "cuda_sha256": "a45c55fa7506e5cb0a5d8804ac20019784ee7b5c765bdc60452d1c6d53037303",
-          "prefix": "b22_cache12",
-          "arm": "CACHE1",
-          "M": [
-            16,
-            32
-          ]
+          "label": "v1S",
+          "M": 8,
+          "time_ratio": 1.0853875758802718,
+          "time_CI95": [
+            1.081747350156605,
+            1.0890400514544398
+          ],
+          "log_SE": 0.001644952,
+          "AA_log_SE": 0.000570241,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "v1F",
+          "M": 8,
+          "time_ratio": 1.0710712051612534,
+          "time_CI95": [
+            1.0686093484442074,
+            1.0735387334911335
+          ],
+          "log_SE": 0.001126742,
+          "AA_log_SE": 0.000426967,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "d16S",
+          "M": 16,
+          "time_ratio": 1.0692816298185377,
+          "time_CI95": [
+            1.0670379441751097,
+            1.0715300333122482
+          ],
+          "log_SE": 0.001028505,
+          "AA_log_SE": 0.000468861,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "d16F",
+          "M": 16,
+          "time_ratio": 1.048622158036817,
+          "time_CI95": [
+            1.0470651012671794,
+            1.050181530255399
+          ],
+          "log_SE": 0.000727593,
+          "AA_log_SE": 0.000429661,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "d32S",
+          "M": 32,
+          "time_ratio": 1.0752606012842534,
+          "time_CI95": [
+            1.0736671433345615,
+            1.076856424127249
+          ],
+          "log_SE": 0.000726155,
+          "AA_log_SE": 0.000531727,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "d32F",
+          "M": 32,
+          "time_ratio": 1.0375645385299344,
+          "time_CI95": [
+            1.036353764763591,
+            1.038776726845212
+          ],
+          "log_SE": 0.000571718,
+          "AA_log_SE": 0.000477675,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
         }
       ]
     },
     "LAZY": {
-      "base": "problems/muse_decode_layer/dev/s22/generated/s22.py",
-      "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
-      "candidate": "runs/screen/p3a_builds22/lazy.py",
-      "candidate_sha256": "6ea3bf992bcec85b2cfd11fffeabae063135c1641a4e4e4a08b0f771b88bb071",
-      "shipped": "runs/screen/p3a_builds22/lazy_packed.py",
-      "shipped_sha256": "77528e07e79ae3dd479bb02a710e0c01f73af087ca43decac80d9d028ef103b8",
-      "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/lazy.patch",
-      "patch_sha256": "ef23f6d18ac1c10b954c6302917317e2bf4aaa3edde46ebd08615b76f4453e31",
-      "variants": [
+      "measured": true,
+      "source_sha256": "6ea3bf992bcec85b2cfd11fffeabae063135c1641a4e4e4a08b0f771b88bb071",
+      "whole_graph": true,
+      "R": 0.9045996346591721,
+      "CI95": [
+        0.9030153905604346,
+        0.9061866581450505
+      ],
+      "n": 64,
+      "log_se": 0.0008582755187221571,
+      "AA_log_se": 0.00022962675449680471,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "per_seed_R": [
+        0.9045450484747414,
+        0.9149587820952237,
+        0.9031954444036074,
+        0.9046438874764421,
+        0.9080413088769698,
+        0.9043333581019126,
+        0.9050265438869595,
+        0.9021745358693808,
+        0.9171117828556076,
+        0.9093809102976457,
+        0.9069592536956349,
+        0.9032449712949,
+        0.9105456045090442,
+        0.9010671533597063,
+        0.900987639161016,
+        0.9061732706823763,
+        0.898404419638487,
+        0.8989535764842468,
+        0.9001379610632939,
+        0.904084295127728,
+        0.8920726607838683,
+        0.9020091020615796,
+        0.9040867547484938,
+        0.9094018638524182,
+        0.9081993902865426,
+        0.907972569771179,
+        0.904086609741625,
+        0.8955754460248563,
+        0.905869645476999,
+        0.9040446553543932,
+        0.8993388372565976,
+        0.9124401016997695,
+        0.9021485272643712,
+        0.8981923803026243,
+        0.898408533066101,
+        0.9030414115240017,
+        0.9106889740866092,
+        0.896804066701843,
+        0.8960911362989649,
+        0.9058107514622599,
+        0.9025851377920966,
+        0.8900272349853818,
+        0.9006774517806777,
+        0.914616897067996,
+        0.9106621032264546,
+        0.8978451615151289,
+        0.9017809035916337,
+        0.8944056435622759,
+        0.9017051477032593,
+        0.9153253270468914,
+        0.9138935156814904,
+        0.907516770792391,
+        0.9084244899567518,
+        0.9090297954443587,
+        0.9101325438313522,
+        0.9045825980001247,
+        0.9128220216041254,
+        0.9124325226111233,
+        0.906103263789249,
+        0.8903173848137902,
+        0.9142506942625539,
+        0.9125713429075917,
+        0.9019009111546527,
+        0.901857453151396
+      ],
+      "lab_gate": false,
+      "TASK_nearby_pass": true,
+      "official_TASK_pending": true,
+      "freeze_gate": false,
+      "loads": {
+        "decode 1": {
+          "R": 0.949164751663151,
+          "CI95": [
+            0.9411420103621513,
+            0.9572558826197756
+          ],
+          "n": 64,
+          "log_se": 0.004156268218697698,
+          "AA_log_se": 0.0010403285555375496,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 16": {
+          "R": 0.8220581597790053,
+          "CI95": [
+            0.8187870746507798,
+            0.8253423130152254
+          ],
+          "n": 64,
+          "log_se": 0.0019522492296970514,
+          "AA_log_se": 0.00033398873332835975,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 32": {
+          "R": 0.8131194310206876,
+          "CI95": [
+            0.8106555921322536,
+            0.815590758295222
+          ],
+          "n": 64,
+          "log_se": 0.0014859262007144427,
+          "AA_log_se": 0.0003904583487324254,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 1": {
+          "R": 0.8657139137255684,
+          "CI95": [
+            0.8608946778581582,
+            0.8705601273812528
+          ],
+          "n": 64,
+          "log_se": 0.002733353934601658,
+          "AA_log_se": 0.0004197790629718773,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 16": {
+          "R": 0.9990133701592112,
+          "CI95": [
+            0.9983866472138911,
+            0.9996404865209009
+          ],
+          "n": 64,
+          "log_se": 0.0002896272700738266,
+          "AA_log_se": 0.0003072706070730015,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 32": {
+          "R": 0.9986062138494926,
+          "CI95": [
+            0.998273265864041,
+            0.9989392728810522
+          ],
+          "n": 64,
+          "log_se": 0.00013929904566690234,
+          "AA_log_se": 0.00016328075493916977,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        }
+      },
+      "prepare_upper_s": 190.516153,
+      "prepare_note": "Shared host prepare+arm delta is a conservative bound,not a separate cold prepare measurement",
+      "shapes": [
         {
-          "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/lazy0_cell.py",
-          "cell_sha256": "29d8632cec81211a3b39e46d9a25299e97e72d19e117f0d4160d204624d8238b",
-          "cuda_sha256": "1a720c4c530acf87a5a7d9f9539a92d38d7b1598ebef138c154db7cb6d61ef14",
-          "prefix": "b22_lazy0",
-          "arm": "LAZY",
-          "M": [
-            1
-          ]
+          "label": "d1S",
+          "M": 1,
+          "time_ratio": 1.0566571036429997,
+          "time_CI95": [
+            1.046279001865064,
+            1.0671381464111696
+          ],
+          "log_SE": 0.004832878,
+          "AA_log_SE": 0.001364294,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
         },
         {
-          "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/lazy1_cell.py",
-          "cell_sha256": "bbd4227cdbe205c6d847257de01484bc2d09a3b55e1bf559ea2f64de4ada3b32",
-          "cuda_sha256": "5b22c0ef95eaebc62c9fb33578a6d0eab5e3221d02fedc61001fa55b29e9d1c3",
-          "prefix": "b22_lazy1",
-          "arm": "LAZY",
-          "M": [
-            8
-          ]
+          "label": "d1F",
+          "M": 1,
+          "time_ratio": 1.0421839476454426,
+          "time_CI95": [
+            1.033319746305053,
+            1.0511241894037995
+          ],
+          "log_SE": 0.004182435,
+          "AA_log_SE": 0.001161885,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
         },
         {
-          "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/lazy2_cell.py",
-          "cell_sha256": "dee59535d21dce4e17852b654f3656745d4c15223bdf5d372f38c7b35c26381b",
-          "cuda_sha256": "5d44bf9b01b9b5a8d9d39775bb73bd1ece6b0d1c180dda2afea79be8b963dcf7",
-          "prefix": "b22_lazy2",
-          "arm": "LAZY",
-          "M": [
-            16,
-            32
-          ]
+          "label": "v1S",
+          "M": 8,
+          "time_ratio": 1.1624936080353003,
+          "time_CI95": [
+            1.154803139022803,
+            1.170235292109165
+          ],
+          "log_SE": 0.003249999,
+          "AA_log_SE": 0.000570241,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "v1F",
+          "M": 8,
+          "time_ratio": 1.1342363555514423,
+          "time_CI95": [
+            1.1275162206817704,
+            1.1409965432485931
+          ],
+          "log_SE": 0.002909676,
+          "AA_log_SE": 0.000426967,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "d16S",
+          "M": 16,
+          "time_ratio": 1.2479264401218257,
+          "time_CI95": [
+            1.2417840866420273,
+            1.2540991761026374
+          ],
+          "log_SE": 0.002416002,
+          "AA_log_SE": 0.000468861,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "d16F",
+          "M": 16,
+          "time_ratio": 1.1584249954727006,
+          "time_CI95": [
+            1.1539787537088582,
+            1.162888368458205
+          ],
+          "log_SE": 0.001882957,
+          "AA_log_SE": 0.000429661,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "d32S",
+          "M": 32,
+          "time_ratio": 1.2892987152974396,
+          "time_CI95": [
+            1.28435591178967,
+            1.2942605410297283
+          ],
+          "log_SE": 0.001880763,
+          "AA_log_SE": 0.000531727,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "d32F",
+          "M": 32,
+          "time_ratio": 1.1420160084011801,
+          "time_CI95": [
+            1.1382256582330563,
+            1.1458189806309251
+          ],
+          "log_SE": 0.001627831,
+          "AA_log_SE": 0.000477675,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
         }
       ]
     },
     "LAZY2": {
-      "base": "problems/muse_decode_layer/dev/s22/generated/s22.py",
-      "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
-      "candidate": "runs/screen/p3a_builds22/lazy2.py",
-      "candidate_sha256": "d09bb5f5bcb7065b8e98369d00fe2f730de3792a277a8f9a53449f3c26dc633d",
-      "shipped": "runs/screen/p3a_builds22/lazy2_packed.py",
-      "shipped_sha256": "b636aa656c6d1388e4e8e5bcb0d6fc4b39151dbadd81d828533430107ab2ef0c",
-      "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/lazy2.patch",
-      "patch_sha256": "a38f43c73aae2decde4be1c2acee0a4998c65f313cf634fe65ba765ad1d20793",
-      "variants": [
+      "measured": true,
+      "source_sha256": "d09bb5f5bcb7065b8e98369d00fe2f730de3792a277a8f9a53449f3c26dc633d",
+      "whole_graph": true,
+      "R": 0.9039231919634497,
+      "CI95": [
+        0.9022538329347279,
+        0.9055956396568743
+      ],
+      "n": 64,
+      "log_se": 0.0009051071980247827,
+      "AA_log_se": 0.00022962675449680471,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "per_seed_R": [
+        0.8993539301934127,
+        0.9126472392705677,
+        0.9031410827974741,
+        0.9016629294829434,
+        0.9058938342846323,
+        0.9047301610590115,
+        0.9033829347010122,
+        0.9030214797312047,
+        0.9141819751432482,
+        0.9086709786687305,
+        0.905993180080274,
+        0.9028166944195625,
+        0.9091044485503595,
+        0.9011966192124746,
+        0.895669037823676,
+        0.9032369889775919,
+        0.9006996722818331,
+        0.8998331617327824,
+        0.8991163266726013,
+        0.903201657935018,
+        0.888953784110567,
+        0.8998570417920432,
+        0.9030244809457054,
+        0.9099231427156391,
+        0.909464240557067,
+        0.906654746117743,
+        0.90407999529968,
+        0.892632226858994,
+        0.9059063673443105,
+        0.9033965490931832,
+        0.896025905012355,
+        0.912211451244833,
+        0.903120111936617,
+        0.8963044601059327,
+        0.8955685523368283,
+        0.9051788966230687,
+        0.9095087397803177,
+        0.895830429963643,
+        0.898099959486982,
+        0.9058498173109779,
+        0.901235601014143,
+        0.8899653863304366,
+        0.8999814473056752,
+        0.9130407361761828,
+        0.908446922653209,
+        0.8981072707410186,
+        0.9013576022660922,
+        0.8947858678550605,
+        0.903980113312911,
+        0.9147070934425757,
+        0.9148525737755981,
+        0.9086878406229333,
+        0.9071428461143871,
+        0.909394651352344,
+        0.9096218406475532,
+        0.9054106432198055,
+        0.9148004638970345,
+        0.9116399603461296,
+        0.9055859262688396,
+        0.8880293527213804,
+        0.9137034610203224,
+        0.915661924180469,
+        0.9015697896819008,
+        0.9017216142466449
+      ],
+      "lab_gate": false,
+      "TASK_nearby_pass": true,
+      "official_TASK_pending": true,
+      "freeze_gate": false,
+      "loads": {
+        "decode 1": {
+          "R": 0.9525186783353508,
+          "CI95": [
+            0.9441549154659835,
+            0.9609565313017868
+          ],
+          "n": 64,
+          "log_se": 0.004318395221702762,
+          "AA_log_se": 0.0010403285555375496,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 16": {
+          "R": 0.8190782095238396,
+          "CI95": [
+            0.8156238144370261,
+            0.8225472349404749
+          ],
+          "n": 64,
+          "log_se": 0.002069400319108089,
+          "AA_log_se": 0.00033398873332835975,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 32": {
+          "R": 0.8125660616371979,
+          "CI95": [
+            0.8100937541089149,
+            0.8150459143471138
+          ],
+          "n": 64,
+          "log_se": 0.0014920583396931363,
+          "AA_log_se": 0.0003904583487324254,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 1": {
+          "R": 0.8628065744541236,
+          "CI95": [
+            0.8575831929151331,
+            0.868061770649613
+          ],
+          "n": 64,
+          "log_se": 0.002973286040291228,
+          "AA_log_se": 0.0004197790629718773,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 16": {
+          "R": 0.9985737195244873,
+          "CI95": [
+            0.9979472723904315,
+            0.9992005599017759
+          ],
+          "n": 64,
+          "log_se": 0.00025540621628691314,
+          "AA_log_se": 0.0003072706070730015,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 32": {
+          "R": 0.9987068885016436,
+          "CI95": [
+            0.9983739069499853,
+            0.9990399811106051
+          ],
+          "n": 64,
+          "log_se": 0.0001521148354164952,
+          "AA_log_se": 0.00016328075493916977,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        }
+      },
+      "prepare_upper_s": 190.358114,
+      "prepare_note": "Shared host prepare+arm delta is a conservative bound,not a separate cold prepare measurement",
+      "shapes": [
         {
-          "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/lazy20_cell.py",
-          "cell_sha256": "7f0129a04b6210362af6d621dd4fc0032f81e4b97b7fe804e70dd05912ae0529",
-          "cuda_sha256": "50cb8ab18a357fa49061d82041844cf2ea57f74b2b348d6b2eb4e40b641c07a2",
-          "prefix": "b22_lazy20",
-          "arm": "LAZY2",
-          "M": [
-            1
-          ]
+          "label": "d1S",
+          "M": 1,
+          "time_ratio": 1.0516306326354825,
+          "time_CI95": [
+            1.041006332258997,
+            1.0623633624758357
+          ],
+          "log_SE": 0.00497188,
+          "AA_log_SE": 0.001364294,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
         },
         {
-          "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/lazy21_cell.py",
-          "cell_sha256": "597f1ca2199e8e640ce570c69a51ab94eb39a627b79b65b6fd699c7aa50c7c42",
-          "cuda_sha256": "943d85cb2faf5eb53ea606b004cd70332b03d01726fb38edfa47368f384bc2db",
-          "prefix": "b22_lazy21",
-          "arm": "LAZY2",
-          "M": [
-            8
-          ]
+          "label": "d1F",
+          "M": 1,
+          "time_ratio": 1.0415291345797695,
+          "time_CI95": [
+            1.0319933488083985,
+            1.0511530325568852
+          ],
+          "log_SE": 0.004503615,
+          "AA_log_SE": 0.001161885,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
         },
         {
-          "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/lazy22_cell.py",
-          "cell_sha256": "03c34a87b0613e15e82a2891bf1a0374275183f0e9c7add38b9735ca74b9fe00",
-          "cuda_sha256": "7cc40d8f7f29410e9fa44dd64ad32d4d863498c84afbef9d99d589305e94c609",
-          "prefix": "b22_lazy22",
-          "arm": "LAZY2",
-          "M": [
-            16,
-            32
-          ]
+          "label": "v1S",
+          "M": 8,
+          "time_ratio": 1.165397373509704,
+          "time_CI95": [
+            1.1569849266338799,
+            1.17387098735565
+          ],
+          "log_SE": 0.003547325,
+          "AA_log_SE": 0.000570241,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "v1F",
+          "M": 8,
+          "time_ratio": 1.1404198487704373,
+          "time_CI95": [
+            1.1332133174561843,
+            1.147672209138041
+          ],
+          "log_SE": 0.003103972,
+          "AA_log_SE": 0.000426967,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "d16S",
+          "M": 16,
+          "time_ratio": 1.2530684496084283,
+          "time_CI95": [
+            1.2464328986042232,
+            1.2597393258492982
+          ],
+          "log_SE": 0.002599771,
+          "AA_log_SE": 0.000468861,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "d16F",
+          "M": 16,
+          "time_ratio": 1.161524687679663,
+          "time_CI95": [
+            1.156984082658459,
+            1.1660831123876436
+          ],
+          "log_SE": 0.001917856,
+          "AA_log_SE": 0.000429661,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "d32S",
+          "M": 32,
+          "time_ratio": 1.2883675888054076,
+          "time_CI95": [
+            1.2834191469190934,
+            1.293335110255215
+          ],
+          "log_SE": 0.001884276,
+          "AA_log_SE": 0.000531727,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "d32F",
+          "M": 32,
+          "time_ratio": 1.1453843070077392,
+          "time_CI95": [
+            1.1414201397849892,
+            1.149362241835617
+          ],
+          "log_SE": 0.001697594,
+          "AA_log_SE": 0.000477675,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
         }
       ]
     },
     "N1SIMT": {
-      "base": "problems/muse_decode_layer/dev/s22/generated/s22.py",
-      "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
-      "candidate": "runs/screen/p3a_builds22/n1simt.py",
-      "candidate_sha256": "e2fddafee203edb39650d069c4d8a351ce51d366c24b37f900e30029f8b3366e",
-      "shipped": "runs/screen/p3a_builds22/n1simt_packed.py",
-      "shipped_sha256": "20534cc1c4df7fb39ffb8005b1b843f807f3a13ba9f79510e2e4be17445496fc",
-      "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/n1simt.patch",
-      "patch_sha256": "a1617500cac35fddbcfacedda5ea3eeaa7dedfdfe6dfd9970cf95d7fad497f39",
-      "variants": [
+      "measured": true,
+      "source_sha256": "e2fddafee203edb39650d069c4d8a351ce51d366c24b37f900e30029f8b3366e",
+      "whole_graph": true,
+      "R": 0.8118121240978786,
+      "CI95": [
+        0.8082039088011583,
+        0.8154364482224401
+      ],
+      "n": 64,
+      "log_se": 0.0021811438408113597,
+      "AA_log_se": 0.00022962675449680471,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "per_seed_R": [
+        0.8026407731104227,
+        0.8250489813569447,
+        0.8156751800351084,
+        0.8095857028099326,
+        0.8115409097529404,
+        0.8169884113298923,
+        0.8075349975860523,
+        0.8105002010291721,
+        0.8325140333591258,
+        0.8154370124402948,
+        0.8149802675186966,
+        0.8021395998480549,
+        0.8409318102336847,
+        0.8054133084742695,
+        0.7990064927926979,
+        0.8168182349981827,
+        0.8009090198380393,
+        0.8038930056791803,
+        0.8021199265135351,
+        0.8021136718020928,
+        0.7887995971209291,
+        0.8075185605127211,
+        0.8046008697484391,
+        0.835476471248892,
+        0.8279877869116405,
+        0.8170298283568832,
+        0.8100982946182415,
+        0.7950054723799714,
+        0.8147106248875217,
+        0.8081823861421914,
+        0.793917754219652,
+        0.8238636696055059,
+        0.8009550826161541,
+        0.8069505351998008,
+        0.7983068408330869,
+        0.8039763334282422,
+        0.8155186914700536,
+        0.7938593791990082,
+        0.7899041001404231,
+        0.8078369113564086,
+        0.8030318557639352,
+        0.7836902529652892,
+        0.811279507020356,
+        0.8321645056062433,
+        0.8420119820404133,
+        0.799232477846761,
+        0.8011191326881891,
+        0.7922950979670788,
+        0.805710673695182,
+        0.8306524669650366,
+        0.8218972747560461,
+        0.8187636712983846,
+        0.8164291914433962,
+        0.8123613868073778,
+        0.8328642844085716,
+        0.8142322140065222,
+        0.8366181921239039,
+        0.8272578585396749,
+        0.8175954132747241,
+        0.7835889938921884,
+        0.825316905539297,
+        0.8421799285244127,
+        0.80546860640224,
+        0.8277206861480068
+      ],
+      "lab_gate": false,
+      "TASK_nearby_pass": true,
+      "official_TASK_pending": true,
+      "freeze_gate": false,
+      "loads": {
+        "decode 1": {
+          "R": 0.894890615109344,
+          "CI95": [
+            0.8803260899074319,
+            0.9096961026055571
+          ],
+          "n": 64,
+          "log_se": 0.008034616611014032,
+          "AA_log_se": 0.0010403285555375496,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 16": {
+          "R": 0.6959274192512391,
+          "CI95": [
+            0.6878162623450065,
+            0.7041342279615352
+          ],
+          "n": 64,
+          "log_se": 0.005740405665339975,
+          "AA_log_se": 0.00033398873332835975,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 32": {
+          "R": 0.6827062379121599,
+          "CI95": [
+            0.6776922182585674,
+            0.6877573546319562
+          ],
+          "n": 64,
+          "log_se": 0.0036093776635975675,
+          "AA_log_se": 0.0003904583487324254,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 1": {
+          "R": 0.6751449921929087,
+          "CI95": [
+            0.6638620136291691,
+            0.6866197359166608
+          ],
+          "n": 64,
+          "log_se": 0.008252046209193164,
+          "AA_log_se": 0.0004197790629718773,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 16": {
+          "R": 0.9994280038217274,
+          "CI95": [
+            0.9988010207593379,
+            1.0000553804637713
+          ],
+          "n": 64,
+          "log_se": 0.0002828258288623024,
+          "AA_log_se": 0.0003072706070730015,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 32": {
+          "R": 0.9977387991824748,
+          "CI95": [
+            0.9964104043309763,
+            0.9990689650239929
+          ],
+          "n": 64,
+          "log_se": 0.0006523490839885186,
+          "AA_log_se": 0.00016328075493916977,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        }
+      },
+      "prepare_upper_s": 191.788035,
+      "prepare_note": "Shared host prepare+arm delta is a conservative bound,not a separate cold prepare measurement",
+      "shapes": [
         {
-          "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/n1simt0_cell.py",
-          "cell_sha256": "2ffc8117024cda983a93a7a361a8e00c447cca7d4f87cbf4adc8080dd3bd2e6c",
-          "cuda_sha256": "7919a1075ce81ed6c62e80904c0c8367d1f248f7d373a993a37d2f2e12b84218",
-          "prefix": "b22_n1simt0",
-          "arm": "N1SIMT",
-          "M": [
-            1
-          ]
+          "label": "d1S",
+          "M": 1,
+          "time_ratio": 1.1224225326237902,
+          "time_CI95": [
+            1.1012555556691148,
+            1.143996355120441
+          ],
+          "log_SE": 0.00932203,
+          "AA_log_SE": 0.001364294,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
         },
         {
-          "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/n1simt1_cell.py",
-          "cell_sha256": "b9d713e8bddc0b4b1a76cb00091380dea34dbdb07e5126c520dc53d98acc2ba6",
-          "cuda_sha256": "eb4eb959b26fe72cfae2f687f862c993a1a0a9bc476582043fdf752dac3ebfdc",
-          "prefix": "b22_n1simt1",
-          "arm": "N1SIMT",
-          "M": [
-            8
-          ]
+          "label": "d1F",
+          "M": 1,
+          "time_ratio": 1.0961109147555828,
+          "time_CI95": [
+            1.0781528796578201,
+            1.1143680642281772
+          ],
+          "log_SE": 0.00808848,
+          "AA_log_SE": 0.001161885,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
         },
         {
-          "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/n1simt2_cell.py",
-          "cell_sha256": "9a22cb7baf8738f025f4e38437e0ce0efc04d2a012d04485d70d129532ae1b09",
-          "cuda_sha256": "080f8a225bf47289324096f62f5c662913854a6fc3a02ceb685a16320b052c4c",
-          "prefix": "b22_n1simt2",
-          "arm": "N1SIMT",
-          "M": [
-            16,
-            32
-          ]
+          "label": "v1S",
+          "M": 8,
+          "time_ratio": 1.4921441135974807,
+          "time_CI95": [
+            1.461931375453309,
+            1.522981237784318
+          ],
+          "log_SE": 0.010015995,
+          "AA_log_SE": 0.000570241,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "v1F",
+          "M": 8,
+          "time_ratio": 1.4420663149767103,
+          "time_CI95": [
+            1.416353352246601,
+            1.468246079618441
+          ],
+          "log_SE": 0.00880944,
+          "AA_log_SE": 0.000426967,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "d16S",
+          "M": 16,
+          "time_ratio": 1.5050941223308083,
+          "time_CI95": [
+            1.482937404900098,
+            1.5275818855127972
+          ],
+          "log_SE": 0.007261706,
+          "AA_log_SE": 0.000468861,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "d16F",
+          "M": 16,
+          "time_ratio": 1.3092556662139216,
+          "time_CI95": [
+            1.295141358832656,
+            1.323523789757025
+          ],
+          "log_SE": 0.00530722,
+          "AA_log_SE": 0.000429661,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "d32S",
+          "M": 32,
+          "time_ratio": 1.5861599304497882,
+          "time_CI95": [
+            1.5701425672832858,
+            1.6023406901945079
+          ],
+          "log_SE": 0.004969659,
+          "AA_log_SE": 0.000531727,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "d32F",
+          "M": 32,
+          "time_ratio": 1.2831063681452448,
+          "time_CI95": [
+            1.2700459722073356,
+            1.2963010694120853
+          ],
+          "log_SE": 0.005009494,
+          "AA_log_SE": 0.000477675,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
         }
       ]
     },
     "EPI4": {
-      "base": "problems/muse_decode_layer/dev/s22/generated/s22.py",
-      "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
-      "candidate": "runs/screen/p3a_builds22/epi4.py",
-      "candidate_sha256": "573a95f81abaec215f780bd772e4eeded206de547aecc83860017a4fdacc8b4d",
-      "shipped": "runs/screen/p3a_builds22/epi4_packed.py",
-      "shipped_sha256": "1f39b5f33b51565d057c35a06d2194034e1f93b7008a1e04c2b3479f3a3fd9ed",
-      "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/epi4.patch",
-      "patch_sha256": "0e25ad2575fd3bbecf2db50ac9e527765b9bd96ef3f17dffcfafe5a09ca4b809",
-      "variants": [
+      "measured": true,
+      "source_sha256": "573a95f81abaec215f780bd772e4eeded206de547aecc83860017a4fdacc8b4d",
+      "whole_graph": true,
+      "R": 0.9983473930220127,
+      "CI95": [
+        0.9978793110849832,
+        0.9988156945253738
+      ],
+      "n": 64,
+      "log_se": 0.00021586332470121324,
+      "AA_log_se": 0.00022962675449680471,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "per_seed_R": [
+        0.9971567034122656,
+        0.9973134774246533,
+        0.9976489263157203,
+        0.9992790656601909,
+        0.9977258476459846,
+        0.9988416344670868,
+        0.995113270718373,
+        0.9976451537522911,
+        0.9943022177568104,
+        0.9965700218682486,
+        1.0000041420713934,
+        0.9986464012623586,
+        0.996680615456067,
+        0.9963325165695608,
+        0.9987628522507375,
+        0.9998554868938905,
+        0.9977196021163519,
+        0.9992899538384428,
+        0.9970755367014761,
+        1.0012951742506524,
+        0.9953298958599852,
+        0.9984486996221714,
+        0.9992928249498074,
+        0.9966938070891906,
+        1.0023332109915148,
+        0.9984172450856487,
+        0.9994847180637716,
+        0.9966949379624283,
+        0.9994123437540293,
+        0.9984092787417786,
+        0.9987100561267968,
+        0.9966579817526761,
+        0.9976503123593825,
+        0.9966384052323254,
+        0.9975401584365142,
+        0.9992294789600673,
+        0.9982803972881793,
+        1.0010814731751803,
+        0.9990259724927312,
+        0.9996060937340576,
+        1.000986344573544,
+        0.9959570875338797,
+        1.001106131130576,
+        0.9968227518378473,
+        0.9968746266024601,
+        0.9977793521818795,
+        1.0006028016091821,
+        0.9963956222452621,
+        0.9979667887609001,
+        1.001750983654027,
+        0.997120949654604,
+        1.0003523352187773,
+        0.9965972599621908,
+        0.9971264206125612,
+        0.9981056367350254,
+        0.9996703720672083,
+        1.0016857108791162,
+        1.0004672031984025,
+        0.9980703269848793,
+        0.9991677788720235,
+        0.9987498864173068,
+        0.997362951989883,
+        0.9997379910875321,
+        0.9976737425497817
+      ],
+      "lab_gate": false,
+      "TASK_nearby_pass": true,
+      "official_TASK_pending": true,
+      "freeze_gate": false,
+      "loads": {
+        "decode 1": {
+          "R": 1.0049978015168366,
+          "CI95": [
+            1.0027475058047097,
+            1.0072531471849722
+          ],
+          "n": 64,
+          "log_se": 0.0010975937195036557,
+          "AA_log_se": 0.0010403285555375496,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 16": {
+          "R": 0.994743698148901,
+          "CI95": [
+            0.9937798003492119,
+            0.9957085308629121
+          ],
+          "n": 64,
+          "log_se": 0.0004746907334050702,
+          "AA_log_se": 0.00033398873332835975,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 32": {
+          "R": 0.9931405143473667,
+          "CI95": [
+            0.9923488669274333,
+            0.993932793304916
+          ],
+          "n": 64,
+          "log_se": 0.00038179788946666755,
+          "AA_log_se": 0.0003904583487324254,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 1": {
+          "R": 0.9974526085511924,
+          "CI95": [
+            0.9964587807841765,
+            0.9984474275219085
+          ],
+          "n": 64,
+          "log_se": 0.0004881078213070479,
+          "AA_log_se": 0.0004197790629718773,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 16": {
+          "R": 1.0000554559126225,
+          "CI95": [
+            0.9994280792232463,
+            1.0006832264287466
+          ],
+          "n": 64,
+          "log_se": 0.0002681933011601905,
+          "AA_log_se": 0.0003072706070730015,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 32": {
+          "R": 0.9997393078554191,
+          "CI95": [
+            0.9994059820820453,
+            1.0000727448009021
+          ],
+          "n": 64,
+          "log_se": 0.00012666040925054652,
+          "AA_log_se": 0.00016328075493916977,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        }
+      },
+      "prepare_upper_s": 190.36274500000002,
+      "prepare_note": "Shared host prepare+arm delta is a conservative bound,not a separate cold prepare measurement",
+      "shapes": [
         {
-          "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/epi40_cell.py",
-          "cell_sha256": "9ffcc0e7dbe12b30cbfce3fcc0bb4ea524cba93a283a336ad1b557f62e09987a",
-          "cuda_sha256": "4e594c720d4abbf822cddd6760792b2e835b82f7c4c4758eb6fa7d222f2f4f61",
-          "prefix": "b22_epi40",
-          "arm": "EPI4",
-          "M": [
-            1
-          ]
+          "label": "d1S",
+          "M": 1,
+          "time_ratio": 0.9912435955872292,
+          "time_CI95": [
+            0.988485540066072,
+            0.9940093465879352
+          ],
+          "log_SE": 0.001343286,
+          "AA_log_SE": 0.001364294,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": true
         },
         {
-          "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/epi41_cell.py",
-          "cell_sha256": "bf9c5c34d51440861a7676317376d15a8c50b5a1a15db08538347576a37bd2e0",
-          "cuda_sha256": "f05f40a71ea4d83aa22a30ddc78038b510302fd09bf3272ce739588e8c2de215",
-          "prefix": "b22_epi41",
-          "arm": "EPI4",
-          "M": [
-            8
-          ]
+          "label": "d1F",
+          "M": 1,
+          "time_ratio": 1.0042587769250062,
+          "time_CI95": [
+            1.0018482082409483,
+            1.006675145730612
+          ],
+          "log_SE": 0.001176728,
+          "AA_log_SE": 0.001161885,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
         },
         {
-          "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/epi42_cell.py",
-          "cell_sha256": "34a9f6d9c638f9ee0421dad8804f5649b65f23448f26698f35d5acd2e161fb99",
-          "cuda_sha256": "b7da4f5f3fdd99c9b0beef50e1878f3d67927d1da17811b5d345ae05233e9239",
-          "prefix": "b22_epi42",
-          "arm": "EPI4",
-          "M": [
-            16,
-            32
-          ]
+          "label": "v1S",
+          "M": 8,
+          "time_ratio": 1.0028057798530097,
+          "time_CI95": [
+            1.0014595371219461,
+            1.004153832312199
+          ],
+          "log_SE": 0.000657777,
+          "AA_log_SE": 0.000570241,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "v1F",
+          "M": 8,
+          "time_ratio": 1.0019148259422768,
+          "time_CI95": [
+            1.0008798084937334,
+            1.0029509137102626
+          ],
+          "log_SE": 0.000506083,
+          "AA_log_SE": 0.000426967,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "d16S",
+          "M": 16,
+          "time_ratio": 1.0068819978568158,
+          "time_CI95": [
+            1.0055666773610448,
+            1.0081990388431776
+          ],
+          "log_SE": 0.000640055,
+          "AA_log_SE": 0.000468861,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "d16F",
+          "M": 16,
+          "time_ratio": 1.002324763080901,
+          "time_CI95": [
+            1.0013848230399032,
+            1.003265585387398
+          ],
+          "log_SE": 0.000459384,
+          "AA_log_SE": 0.000429661,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "d32S",
+          "M": 32,
+          "time_ratio": 1.0076087475210806,
+          "time_CI95": [
+            1.0065150730779076,
+            1.0087036103456497
+          ],
+          "log_SE": 0.000531756,
+          "AA_log_SE": 0.000531727,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
+        },
+        {
+          "label": "d32F",
+          "M": 32,
+          "time_ratio": 1.005803062911353,
+          "time_CI95": [
+            1.004822324508256,
+            1.0067847585461835
+          ],
+          "log_SE": 0.000460081,
+          "AA_log_SE": 0.000477675,
+          "seeds": 64,
+          "control_alias": false,
+          "point_nominee": false
         }
       ]
     }
   },
-  "whole_production_graph_measured": false,
-  "gate": "Pending native receipt;no local performance nomination",
-  "diagnostic_sender": 3637718
+  "source_audit": {
+    "verified": true,
+    "wrapper_sha256": "ab36c11e7cb7ea6cb1f7fdddde9e822b0a53550b66db80ca161a8f38b5c07a25",
+    "payload_sha256": "019fc56d95d9cd00e3b48929946de62ff89a547db3f0867163a7c58f770c8e0d",
+    "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+    "candidate_sha256": {
+      "CACHE1": "b1d7811c05d3d1b69afa901b691e142abcf9fa64e57bd8211031391fdfd341d4",
+      "LAZY": "6ea3bf992bcec85b2cfd11fffeabae063135c1641a4e4e4a08b0f771b88bb071",
+      "LAZY2": "d09bb5f5bcb7065b8e98369d00fe2f730de3792a277a8f9a53449f3c26dc633d",
+      "N1SIMT": "e2fddafee203edb39650d069c4d8a351ce51d366c24b37f900e30029f8b3366e",
+      "EPI4": "573a95f81abaec215f780bd772e4eeded206de547aecc83860017a4fdacc8b4d"
+    }
+  },
+  "gate": "Whole production graph measurements;any valid per-shape point nominee retained. P4 new held-out six-load R lower bound>1 and official TASK finish promotion"
 }

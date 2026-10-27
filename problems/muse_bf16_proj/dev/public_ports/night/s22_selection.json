@@ -1,0 +1,40 @@
+{
+  "parent": "f66e20e76c714cc8",
+  "confirmation": "72f273a83e6d4de5",
+  "points": [
+    [
+      1,
+      "unpooler_slice",
+      "P"
+    ],
+    [
+      16,
+      "qkv_gate",
+      "N"
+    ],
+    [
+      16,
+      "gate",
+      "P"
+    ],
+    [
+      256,
+      "qkv_gate",
+      "N"
+    ],
+    [
+      256,
+      "unpooler",
+      "N"
+    ]
+  ],
+  "pool": {},
+  "groups": [
+    "P16"
+  ],
+  "dropped": {
+    "v1_unpooler_slice_N": "held-out v1 0.9966 [0.9897,1.0036] (72f273a8); f66e20e7 1.0016 [0.9902,1.0132]",
+    "pool16_CW8_S2": "replaced by P16: NO_P16/FULL d16 1.0125 [1.0112,1.0139], six-load 1.0021 [1.0002,1.0040]",
+    "O16_Q16_Q32_P32_U16_U32": "leave-outs do not show a six-load lower bound above 1 (72f273a8)"
+  }
+}

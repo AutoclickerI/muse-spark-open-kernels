@@ -1,12 +1,10 @@
-# P3b: prebuilt outcomes for the morning S19 ladder
+# P3b: S22 outcome builds for the S19 ladder
 
-Base: newest P4 build at construction, **S22 `4b8c803d`**, shipment `d1ccdc35`.
-[base.json](base.json) pins its committed source so P4's morning selection cannot
-silently rebase these already screened arms.
-The diagnostic remains exact S19; S22 has the same large-M MoE body. No H200
-performance result exists for this portfolio yet. Public full-port recipes remain
-closed. These arms replace only the heavy expert branch inside S22's original
-production routing/three-stream MoE graph, plus EPI's finalizer choice.
+**Measured `054e28849b424be2`: every arm loses whole-load six-load R vs S22 `4b8c803d`** (64 fresh seeds
+x 16 rounds, 3840 TASK + 1040 nearby pass, A:A 1.0001 [0.9997,1.0004]): REG 0.9555 [0.9543,0.9567],
+OCC 0.9848 [0.9836,0.9861], PAD 0.9975 [0.9968,0.9982], BALANCE 0.9964 [0.9958,0.9969], EPI 0.9979
+[0.9974,0.9983], DECODE 0.9998 [0.9993,1.0004]. Per load in `result/summary.json`; per shape in
+`result/raw.json`. No arm goes to P4. [base.json](base.json) pins the committed S22 source.
 
 | Arm | Diagnostic outcome targeted | Concrete change |
 |---|---|---|
@@ -71,61 +69,9 @@ passed all4,880checks. This remains an unassigned local event, not a diagnosed
 kernel defect or a claimed repair; the final nonblocking/forced validations and
 `rehearsal_issues.json` retain its status. Native faults invalidate their arms.
 
-## One production cohort after the diagnostic
+## Production cohort
 
-`build_lab.py` uses P4 commit `ec754e5`'s sampler and source/protocol admission:
-64fixed fresh seeds,16palindromic rotating rounds, arithmetic mean of every round,
-no selective retiming. Input/router/weight seeds are disjoint from the parent
-diagnostic and prior P4 selection/confirmation seeds. A/A2/INC are independent
-S22 graphs; each candidate runs on v16S/F and v32S/F, inside full `kernel_fn`.
-Other scored rows have identical code and borrow the independent A2 measurement,
-as P4's restricted-arm protocol does. Each load is46sliding+16full, followed by
-the six-load geomean. Per-kernel wins cannot nominate a whole-graph winner.
-
-The protocol keeps all-round arithmetic means and counts for every seed/arm,
-and the worst four complete primary round/enqueue traces with telemetry around
-each symmetric block, exactly as `ec754e5`. It does **not** archive every raw round
-for every candidate; the parent ladder archives all of its rounds. No trace
-selection alters score samples, controls or seed counts. The public transport
-keeps a checksummed compressed archive within the16,000-character tail, with
-4,000trailing characters tested. Every dropped/incomplete/device-fault arm stays
-unmeasured by `tools/promotion.py`.
-
-[queue.json](queue.json) identifies production sender **384352**, wrapper
-`aa449a800d62484a`, payload `fbbc47741b749b89`, same host and PLAN rank6 as
-diagnostic `bad55569`/sender3645567, queued later so it follows the diagnostic.
-Both wait for the10-27 09:01KST reset. No candidate is scored or promoted by this send. `read.py`
-uses `promotion.evaluate`'s native/source/protocol/TASK health and reports
-**S22/candidate whole-load R** with paired95% CIs, plus A:A. Selection from this
-portfolio requires new disjoint confirmation before a G0 winner is handed to P4.
-
-`follow.py` is a finite local event worker, identified in `follow_queue.json`.
-Worker **408337** replaces our older duplicate diagnostic reader. It waits for
-the exact diagnostic receipt, then drops an arm only if its
-predeclared hypothesis is refuted with matched control/resource evidence. A
-positive term is retained even if another term is larger. REG/OCC/DECODE need a
-nonpositive paired contrast at **both** M, matching residency/no local traffic,
-and allocation/clone CIs covering1. PAD drops only if the observed expert counts
-never use a changed16/48-row tail. Finalizer and scheduling hypotheses stay when
-the diagnostic cannot refute them. Failed controls do not justify a drop.
-
-If the production snapshot is still local, the worker stops only its own waiter
-under `runs/.dispatch.lock`, rebuilds the subset, screens packaging/transport,
-and replaces that waiter via `tools/h200_lab.py send --lane P3b`. This consumes
-one admitted production run. If already admitted, it preserves the original
-cohort and records that pruning was too late. After that receipt it writes the
-whole-load report and exits. No polling, model invocation, scoring, promotion or
-shared-doc edits occur in this worker.
-
-Rebuild and screen:
-
-```sh
-python problems/muse_decode_layer/dev/moe_excess/builds/candidates.py
-python problems/muse_decode_layer/dev/moe_excess/builds/build_lab.py
-CUDA_VISIBLE_DEVICES=0 python problems/muse_decode_layer/dev/moe_excess/builds/screen_components.py
-CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_decode_layer/dev/moe_excess/builds/screen_lab.py
-CUDA_VISIBLE_DEVICES=1 tools/img python problems/muse_decode_layer/dev/moe_excess/builds/screen_lab.py --forced
-```
-
-Pending: native diagnostic terms/CIs, native production transfer, and any fresh
-confirmation. P3b stays active; nothing here closes the large-M ceiling.
+`build_lab.py` uses P4 `ec754e5`'s sampler: 64 fixed fresh seeds, 16 palindromic rounds, arithmetic
+mean of every round. A/A2/INC are independent S22 graphs; each candidate runs on v16S/F and v32S/F
+inside full `kernel_fn`; other rows borrow A2. `read.py <receipt>` reports S22/candidate whole-load R
+with paired 95% CIs through `promotion.evaluate` and matches the receipt by its `.py` source.

@@ -1,5 +1,5 @@
 {
-  "status": "waiting on diagnostic completion event",
+  "status": "one paired check accepted by the judge; diagnostic unmeasured, so no arm pruned",
   "worker_pid": 691620,
   "admission_sha256": "0e3e8aa7459eed99619a302f5083478c087b18ab9faf96ad8aaea87170106c05",
   "one_paired_check_only": true,
@@ -20,5 +20,27 @@
       3620849,
       3705999
     ]
-  }
+  },
+  "diagnostic": {
+    "job": "32889c27aa2840e4",
+    "receipt": "runs/muse_attention_decode/20261027T000002Z_check_32889c27aa2840e4.json",
+    "measured": false,
+    "reason": "16 TASK-case tracebacks from the lab-only kernel_fn stub (6,916 characters) displaced the LAB_PACKET line head from the 16,000-character receipt tail; tools/h200_lab.py now replays the packet before each attention stub traceback"
+  },
+  "selection": {
+    "keep": [
+      "INC",
+      "CHAIN",
+      "STAGE",
+      "LANE1",
+      "SOFTMAX",
+      "OCHAIN"
+    ],
+    "dropped": {},
+    "rule": "README: an unmeasured diagnostic prunes nothing"
+  },
+  "paired_job": "10c8f0762f7246de",
+  "paired_wrapper_sha256": "a12a145df3266b2caafc086147ffd0da0e53064de0393cbb552a4bd32d888e4f",
+  "paired_payload_sha256": "3262bcf872ead0a9de6d98d6d852aed09be3f16ad93445bd0d795c56f20fedd9",
+  "read": "python3 problems/muse_attention_decode/dev/public_vector/night/read.py runs/muse_attention_decode/<utc>_check_10c8f0762f7246de.json"
 }

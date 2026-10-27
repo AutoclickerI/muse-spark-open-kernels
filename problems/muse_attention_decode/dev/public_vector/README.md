@@ -100,13 +100,11 @@ questions, not a mechanism claimed solved by local emulation.
   one active/idle peer, every emitted query bit-exact and no stranded barrier.
 - Full-size synthetic transport rehearsal: 7,756 bytes before native
   profiling diagnostics, exact timestamp round trip, 11,700-byte reservation.
-- **Sender3831549**, wrapper`5191ed5db2ed9eb8`, attention host, check,
-  priority2, **2026-10-27 09:00 KST / epoch1793059200**. All hosts had zero
-  quota. Payload`b4a5ec1bb85d260e`: eight fixed fresh seeds
-  `281730011 + 104729*i`, eight forward/reverse cold rounds, **432 TASK**,
-  every integer-nanosecond round retained. Profiles capture A/S/F attention
-  and adjacent graph nodes. `queue.json` matches the waiting sender's exact
-  wrapper hash; this is one batched check, not a scored candidate send.
+- Sent as check **32889c27aa2840e4** (wrapper `5191ed5d`, payload `b4a5ec1b`, eight fresh seeds
+  `281730011 + 104729*i`, eight forward/reverse cold rounds, 432 TASK). **Unmeasured**: the 16 TASK
+  cases on the lab-only attention host printed 6,916 characters of stub tracebacks after the packet,
+  cutting its head from the 16,000-character tail; `analyze.py` finds no packet. `tools/h200_lab.py`
+  now replays the packet before each stub traceback.
 
 The exact candidate screen retains all 37 inherited native compile checks (43 static
 checks total); the local cache adapter expands the packed source only for compilation
@@ -119,15 +117,8 @@ d16S restore; its exact one-line patch and prior CI are in `P4_HANDOFF.json`.
 
 ## Receipt decision
 
-Read the job assigned to sender3831549, then run `analyze.py <receipt>`.
-Require exact source/seeds/round counts, native completion and every TASK
-gate. Report A:A with each interval; use the larger paired/A:A log SE,
-never subtract control drift, discard rounds or retime selected seeds.
-For each cell compare whole-load times of S/D/V/F, with A2 for its unchanged
-counterpart. Hand correct improving points to P4 as per-cell patches; P4
-confirms the selected composition on new held-out seeds under GOAL G0.
-The simultaneous F six-load estimate is also archived. A failed native
-implementation or control is unmeasured, not a closed structural recipe.
+The diagnostic produced no evidence, so nothing here is decided. The S22 portfolio in
+[night/README.md](night/README.md) measures each candidate directly in the production graph.
 
 Rebuild: `public_hybrid/build.py` (if its ignored reviewed-source export is
 absent), `build.py`, `build_lab.py`, `build_candidate.py`. All generated
@@ -136,8 +127,5 @@ kernel bodies and full license notices are embedded; no donor scripts run.
 
 ## Overnight S22 follow-through
 
-The outcome-specific builds are now in [night/README.md](night/README.md):
-six screened production candidates on P4 S22 expanded4b8c803d, sealed worker
-691620 behind diagnostic sender3831549. It sends one ec754e5 paired check after
-reading/pruning the diagnostic. The original diagnostic and its S21+9b control
-stay unchanged. The ready patches remain unmeasured until the native receipt.
+Six screened production candidates on P4 S22 `4b8c803d` ([night/README.md](night/README.md)). With the
+diagnostic unmeasured no arm was pruned; all six run in paired check `10c8f0762f7246de`.

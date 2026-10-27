@@ -1,301 +1,190 @@
 {
   "lane": "P10",
-  "status": "Stage nominees ready; no new whole-layer G0 winner. S21 whole-graph selection queued on actual quota reset.",
-  "patch": "problems/muse_bf16_proj/dev/public_ports/patch.py",
-  "body": "problems/muse_bf16_proj/dev/public_ports/port_body.py.inc",
-  "command": "python3 problems/muse_bf16_proj/dev/public_ports/patch.py BASE.py OUTPUT.py POINTS.json",
-  "points": "problems/muse_bf16_proj/dev/public_ports/points.json",
-  "priority_points": "problems/muse_bf16_proj/dev/public_ports/preferred_points.json",
+  "status": "Qualifies on held-out seeds: parent portfolio vs S21 six-load R 1.0071 [1.0052,1.0091] and P16 over CW8_S2 1.0021 [1.0002,1.0040] (72f273a83e6d4de5). Rebased onto S22 4b8c803d; P4 confirms the composition on S22 with fresh seeds.",
   "base": {
-    "series": "current S21/S22 projection ABI",
-    "tested_S21_sha256": "eacc087bd59b3cd58ee6b7690913868d86a8deb2ad1ff50040329ece62f7c8a4",
-    "exact_patched_S21_sha256": "7702c6cb9a5e98b8e3fc6ffb5cea58b316e5733de0008a4a52a8213058ec04bb",
-    "stage_comparator": "actual frozen S19 8b415553 including all selected lossless coded sites"
+    "series": "S22",
+    "expanded_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+    "shipped_sha256": "d1ccdc358ef5fb0f038a1d0e741465f512f498e90d39a16e56f3f0b0e47615f3",
+    "git_blob": "43cad1581817ae161ae70588ac4819ef7ddb8002",
+    "measured_on": "S21 eacc087bd59b3cd58ee6b7690913868d86a8deb2ad1ff50040329ece62f7c8a4"
   },
-  "stage": {
-    "receipt": "c74d2a26699743d0",
-    "TASK": 4408,
-    "fresh_seeds": [
-      31000319,
-      31105048,
-      31209777,
-      31314506,
-      31419235,
-      31523964,
-      31628693,
-      31733422
+  "composition": {
+    "points": [
+      [
+        1,
+        "unpooler_slice",
+        "P"
+      ],
+      [
+        16,
+        "qkv_gate",
+        "N"
+      ],
+      [
+        16,
+        "gate",
+        "P"
+      ],
+      [
+        256,
+        "qkv_gate",
+        "N"
+      ],
+      [
+        256,
+        "unpooler",
+        "N"
+      ]
     ],
-    "rounds": 4,
-    "all_rounds_retained": true,
-    "nominees": [
-      {
-        "t": 1,
-        "role": "qkv3",
-        "provider": "O",
-        "measured": true,
-        "ratio": [
-          0.954440068386699,
-          0.9354236988635818,
-          0.9738430245552895
-        ],
-        "us": 10.619,
-        "saved_us": 0.5070000000000003
-      },
-      {
-        "t": 1,
-        "role": "gate",
-        "provider": "P",
-        "measured": true,
-        "ratio": [
-          0.8120195389454206,
-          0.7959314603095743,
-          0.8284328042174283
-        ],
-        "us": 11.002,
-        "saved_us": 2.548
-      },
-      {
-        "t": 1,
-        "role": "unpooler",
-        "provider": "P",
-        "measured": true,
-        "ratio": [
-          0.93492212222667,
-          0.9173148712293065,
-          0.9528673327376175
-        ],
-        "us": 10.187000000000001,
-        "saved_us": 0.71
-      },
-      {
-        "t": 8,
-        "role": "unpooler",
-        "provider": "N",
-        "measured": true,
-        "ratio": [
-          0.9931274046596534,
-          0.9735097581647743,
-          1.0131403754445771
-        ],
-        "us": 10.938,
-        "saved_us": 0.07600000000000007
-      },
-      {
-        "t": 16,
-        "role": "qkv_gate",
-        "provider": "N",
-        "measured": true,
-        "ratio": [
-          0.9560805049404849,
-          0.9382122671548184,
-          0.9742890430321081
-        ],
-        "us": 14.707,
-        "saved_us": 0.6739999999999997
-      },
-      {
-        "t": 16,
-        "role": "qkv3",
-        "provider": "N",
-        "measured": true,
-        "ratio": [
-          0.6788627458536318,
-          0.22370944122979505,
-          2.060058910229637
-        ],
-        "us": 12.824,
-        "saved_us": 60.354
-      },
-      {
-        "t": 16,
-        "role": "gate",
-        "provider": "P",
-        "measured": true,
-        "ratio": [
-          0.9836215126606467,
-          0.9627316450017802,
-          1.0049646598736552
-        ],
-        "us": 13.697000000000001,
-        "saved_us": 0.22799999999999976
-      },
-      {
-        "t": 32,
-        "role": "gate",
-        "provider": "N",
-        "measured": true,
-        "ratio": [
-          0.9782400066381892,
-          0.9615613345197684,
-          0.9952079771025888
-        ],
-        "us": 14.494,
-        "saved_us": 0.3220000000000005
-      },
-      {
-        "t": 32,
-        "role": "o",
-        "provider": "P",
-        "measured": true,
-        "ratio": [
-          0.9946598391291801,
-          0.9805715261879097,
-          1.0089505652103699
-        ],
-        "us": 13.443,
-        "saved_us": 0.07200000000000029
-      },
-      {
-        "t": 32,
-        "role": "pool_router",
-        "provider": "P",
-        "measured": true,
-        "ratio": [
-          0.9504652111916296,
-          0.9443819368184628,
-          0.9565876712222687
-        ],
-        "us": 26.997,
-        "saved_us": 1.4070000000000005
-      },
-      {
-        "t": 128,
-        "role": "unpooler",
-        "provider": "N",
-        "measured": true,
-        "ratio": [
-          0.9997998140764461,
-          0.9865101936915298,
-          1.0132684635389175
-        ],
-        "us": 29.017,
-        "saved_us": 0.006000000000000227
-      },
-      {
-        "t": 256,
-        "role": "qkv_gate",
-        "provider": "N",
-        "measured": true,
-        "ratio": [
-          0.9602231052399669,
-          0.9437698788643225,
-          0.9769631691850557
-        ],
-        "us": 22.783,
-        "saved_us": 0.9419999999999993
-      },
-      {
-        "t": 256,
-        "role": "o",
-        "provider": "P",
-        "measured": true,
-        "ratio": [
-          0.9773894548154499,
-          0.9659362717985699,
-          0.9889784391321134
-        ],
-        "us": 21.066,
-        "saved_us": 0.48700000000000054
-      },
-      {
-        "t": 256,
-        "role": "pool_router",
-        "provider": "O",
-        "measured": true,
-        "ratio": [
-          0.9957590626437579,
-          0.9857949227329837,
-          1.0058239172994268
-        ],
-        "us": 36.964,
-        "saved_us": 0.15800000000000036
-      },
-      {
-        "t": 256,
-        "role": "unpooler",
-        "provider": "N",
-        "measured": true,
-        "ratio": [
-          0.9898622613568229,
-          0.9840019049157244,
-          0.9957575199433797
-        ],
-        "us": 36.35,
-        "saved_us": 0.3719999999999999
-      }
-    ],
-    "ratio_orientation": "candidate/S19, lower faster; max primary/A:A SE. CI not a stage veto; all15 mean-positive points queued,9 CI-upper<1 points ranked first."
-  },
-  "prepare": {
-    "S19_base_s": 137.81192089198157,
-    "all_new_banks_and_NF_variants_s": 57.584999037208036,
-    "per_bank_s": {
-      "coded_o": 0.002481680829077959,
-      "coded_pool_router": 0.010881691006943583,
-      "coded_qkv_gate": 0.005759332096204162,
-      "coded_unpooler": 0.009381350129842758,
-      "raw_tile_('gate', 128)": 5.470099858939648e-05,
-      "raw_tile_('pool_router', 256)": 0.00011710613034665585,
-      "raw_tile_('qkv3', 128)": 4.600919783115387e-05,
-      "raw_tile_('qkv_gate', 128)": 6.31019938737154e-05,
-      "raw_tile_('unpooler', 256)": 0.00010414794087409973,
-      "NF_v18": 3.737737701041624,
-      "NF_d9": 3.75609331112355,
-      "NF_u1": 3.733290571020916,
-      "NF_sm2": 3.756826151860878,
-      "NF_q8": 3.8534982120618224,
-      "NF_u8": 3.723025554092601,
-      "NF_cp": 3.755060091149062,
-      "NF_q16": 3.820162176853046,
-      "NF_p32": 3.8117881359066814,
-      "NF_wide": 19.835413094842806,
-      "NF_gate": 3.7385122089181095,
-      "NF_qkv3": 0.03403791901655495
+    "point_names": {
+      "[1, \"unpooler_slice\", \"P\"]": "PORT2",
+      "[16, \"qkv_gate\", \"N\"]": "PORT4",
+      "[16, \"gate\", \"P\"]": "PORT6",
+      "[256, \"qkv_gate\", \"N\"]": "PORT11",
+      "[256, \"unpooler\", \"N\"]": "PORT14"
     },
-    "limits": "These are all-bank lab preparation measurements, not the selected S21 portfolio prepare. Native selected prepare and compile/warm are pending in queued whole-graph test. GPU exact12 pack includes integer roundtrip."
+    "new_groups": [
+      "P16"
+    ],
+    "group_P16": "NF12 S4/WK4/ST1 DSM RED3 pool/router at T16, first codewords before the activation wait",
+    "parent_pool": {},
+    "dropped": {
+      "v1_unpooler_slice_N": "held-out v1 0.9966 [0.9897,1.0036] (72f273a8); f66e20e7 1.0016 [0.9902,1.0132]",
+      "pool16_CW8_S2": "replaced by P16: NO_P16/FULL d16 1.0125 [1.0112,1.0139], six-load 1.0021 [1.0002,1.0040]",
+      "O16_Q16_Q32_P32_U16_U32": "leave-outs do not show a six-load lower bound above 1 (72f273a8)"
+    }
   },
-  "pool": {
-    "completed": {
-      "T16_raw": [
-        1.0475490986534783,
-        1.0276544403009813,
-        1.0678289034281974
-      ],
-      "T16_PDL": [
-        1.0437827540308584,
-        1.0237187575094753,
-        1.0642399874187705
-      ],
-      "T32_raw": [
-        0.96885396849814,
-        0.955513168358076,
-        0.982381031846573
-      ],
-      "T32_PDL": [
-        0.9504652111916296,
-        0.9443819368184628,
-        0.9565876712222687
+  "command": "python3 problems/muse_bf16_proj/dev/public_ports/night/s22_handoff.py  # writes night/out/s22_p10.py and night/out/s22_p10_packed.py from the pinned S22 blob",
+  "patch": {
+    "script": "problems/muse_bf16_proj/dev/public_ports/night/patch.py",
+    "function": "apply(source, selection, groups)",
+    "selection": "problems/muse_bf16_proj/dev/public_ports/night/s22_selection.json",
+    "expanded_sha256": "b52c8980339d7012f0e403ad10bb6e5c5a6ce70be7c2c56250650cddb3ae6004",
+    "shipped_sha256": "4ad0069ad4d38d0496fc123ce5ab89dc40df71f75a9f1b14c894e768ef55bf5d"
+  },
+  "evidence": {
+    "selection_receipt": {
+      "job": "f66e20e76c714cc8",
+      "seeds": "32000319+104729*i, i<8",
+      "note": "per-site in-graph points on S21; no single site has a six-load lower bound above 1; table in docs/FINDINGS.md"
+    },
+    "confirmation_receipt": {
+      "job": "72f273a83e6d4de5",
+      "seeds": "33000319+104729*i, i<8 (disjoint), new weights/router",
+      "parent_vs_S21": {
+        "R": 1.0071,
+        "CI95": [
+          1.0052,
+          1.0091
+        ],
+        "loads": {
+          "d1": [
+            1.0143,
+            1.0066,
+            1.0222
+          ],
+          "d16": [
+            1.0208,
+            1.0186,
+            1.023
+          ],
+          "d32": [
+            0.9997,
+            0.9976,
+            1.0018
+          ],
+          "v1": [
+            0.9966,
+            0.9897,
+            1.0036
+          ],
+          "v16": [
+            1.0028,
+            1.0004,
+            1.0052
+          ],
+          "v32": [
+            1.0089,
+            1.0079,
+            1.0098
+          ]
+        }
+      },
+      "leave_outs": {
+        "Q16": {
+          "R": 0.9996151681532548,
+          "CI95": [
+            0.9977412122134924,
+            1.0014926437540486
+          ]
+        },
+        "Q32": {
+          "R": 0.9998093358587303,
+          "CI95": [
+            0.9979350159171635,
+            1.0016871761449964
+          ]
+        },
+        "O16": {
+          "R": 1.0002212862149744,
+          "CI95": [
+            0.998346193999395,
+            1.0020999002257367
+          ]
+        },
+        "P16": {
+          "R": 1.0020805106237685,
+          "CI95": [
+            1.0002019329622542,
+            1.0039626166268245
+          ]
+        },
+        "P32": {
+          "R": 0.9892884936433929,
+          "CI95": [
+            0.9874338968866965,
+            0.9911465737007343
+          ]
+        },
+        "U16": {
+          "R": 0.999136386423366,
+          "CI95": [
+            0.9972633280448804,
+            1.001012962777085
+          ]
+        },
+        "U32": {
+          "R": 0.9952856797199123,
+          "CI95": [
+            0.9934198401741626,
+            0.9971550236824953
+          ]
+        }
+      },
+      "coded_p32_vs_raw": [
+        1.000057490403341,
+        0.9981827052520638,
+        1.0019357967730733
       ]
     },
-    "new_build": "Original S19 NF exact12 payload/reader, six WK4/WK8 stage1/2 wait/early-weight variants; donor TMA four BK128/256 stage2/3 wait/early variants. No new exact12 format selected.",
-    "native_status": "UNMEASURED; corrected sender3966799 supersedes3347492 before reset due activation-TMA hoist. Same seeds/arms/protocol, no quota spent.",
-    "queue": {
-      "pid": 3966799,
-      "priority": 5,
-      "t": 1793024859.0341039,
-      "problem": "muse_bf16_proj",
-      "file": "problems/muse_bf16_proj/lab/lab_public_whole.py",
-      "sha256": "5a8ae27c764a6f9b67ab526adfa106ee09fa3e4136731f4e1195420f5be758c2",
-      "note": "h200_lab problems/muse_bf16_proj/dev/public_ports/out/public_whole.py: Correct own queued3347492 before quota: first W tile peeled; all X descriptor coordinates depend on post-GDC opaque zero to prevent Triton hoisting. Same S21eacc/15individual ports+portfolio/10poolarms/8seeds8symmetric rounds;848layer+640strict local TASK and all8 sm90TMA activation-order proofs. No quota spent on superseded source.",
-      "not_before": 0,
-      "lane": "P10",
-      "decision": "rank public port nominees and coded pool prefetch in S21 whole graph",
-      "priority_override": false,
-      "until": 1793059260.0
+    "reader": "python3 problems/muse_bf16_proj/dev/public_ports/night/read.py <receipt>; parent-vs-S21 is T_INC/T_A per seed with the A:A control"
+  },
+  "screens": {
+    "local_eval_normal": {
+      "sha256": "4ad0069ad4d38d0496fc123ce5ab89dc40df71f75a9f1b14c894e768ef55bf5d",
+      "TASK": 13,
+      "graphs": 12,
+      "passed": true
     },
-    "local_checks": 1488,
-    "sm90_TMA_issue_order": "pool_native_validation.json: early schedules have only the W descriptor before GDC; every X descriptor after GDC. Corrected first-tile storage is priced by the native parent batch; original61\u201398KB claim applies only to ordinary variants.",
-    "NF_native_compile": "pool_nf_native_validation.json:12sm90a kernels72\u2013128regs,zero spills,intended PTX ordering; no runtime effect inferred"
+    "local_eval_forced": {
+      "sha256": "4ad0069ad4d38d0496fc123ce5ab89dc40df71f75a9f1b14c894e768ef55bf5d",
+      "TASK": 13,
+      "graphs": 12,
+      "passed": true
+    },
+    "static": "packaging, imports, undefined names, call signatures, sm_90a compile: pass",
+    "script": "tools/img python problems/muse_bf16_proj/dev/public_ports/night/screen_s22.py <packed> --out DIR [--forced]",
+    "limits": "sm_120 arithmetic stand-ins for Hopper NF/TMA kernels; native S22 TASK and timing unmeasured; P16 NF launches recorded at T16 in the normal screen"
   },
   "license": {
     "operator_pin": "6d9b77656b6c295e421be9e1424b0f8f99299b0a",
@@ -303,91 +192,9 @@
     "untrusted_safety": "Separate external clone; reviewed sources only; no donor install/build scripts or tests executed."
   },
   "limits": [
-    "No new G0 promotion. P4 needs its own held-out paired six-load confirmation on the current S21/S22 composition.",
-    "T1 gate was compared with S19 dense gate; S21 already has exact12 sliding gate, so native S21 whole comparison is essential.",
-    "QKV3 T16 has a large baseline timing excursion: all samples kept,CI0.224\u20132.060,never interpret0.679 as established gain.",
-    "Four unpublished NF large gate/QKV3 dispatches unmeasured. Other36cell O/P/C coverage complete.",
-    "C-coded swap-AB adaptation passes TASK but is4.5\u201324x slower at most sites,255regs/stack1016B in representative small-pool sm90 code; closes only this adapter."
+    "Measured on S21. S22 restores S19 attention at d16S and adds direct-input hybrids at d32S/v1S; the d16 gate/QKV ports and P16 may interact with them, so P4 must confirm on S22.",
+    "Selection then one 8-seed held-out confirmation; the A:A twin differs by up to 0.2% per load, so expect some shrinkage.",
+    "Prepare for this composition is unmeasured on its own (lab prepare included all banks and NF variants)."
   ],
-  "report": "problems/muse_bf16_proj/dev/public_ports/PORTS.md",
-  "full_rounds": "problems/muse_bf16_proj/dev/public_ports/results.json",
-  "next": "One-shot night dispatcher4088520 waits corrected parent3966799 (3347492 lineage), runs whole_read.py, drops in-graph losers, updates this handoff with exact native portfolio.py patch, then queues seven-carrier/leaveout plus codedP32 batch at P10 PLAN priority. No native night/G0 result claimed.",
-  "validation": {
-    "passed": true,
-    "records": [
-      {
-        "mode": "forced",
-        "sha256": "7f066b9c3ceb8fb2b01fe971951c2e1707f612230b3646e269f4187dbba395c4",
-        "TASK": 13,
-        "graphs": 12,
-        "static": 6,
-        "prepare_s": 2.6202998860972
-      },
-      {
-        "mode": "normal",
-        "sha256": "7f066b9c3ceb8fb2b01fe971951c2e1707f612230b3646e269f4187dbba395c4",
-        "TASK": 13,
-        "graphs": 12,
-        "static": 6,
-        "prepare_s": 2.4734591270098463
-      }
-    ],
-    "limits": "Official local TASK and exact selected P4 patch glue; declared Hopper stand-ins, not native H200 timing. Native S21 pool/portfolio still queued."
-  },
-  "shipping_integrity": {
-    "passed": true,
-    "change": "Strip trailing whitespace from license comment blanks only; identical Python AST including every embedded source literal.",
-    "screened_sha256": "7f066b9c3ceb8fb2b01fe971951c2e1707f612230b3646e269f4187dbba395c4",
-    "shipped_sha256": "7702c6cb9a5e98b8e3fc6ffb5cea58b316e5733de0008a4a52a8213058ec04bb",
-    "AST_sha256": "cd46d4b464ebc4832a56de2c678c761130f63dcdcc3778135178d638f2869217"
-  },
-  "night": {
-    "path": "problems/muse_bf16_proj/dev/public_ports/night/README.md",
-    "queue": {
-      "status": "waiting on parent sender completion event",
-      "parent_sender": 3966799,
-      "parent_lineage": 3347492,
-      "one_shot": true,
-      "worker_pid": 4088520,
-      "dependency": {
-        "pid": 3966799,
-        "priority": 5,
-        "t": 1793024859.0341039,
-        "problem": "muse_bf16_proj",
-        "file": "problems/muse_bf16_proj/lab/lab_public_whole.py",
-        "sha256": "5a8ae27c764a6f9b67ab526adfa106ee09fa3e4136731f4e1195420f5be758c2",
-        "note": "h200_lab problems/muse_bf16_proj/dev/public_ports/out/public_whole.py: Correct own queued3347492 before quota: first W tile peeled; all X descriptor coordinates depend on post-GDC opaque zero to prevent Triton hoisting. Same S21eacc/15individual ports+portfolio/10poolarms/8seeds8symmetric rounds;848layer+640strict local TASK and all8 sm90TMA activation-order proofs. No quota spent on superseded source.",
-        "not_before": 0,
-        "lane": "P10",
-        "decision": "rank public port nominees and coded pool prefetch in S21 whole graph",
-        "priority_override": false,
-        "until": 1793059260.0
-      },
-      "send_via": "tools/h200_lab.py normal sender; --lane P10; PLAN rank",
-      "fixed_code_sha256": "028aec3cadb6d8d256cbcf443505da5fb65deea8bab6f20cebbedfc1eda44ad4"
-    },
-    "groups": [
-      "Q16",
-      "Q32",
-      "O16",
-      "P16",
-      "P32",
-      "U16",
-      "U32"
-    ],
-    "extra": "CODED_P32 shares exact12 P16 bank",
-    "local_TASK": {
-      "layer": 512,
-      "strict": 208,
-      "normal": 13,
-      "forced": 13
-    },
-    "native_compile": {
-      "NF": 9,
-      "registers": "64\u201396",
-      "zero_spills": true,
-      "TMA": "Explicit PDL; first W before GDC, all X coordinates depend on post-GDC zero"
-    },
-    "limits": "In-graph parent results and night results have not landed; P4 still judges the composed new S2x by held-out six-load G0."
-  }
+  "report": "docs/FINDINGS.md \"Projections and verify dense\"; problems/muse_bf16_proj/dev/public_ports/WHOLE.md"
 }

@@ -76,14 +76,15 @@ screens. Local body arithmetic stand-ins establish glue and encoding coverage,
 not native speed. `admission.json` pins all code while allowing only validated
 parent point/pool constants to change after the receipt.
 
-After the next native receipt: `python3 problems/muse_bf16_proj/dev/public_ports/night/read.py RECEIPT`. It reports
-INC/FULL, A/FULL, every NO_site/FULL, and coded-vs-raw P32 with Student-t95% CIs
-using the larger primary/A:A log SE. All native rounds stay in `results.json`.
-No new G0 winner or native night result exists yet.
+## Result (72f273a83e6d4de5) and S22 handoff
 
+`read.py <receipt>` writes `results.json`. On 8 held-out seeds the selected parent beats S21: six-load
+R 1.0071 [1.0052,1.0091] (d1 1.0143, d16 1.0208, v32 1.0089; v1 0.9966 [0.9897,1.0036]). Leave-outs
+(T_NO/T_FULL, above 1 = the group helps): P16 1.0021 [1.0002,1.0040] (d16 +2.06 us over CW8_S2); O16
+1.0002, Q16 0.9996, Q32 0.9998, U16 0.9991, U32 0.9953, P32 0.9893 (d32 -14.0 us); coded P32 equals the
+S21 dense pool (1.0001). FULL loses to S21 (0.9933) because of the T32 groups.
 
-Queue state: `queue.json`, dispatcher4088520, dependency3966799. It is currently
-blocked on the actual parent-completion event, not a timer. Host Python and glibc
-lack a named pidfd wrapper; the worker uses Linux x86_64 syscall434. Actual child
-exit and filesystem-close tests pass in `pipeline_validation.json`. Failed
-startup attempts sent nothing and are retained in `startup_failure.json`.
+P4 handoff (`../P4_HANDOFF.json`): S22 `4b8c803d` + PORT2/4/6/11/14 + P16, v1 PORT3 and CW8_S2 dropped
+(`s22_selection.json`). `s22_handoff.py` rebuilds it from the pinned S22 shipment blob (expanded and
+packed); `screen_s22.py` screens it with S22's hybrid stand-ins under these night stand-ins: normal
+and forced 13 TASK + 12 graphs + static pass. Native S22 TASK, timing and prepare are P4's to confirm.

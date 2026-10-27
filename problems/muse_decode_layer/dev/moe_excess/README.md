@@ -1,15 +1,11 @@
 # P3b: assign the S19 large-M MoE excess
 
-**Active, awaiting H200 quota; no term has been assigned and no build has been
-ranked.** Public MoE ports remain closed (`550f0aa8`, `17b91ef9`). This experiment
-targets the unassigned S19 excess at M128/256, rather than repeating that recipe.
-Do not use local sm120 timings to select a Hopper optimization.
-
-Overnight follow-through: [S22 production candidates](builds/README.md) prebuild
-REG/DECODE/PAD/OCC/BALANCE/EPI for the plausible load, decode, MMA, residency,
-tail and readiness outcomes. A separate whole-graph64×16 paired cohort follows
-this diagnostic, with S22 A:A controls and a finite event worker to remove
-qualified refuted arms before admission if possible. No native winner exists yet.
+**Measured `1b75cd73b9d547b0`; P3b parked.** W13+W2 BASE 185.3 / 253.0 us vs unique-byte STREAM
+125.0 / 144.6 at M128 / M256. Terms (us, 95% CI; conditional, overlapping): load issue/reuse/residency
+(L0 - STREAM) 46.5 [42.2,50.8] / 81.8 [74.1,89.5], six-load R 1.0636 if fully removed (1.0478 capped
+at the 1.3x-roof excess); MMA 30.5 / 53.4 (R1.0397); epilogue/readiness 14.9 / 18.0 (R1.0152);
+decode/scale 8.5 / 12.2 (R1.0093). [result/ladder.md](result/ladder.md), `result/summary.json`. The six
+S22 builds that priced these terms all lose (`054e28849b424be2`, [builds](builds/README.md)).
 
 ## Baseline and prior evidence
 
@@ -119,30 +115,12 @@ has a checksum and a strict 11,744-byte cap. The independent reader verifies
 identities, complete seeds/rounds, telemetry, TASK counts and work totals and
 rejects incomplete or device-fault transport.
 
-## Admission and queue
+## Admission and reproduction
 
-Verified locally: full eight-seed cohort (384 full-math TASK comparisons),
-every diagnostic eager/graph path, strict wire-size check, lossless independent
-reader round trip, wrapper lab-only transport, and both native sm90a CUDA units.
-[native_audit.json](native_audit.json) audits 64 actual cut SASS functions:
-L0/L1 have no MMA, L0 has no BF16 decode products, L1+ retains decode, and
-MATH/INIT have no global async operand copies. Original metadata/output traffic
-remains. This establishes admission, not native timings.
-
-All five hosts have zero quota. [queue.json](queue.json) records the exact
-snapshot and detached sender, priority 6, lane P3b, decision
-`assign the large-M MoE excess`. The sender waits for the next 00:00 UTC reset,
-waking **2026-10-27 09:01 KST**. No judge job ID or H200 result exists yet.
-Do not send a duplicate. Completion receipts will appear in
-`runs/muse_moe_w4a16/`; local generated files stay under ignored `out/`.
-
-[receipt_reader.json](receipt_reader.json) records replacement of the original
-reader by [builds/follow.py](builds/follow.py), worker408337. The finite worker
-waits on receipt events and sender completion, materializes validated
-`result/{raw.json,summary.json,ladder.md}`, handles pre-admission portfolio pruning,
-then reads the production result and exits. Its current identity and log are in
-[builds/follow_queue.json](builds/follow_queue.json). No scoring or promotion occurs.
-Queue/admission records describe pending work; native reports need review.
+Verified locally before sending: 384 full-math TASK comparisons, every diagnostic eager/graph path,
+strict wire size, lossless reader round trip and both native sm90a units; [native_audit.json](native_audit.json)
+audits 64 cut SASS functions (L0/L1 no MMA, L0 no BF16 decode products, MATH/INIT no global async copies).
+`read.py` matches the receipt by its `.py` source (the judge's `content_hash` is not our file hash).
 
 Reproduce the exact payload and read its eventual receipt:
 
@@ -158,16 +136,8 @@ muse_moe_w4a16 --lab-only --import-budget 840 --check --lane P3b --decision
 "assign the large-M MoE excess"`. The payload is a byte-identical copy of
 `out/ladder.py`; hashes are in the manifest and queue record.
 
-## Next decision and P4 handoff
+## Decision
 
-Pending native ladder, largest assigned term and its CI: **unassigned at both M**.
-No optimization is selected from local timings, no paired build result exists,
-and no G0 winner or patch is handed to P4. Six exact S22 production candidates
-are prebuilt in `builds/` so the next receipt can rank implementations. After native evidence, first inspect
-allocation/sink/clone/observer controls and branch tails; rank the supported
-load/decode/MMA/epilogue/scheduling term and its capped six-load transfer. The
-production batch compares the prebuilt outcome arms against the newest P4 S22
-graph under the ec754e5 protocol and `tools/promotion.py`; selection needs a new
-disjoint composition confirmation. P3b remains active until that term evidence and
-build decision exist; quota exhaustion does not close the lane. P3a row is
-unchanged.
+No candidate: the ladder is excluded-work diagnostics. The largest term (load issue/reuse/residency,
+mostly W13) is assigned; its two production recipes (REG, OCC) lose the most in `054e2884`, and the
+MMA, epilogue, decode and tail recipes lose by 0.02-0.4%. Nothing goes to P4.

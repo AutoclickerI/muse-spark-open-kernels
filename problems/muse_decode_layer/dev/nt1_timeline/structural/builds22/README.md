@@ -1,9 +1,13 @@
 # S22 builds for the operand diagnostic outcomes
 
-[Current report, budgets, screens and receipt state](REPORT.md). P3a is active.
-The diagnostic remains sender3637718/wrappere1710fb3. The single production
-batch is sender984504/wrapperab36c11e7cb7ea6c,queued on the MoE host at rank4
-after09:00KST10-27. No new H200 result exists yet.
+**Measured, receipt `f6970526aa6f4a28`: every arm loses whole-load six-load R vs S22 `4b8c803d`.**
+CACHE1 0.9613 [0.9601,0.9624], LAZY 0.9046 [0.9030,0.9062], LAZY2 0.9039 [0.9023,0.9056],
+N1SIMT 0.8118 [0.8082,0.8154], EPI4 0.9983 [0.9979,0.9988]; A:A 0.9987 [0.9982,0.9991]; 5376 TASK
++ 780 nearby pass. Per load and per shape: [REPORT.md](REPORT.md), `results.json`. The reader exports
+EPI4's d1S whole-layer point (time 0.9912 [0.9885,0.9940]) to `P4_HANDOFF.json`, but it does not
+qualify: the identical-S22 twin A2 is itself 0.9946 at d1S (log SE .0014), so EPI4 vs A2 is about
+0.9966 (CI spans 1) and its d1S-only six-load estimate is ~1.0004 with a CI spanning 1; EPI4 loses
+at d1F (1.0043) and every M>=8 shape. No P3a arm goes to P4 from this receipt.
 
 | Arm | Outcome it targets | Correct implementation |
 |---|---|---|

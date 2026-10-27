@@ -1,6 +1,6 @@
 # P3a correct S22 outcome portfolio
 
-Active. Native H200 results pending.
+Receipt **f6970526aa6f4a28**; per-arm validity is reported below.
 Frozen base S22 expanded **4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27**. Paired sender **984504**, wrapper **ab36c11e7cb7ea6cb1f7fdddde9e822b0a53550b66db80ca161a8f38b5c07a25**; `--lane P3a`, PLAN rank4,MoE check after09:00KST10-27. Older diagnostic sender3637718/wrappere1710fb3 precedes it. No scored submission.
 
 | Candidate | Mechanism | Diagnostic outcome targeted |
@@ -21,11 +21,11 @@ Frozen base S22 expanded **4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db42
 
 | Candidate | Whole six-load speedup R [95%CI] | Per-shape point nominees | Leaves open |
 |---|---|---|---|
-| CACHE1 | unmeasured;await native receipt | none yet | Other schedules/layouts and P4 composition;only this exact recipe can close |
-| LAZY | unmeasured;await native receipt | none yet | Other schedules/layouts and P4 composition;only this exact recipe can close |
-| LAZY2 | unmeasured;await native receipt | none yet | Other schedules/layouts and P4 composition;only this exact recipe can close |
-| N1SIMT | unmeasured;await native receipt | none yet | Other schedules/layouts and P4 composition;only this exact recipe can close |
-| EPI4 | unmeasured;await native receipt | none yet | Other schedules/layouts and P4 composition;only this exact recipe can close |
+| CACHE1 | 0.961250 [0.960067,0.962435] | none | Other schedules/layouts and P4 composition;only this exact recipe can close |
+| LAZY | 0.904600 [0.903015,0.906187] | none | Other schedules/layouts and P4 composition;only this exact recipe can close |
+| LAZY2 | 0.903923 [0.902254,0.905596] | none | Other schedules/layouts and P4 composition;only this exact recipe can close |
+| N1SIMT | 0.811812 [0.808204,0.815436] | none | Other schedules/layouts and P4 composition;only this exact recipe can close |
+| EPI4 | 0.998347 [0.997879,0.998816] | d1S | Other schedules/layouts and P4 composition;only this exact recipe can close |
 
 **Correctness and local scope.** All five exact candidate math bodies pass270 leaf TASK gates each: M1/8/9/16/24/32,real/all/empty/singleton/dense routes,local_start0/96/224,three changed inputs per captured graph. All five shipped candidates pass normal and forced Hopper-glue screens:13TASK cases and12captured shapes per mode (130TASK,120graphs total). All three small-M native launch paths are observed eagerly and captured. Fifteen exact sm90a translation units compile;20shape/layout occupancy rows retain two CTAs and zero spills. CACHE1 needs113KB shared memory unavailable on sm120:only its activation-bank address space/LDS is replaced with preallocated global storage locally;math,one-slot raw TMA,ordering,allocation and native launch remain. The H200 payload contains the actual shared bank. Other Hopper-stage stand-ins are the existing S22 screen hooks. Native H200 correctness and performance remain unmeasured until the receipt.
 

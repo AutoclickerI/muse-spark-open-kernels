@@ -1,7 +1,7 @@
 {
   "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
   "base": "S22 4b8c803d",
-  "status": "screened candidate portfolio; no H200 result or G0 winner",
+  "status": "measured 054e28849b424be2: every arm loses whole-load six-load R vs S22; no handoff",
   "arms": {
     "REG": {
       "source": "problems/muse_decode_layer/dev/moe_excess/builds/REG.py",
@@ -159,5 +159,6 @@
   "paired_manifest": "problems/muse_decode_layer/dev/moe_excess/builds/manifest.json",
   "queue": "problems/muse_decode_layer/dev/moe_excess/builds/queue.json",
   "base_pin": "problems/muse_decode_layer/dev/moe_excess/builds/base.json",
-  "packed_notice_equivalence": "problems/muse_decode_layer/dev/moe_excess/builds/packed_notice_equivalence.json"
+  "packed_notice_equivalence": "problems/muse_decode_layer/dev/moe_excess/builds/packed_notice_equivalence.json",
+  "result": "problems/muse_decode_layer/dev/moe_excess/builds/result/summary.json"
 }

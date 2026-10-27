@@ -838,93 +838,46 @@ Transport history:c43111f584854b05 is unmeasured(schema/output oversize);da1fb2e
 controls but scalar STREAM/per-tile ACT sink measure costlier implementations,not pure-byte/activation
 oracles. initial_* keeps that evidence. All rows above use only corrected5ee35b941ccb4171.
 
-### P3a operand/issue oracle batch: queued, not measured (2026-10-26)
+### P3a operand/issue oracle on S19: measured `33f5c4c105374311` (2026-10-27)
 
-Read the public MoE P4/P3a handoff and matched-ABI mechanisms first: no whole-port/hybrid winner;
-operatorstack's register-only raw loads and bit-permuted decode do not establish a transferable small-M
-speedup. Read mixed_wgmma DIRECT/TRANS/WS/CTA2 losses and bounded CHUNK winners;this batch copies
-none of their decoded-weight sharing/WGMMA producer-consumer designs. Compute/operand work ranks first.
-Old MATH changes126→47regs atM8–32 plus operands/weight transport;max(MATH,STREAM) is not a proved
-critical-path roof. No global hardware-pipe saturation is inferred from that comparison.
+Exact S19 `62ea5bf4` MoE call, 15 arms, eight matched seeds x four symmetric rounds; BASE/AA/BASE_PAD/
+ACC_CTRL/PAD_CTRL/HIST/LAZY pass 448 TASK + 162 LAZY nearby checks; all 56 sm90a rows keep two CTAs,
+zero spills. Oracles have wrong math and never nominate. Conditional savings, us at M1/8/16/32, and
+modeled M8-32 six-load R (full wall credit on S19 layer times); the terms overlap and do not add.
 
-Source-derived issued warp-HMMA from5ee35b94's actual CTA tile/expert histograms and32SASS sites:
-mean M1/8/16/32 **516096/1400832/1474560/2187264**;useful column fractions
-**.125/.27145/.48769/.69069**. Per-seed counts and95%CIs are in operand/sizing.json. This is an exact
-schedule-count reconstruction,not NVPerf counters. The useful equivalent does not implement N<8 BF16 MMA.
-Wasted-HMMA nominal service at TASK989TFLOP/s with full wall credit models six-loadR1.01097;not measured
-exposed savings. Prior ACT−LOOP referenceR1.02126 and epilogue referenceR1.01580 overlap this scenario.
-Pure occupancy upside from lowering registers at fixed two CTAs isR1.00000;latency/scheduling stays open.
+| Term (contrast) | Saving M1 / M8 / M16 / M32 us | Modeled R [95% CI] | Receipt |
+|---|---|---|---|
+| MMA+activation (L2 - L1) | 3.97 / 8.57 / 12.45 / 19.34 | 1.0399 [1.0358,1.0441] | 33f5c4c105374311 |
+| Epilogue NOWAIT (L3 - L2) | 3.93 / 4.38 / 5.30 / 6.76 | 1.0163 [1.0148,1.0177] | 33f5c4c105374311 |
+| Accumulator recurrence (ACC_CTRL - ACC_FREE) | 1.51 / 4.50 / 4.50 / 6.85 | 1.0157 [1.0130,1.0185] | 33f5c4c105374311 |
+| Pack-free register fragments (BASE - FRAG_REG) | 2.03 / 2.51 / 4.00 / 4.97 | 1.0110 [1.0094,1.0126] | 33f5c4c105374311 |
+| Prelaid shared fragments (BASE_PAD - FRAG_SMEM) | 1.57 / 2.37 / 3.26 / 3.21 | 1.0087 [1.0065,1.0110] | 33f5c4c105374311 |
+| Useful-N HMMA count (PAD_CTRL - PAD_USEFUL) | 0.83 / 3.07 / 1.21 / 1.35 | 1.0064 [1.0045,1.0083] | 33f5c4c105374311 |
+| Bf register lifetime (FRAG_SMEM - FRAG_JIT) | 0.50 / -0.45 / 0.03 / 0.88 | 1.0011 [1.0003,1.0018] | 33f5c4c105374311 |
 
-| Recipe | Ratio / us / CI | Mechanism | Leaves open | Receipt / sender |
-|---|---|---|---|---|
-| FRAG_SMEM / BASE_PAD | H200 pending M1/8/16/32 | Synthetic BF16 fragments prelaid in8KiB two-plane shared bank;segment-cached Bf,extra8320B reservation controlled | Real64KiB activation bank,packing/publication and capacity cost;not a production candidate | sender3637718,wrappere1710fb3 |
-| FRAG_REG / BASE | H200 pending | Pack-free register constants remove gathers/addressing and lower lifetime;64regs atM8+ | Joint operand/register ceiling,not exclusive global-load latency | same pending batch |
-| FRAG_JIT / FRAG_SMEM | H200 pending | Same shared pattern,one K-group live;63vs117regs,more LDS per tile | Correct cached/shared layout must pay its working-set and transport costs | same pending batch |
-| ACC_FREE / ACC_CTRL | H200 pending | Both128regs atM8+,32HMMA and matched live-result sinks;FREE zeroes C to remove recurrence | Wrong math oracle only;independent correct accumulator scheduling | same pending batch |
-| PAD_USEFUL / PAD_CTRL | H200 pending | Both retain all weight/decode work with matched sinks;only r of8 K-warps issue HMMA to match useful-N budget | Skips required K work;not a legal narrow-N implementation or nominee | same pending batch |
-| L1/L2/L3 + HIST | H200 pending | Same matched decode/MMA/epilogue cuts and minimal work/finish observer | Epilogue resource127→128regs retains2CTAs;no occupancy-only saving | same pending batch |
-| LAZY / BASE | H200 pending;native leaf only | Original BF16 activation loads moved per K-group/tile,126→96regs atM8+;repeats global reads | Correct but no production graph measured;stage point cannot establish S21 transfer | same pending batch |
-| BF16 conversion removal | Dropped before timing:zero convertible instructions in this fill | S19 loads BF16 bits directly into uint4/Bf for HMMA | Fragment/address/lifetime work still exists | actual frozen S19 source62ea5bf4 |
+The correct LAZY leaf (per-K-group activation loads) takes 43.2 / 92.5 / 109.0 / 152.2 us vs BASE
+34.7 / 68.0 / 71.3 / 96.7: it loses 25-57%. Lower registers buy no residency (shared memory caps two
+CTAs). Issued vs useful HMMA fraction .125 / .271 / .488 / .691 (schedule reconstruction, not counters).
+[REPORT](../problems/muse_decode_layer/dev/nt1_timeline/structural/operand/REPORT.md).
 
-All56 exact sm90a arm/shape counts give2CTA/zero stack/spills;all HMMA-bearing arms retain32sites,
-L1 none. ACC_FREE's first compiler output collapsed to one HMMA;matched live-result sinks fixed this
-before send. Real full Bf cache65536B plus two raw slots needs150672B atM32 and fails2CTA;one slot
-fits113808B before final bank alignment,but repeated shared loads/publication and the known one-slot penalty
-must be paid. The correct CACHE1 build below now pays these costs;the FRAG_JIT bound will rank it.
-Original read/publish/acquire ordering stays in all arms.
+### P3a S22 outcome builds: every arm loses, `f6970526aa6f4a28` (2026-10-27)
 
-Exact payloadf4a1f883:448native control TASK checks plus162LAZY native nearby/local_start/skew/changed
-captured-input checks pass (leaf worst total/row.002392/.002451). Local packet8985B fits11700B;all1920
-rounds,96NVML snapshots and work/finish records retained. Local sm120 timing is not H200 evidence.
-All five hosts exhausted quota;actual MoE check sender**3637718** waits for**10-27 09:00KST**,
-wrappere1710fb3ff91fcb6a430acf5bede584ae4172ae08188823f94d673034f636301,no judge job assigned yet.
-A prior outer-payload AST admission error spent no judge quota;literal lab wrapper was fixed and both
-exact native screens rerun. See [REPORT](../problems/muse_decode_layer/dev/nt1_timeline/structural/operand/REPORT.md).
+Exact S22 `4b8c803d` production graphs at all 12 shapes, 64 fresh seeds x 16 symmetric rounds; 5376 TASK
++ 780 nearby pass. R = S22 / candidate whole-load time (above 1 favors the candidate); S22 A:A six-load
+0.9987 [0.9982,0.9991], and the identical A2 twin differs from A by up to 0.5% per load (d1 1.0045, v1
+1.0050), so single-shape points below ~0.5% are within arm-placement spread.
 
-Decision remains active. New oracle timings,CIs and the largest buildable term are pending the receipt.
-Production base advanced to S22 expanded4b8c803d/shipmentd1ccdc35 for the correct portfolio below.
-All timed packing/producer cost stays inside complete12-shape production graphs with fresh seeds under
-promotion.evaluate;TASK only and held-out six-loadR lower bound>1 judge it. No per-call transfer or new
-G0 claim;all83previous nominations remain unchanged. No production build is declared measured.
+| Recipe | Six-load R [95% CI] | d1 / d16 / d32 / v1 / v16 / v32 | Mechanism / verdict | Leaves open | Receipt |
+|---|---|---|---|---|---|
+| CACHE1: real 64 KiB two-plane BF16 activation bank, one raw TMA slot | 0.9613 [0.9601,0.9624] | .962/.942/.943/.925/1.000/.999 | Bank fill, LDS and the one-slot pipeline cost more than the 1.6-3.3 us prelaid-fragment bound; M>=8 shapes +4-9% | Fragment layouts without a timed bank fill | f6970526aa6f4a28 |
+| LAZY: original BF16 fragments loaded per K-group | 0.9046 [0.9030,0.9062] | .949/.822/.813/.866/.999/.999 | Repeated global activation reads; the lifetime term it frees is ~0 (oracle); d16S/d32S +25-29% | Lifetime cuts that keep cached activations | f6970526aa6f4a28 |
+| LAZY2: LAZY + two FP32 accumulator chains | 0.9039 [0.9023,0.9056] | .953/.819/.813/.863/.999/.999 | Same as LAZY: the second chain recovers none of the 4.5-6.9 us recurrence oracle on top of LAZY's cost | Recurrence split on the cached base at two CTAs | f6970526aa6f4a28 |
+| N1SIMT: FP32 SIMT matvec for singleton token blocks | 0.8118 [0.8082,0.8154] | .895/.696/.683/.675/.999/.998 | SIMT FMA issue costs far more than padded HMMA (useful-N term 0.8-3.1 us); shapes +10-59% | Narrow-N tensor-core forms | f6970526aa6f4a28 |
+| EPI4: four epilogue warps, scalar W2 channel ownership, one norm flush | 0.9983 [0.9979,0.9988] | 1.005/.995/.993/.998/1.000/1.000 | Vs the A2 twin: d1 1.0005 [0.9986,1.0024], six-load 0.9970; its d1S point (0.9912 vs A) is the A/A2 spread; +0.2-0.8% at every M>=8 shape | Other finish/reduction schedules | f6970526aa6f4a28 |
 
-### P3a S22 outcome builds: one whole-graph cohort queued (2026-10-27)
-
-User-directed overnight prebuild replaces the sequential build-after-diagnostic plan. Frozen S22
-expanded4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27;only its three small-M
-CUDA literals change. Exact patches/source hashes are in builds22/manifest.json;patches apply to the
-expanded source. No mixed_wgmma or losing public-port implementation is repeated.
-
-| Recipe | Ratio vs S22 | Mechanism | Leaves open | Receipt |
-|---|---|---|---|---|
-| CACHE1 | Unmeasured | Real64KiB two-plane BF16 bank loaded once per segment;one raw TMA slot keeps2CTA | Full native shared-bank correctness and fill/LDS/one-slot cost;other fragment layouts | sender984504,wrapperab36c11e7cb7ea6c;pending09:00KST |
-| LAZY | Unmeasured | Original BF16 fragment loads per K-group/tile shorten64-register cache lifetime | Activation scheduling tradeoff and two-chain composition;not the synthetic register oracle | same pending cohort |
-| LAZY2 | Unmeasured | LAZY plus independent FP32 accumulators over alternating K-groups,final sum | Different schedules and recurrence-vs-register cost;old cached-Bf ILP does not measure this | same pending cohort |
-| N1SIMT | Unmeasured | Correct FP32 SIMT matvec for actual singleton token blocks;HMMA otherwise,all K/experts retained | Useful-N padding at wider token blocks and SIMT instruction overhead | same pending cohort |
-| EPI4 | Unmeasured | Four epilogue warps/scalar W2 channel ownership;remove duplicate norm flush | Other reduction/finish schedules and native register/latency tradeoff | same pending cohort |
-
-Every arm passes270leaf TASK gates (1350total),M1/8/9/16/24/32,real/all/empty/singleton/dense routes,
-local_start0/96/224,three changed inputs under reused graphs. All five normal+forced screens pass
-13TASK/12captured shapes each (130TASK+120graphs),including actual small-M eager/captured launches.
-Fifteen exact sm90a units/20shape budgets:zero spills/stack,two CTAs. Registers M1/M8+:CACHE1 94/60,
-LAZY94/96,LAZY2 96/100,N1SIMT106/88,EPI4 115/126. CACHE1 shared112688/112960/113280/113920B;
-other layouts83904/84176/84496/85136B. Local sm120 cannot hold CACHE1's113KB bank:only its activation
-bank storage/LDS uses an explicit preallocated-global stand-in;H200 uses real shared storage. Full native
-Hopper correctness/performance remains pending. EPI4's initial local M1 failure exposed uninitialized
-SLOT n/off metadata;keeping actual segment ne/off fixed it,then all final checks reran. No failed build
-or local time is labeled a measured H200 loss.
-
-Single paired MoE check sender984504,rank4,after older diagnostic3637718;64fresh seeds×16symmetric
-rotated forward/reverse rounds,arithmetic means of all rounds,cold flushes,all12production graphs per arm,
-S22 A:A,5376TASK+780nearby. Primary six-load samples/round counts and bounded worst4 full GPU/enqueue
-traces/NVML survive checksummed lossless packing. Exact local packed rehearsal passes168TASK+24nearby
-with an explicitly local2seed×2round plan;synthetic64×16 transport11645B fits11744B,and is not timing
-evidence. Whole-load T=46sliding+16full through promotion.py judges transfer;no per-call speedup claim.
-
-Finite event-driven follow.py reads/audits the diagnostic,prunes only universally refuted outcomes while
-this owned waiter is still local,and reads the one eventual paired receipt. Accepted jobs remain intact;
-failed controls/implementations close nothing. Every valid whole-layer shape point winner gets its exact
-S22 patch/SE/seed IDs in P4_HANDOFF and point_nominations;P4 fresh held-out G0 confirmation remains.
-See [REPORT](../problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/REPORT.md).
+No P3a arm qualifies for P4. Open: the largest operand term (MMA+activation, modeled R1.040) has no
+correct build; recurrence and fragment placement were priced only inside LAZY2 and CACHE1.
+[REPORT](../problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/README.md).
 
 ## MoE M=128
 
@@ -1737,46 +1690,28 @@ ready candidate passes28 eager+graph each, five exact sm90a units compile and
 eight native-reader cases are bit-exact. Verify spills remain; native two-lane
 correctness and performance are unmeasured, not a closed recipe.
 
-One check is queued as sender3831549, attention host, priority2, not-before
-**2026-10-27 09:00KST /1793059200**: eight fresh seeds, eight symmetric cold rounds,
-432TASK, all production-graph round times and adjacent-kernel profiles retained.
-Payloadb4a5ec1b; controlfbaf2793=S21eacc087b+9b043487. Unsent senders3620849/3705999 were
-replaced before dispatch to keep S19 caches source-owned and guard balanced
-cross-request/idle lanes. Exact two-lane prologue tests pass15cases/99crossings/1idle-peer
-bit-exact; full native attention TASK remains pending. All-F review
-patch6a605fa2/sourcea4c63f0b is ready and unmeasured; no new fix is nominated.
-P4 confirms correct whole-load improving points on disjoint held-out G0 seeds.
+The in-graph diagnostic `32889c27aa2840e4` (eight seeds, 7 S19 restores, D/V/F) is **unmeasured**:
+its 16 TASK cases on the lab-only attention host printed 6,916 characters of stub tracebacks after the
+packet and cut its head from the 16,000-character tail (Failures). Nothing is inferred from it.
 
-### P5b overnight S22 outcome portfolio
+### P5b overnight S22 outcome portfolio: one paired check in flight
 
-Six fixed candidate patches target each possible largest term of the pending
-production-graph diagnostic, on P4 S22 expanded4b8c803d/shipmentd1ccdc35.
-These are builds, not measured improvements. [Sources, screens and decision](../problems/muse_attention_decode/dev/public_vector/night/README.md).
+Six exact candidates on P4 S22 `4b8c803d`; local normal/forced 156 TASK + 144 graphs and the exact
+64-seed x 16-round rehearsal (3712 TASK + 260 nearby) pass; no native result yet.
+[Sources, screens and decision](../problems/muse_attention_decode/dev/public_vector/night/README.md).
 
-| Recipe | Ratio versus control | Mechanism | Leaves open | Receipt / queue |
-|---|---|---|---|---|
-| CHAIN92367a26 | unmeasured vs S22 | PDL entry release and independent history/CTA prologue before consumer wait at six remaining public cells | Lost overlap versus library boundary; prune only if diagnostic D loses at every changed cell | diagnostic sender3831549; paired dependency691620 |
-| DIRECT9eedddf9 | unmeasured vs S22 | 16-byte ordered partial loads, once-per-CTA query/own-KV readers and PDL; actual native d1S/F readers | Residual scalar work versus prologue/barriers; prune only if all eight inherited F/V cells are resolved losses | same one dependent paired check |
-| STAGE5d3d6f89 | unmeasured vs S22 | First1280 Q/K/V columns reduced once into20KB of dead V shared storage; free before PV; v1F,v16S/F,v32S | Native spills/barriers and lifetime;18 exact prologue cases pass106crossings/2idle peers | same |
-| LANE1d0c044f1 | unmeasured vs S22 | One request lane/384 threads,80initial regs, producer32/consumers112; same logical split count; target two CTAs/SM | Actual Hopper occupancy/transport versus launch/merge waves, logged by stage_resources | same |
-| SOFTMAXf2116fdc | unmeasured vs S22 | Staged path plus50% FMA polynomial/50% MUFU; no second K pass, existing tensor-core sums; static EX2 151→135,FFMA437→485 | Dynamic issue balance and allowed TASK error, not static instruction-count timing | same |
-| OCHAINb92d9094 | unmeasured vs S22 | Existing notice-preserved NF BF16 O128/O256 joins PDL instead of an ordinary library successor | Full-graph native math versus boundary cost; O kernel spills0,registers90/154 | same |
+| Recipe | Mechanism | Leaves open | Receipt |
+|---|---|---|---|
+| CHAIN `92367a26` | PDL entry release; independent history/CTA prologue before the consumer wait at six public cells | Unmeasured; nothing closed | pending `10c8f0762f7246de` |
+| DIRECT (INC) `9eedddf9` | 16-byte ordered partial loads, once-per-CTA query/own-KV readers, PDL; native d1S/F readers | Unmeasured; nothing closed | pending `10c8f0762f7246de` |
+| STAGE `5d3d6f89` | First 1280 Q/K/V columns reduced once into 20 KB of dead V shared storage (v1F, v16S/F, v32S) | Unmeasured; nothing closed | pending `10c8f0762f7246de` |
+| LANE1 `d0c044f1` | One request lane, 384 threads, 80 initial registers; targets two CTAs/SM | Unmeasured; nothing closed | pending `10c8f0762f7246de` |
+| SOFTMAX `f2116fdc` | Staged path with 50% FMA-polynomial / 50% MUFU exponentials | Unmeasured; nothing closed | pending `10c8f0762f7246de` |
+| OCHAIN `b92d9094` | Notice-preserved NF BF16 O128/O256 joined by PDL | Unmeasured; nothing closed | pending `10c8f0762f7246de` |
 
-Each exact candidate passes normal/forced judge-image local_eval:156TASK+144
-production graphs total. Final batch normal/forced context4096 each116TASK+260
-nearby pass; exact64freshseed/16symmetric-round rehearsal3712TASK+260nearby
-passes and its9576-byte evidence survives a4000-character suffix. Pruned portfolio
-forced96TASK+260nearby passes. Three exact sm90a compile units pass; verify
-still spills. Local stand-ins establish no native TASK or timing claim.
-
-Diagnostic3831549 remains rank2/not-before1793059200 (10-27 09:00KST).
-Sealed worker691620 waits on its real completion event and sends one whole-graph
-check via h200_lab --lane P5b. New staged/occupancy/exponent/O recipes stay open
-when an inherited recipe loses. Unmeasured controls stop for inspection. Paired
-cohort uses ec754e5:64disjoint seeds,16 forward/reverse cold rounds, every-round
-means, unchanged TASK each active arm/seed, A:A, per-seed six-load ratios,
-worst4 full primary traces and per-block NVML. Correct improving points go to
-P4 as exact licensed patches; selected composition requires fresh G0 confirmation.
+The diagnostic that was to prune CHAIN/DIRECT is unmeasured, so by the lane's rule all six arms run.
+`10c8f0762f7246de` (attention host, ec754e5 protocol: 64 disjoint seeds x 16 rounds, A/A2, TASK per arm)
+uses the replaying lab-only stub; `night/read.py` reads it.
 
 ## Projections and verify dense
 
@@ -2178,51 +2113,65 @@ packs O/pool/QKV/unpool take .002482/.010882/.005759/.009381s; raw tile permutat
 Most added cost is compiling all unshipped NF families. Selected S21 prepare, including warmup, is
 still unmeasured. Exact MIT-noticed patches and all15 point specs are in `public_ports/P4_HANDOFF.json`.
 
-Built the next small-M test with S19's existing exact12 NF reader: WK4/8, ST1/2, first weights before
-PDL activation wait; and donor tiled TMA BK128/256 ST2/3 to admit more CTAs, with matched early-issue
-controls. Local full S21 rehearsal passes848layer+640strict projection/router TASK; all8changed
-sm90 TMA schedules compile at61–148KB shared and PTX verifies weights-before-wait only in early arms.
-Twelve NF sm90a kernels also compile with72–128regs/zero spills and intended PTX load/wait order.
-Exact P4 patch normal/forced screens pass13TASK/12graphs/6static each.
-The native follow-up is **unmeasured**: all five hosts exhausted0scored+0checks after the port run.
-Corrected sender3966799 (`5a8ae27c`) supersedes unsubmitted3347492 (`9654f02c`) before reset:
-sm90 PTX exposed both W and X TMA hoisting before GDC in two early-TMA schedules. Peeling the first
-W tile and feeding an opaque post-GDC zero into **every X descriptor coordinate** repairs activation
-readiness; all8verify X-after and the early arms verify W-before. Same arms/seeds/rounds/TASK,
-no quota spent on old source. `night/parent_repair.json` preserves old/new identities. The corrected
-parent still freezes S21eacc087b and tests15points individually/portfolio +10pool schedules on8fresh
-seeds/8symmetric rounds. Its native receipt, selected prepare and G0 remain unmeasured.
+**In-graph public ports and pool schedules in S21, `f66e20e76c714cc8`** (8 fresh seeds x 8 rounds,
+848 layer + 640 strict TASK pass). R = S21 / arm whole-load time; unchanged loads pair to the same A, so
+every six-load CI carries the A:A SE (A:A 0.9982 [0.9955,1.0009]). No arm's six-load lower bound is
+above 1; selection used point estimates, then held-out `72f273a8` (below) judged it.
 
-**Night small-M carrier build, `dev/public_ports/night/`:** exact reaggregation ofe70024b1 gives
-weighted d16 pool/router11.580011us [11.388716,11.771306], unpool.918463, O.477709, QKV.301681;
-d32 QKV2.999935, pool2.848397, unpool2.536113, O.008758us. Gate has no positive exposed surplus.
-S19 timeline9c16c850 independently has d16 pool27.06critical/15.84roofus and d32 QKV11.99/6.38,
-unpool15.75/10.87. It uses byte/tensor roofs without the fitted intercept, so those excesses differ.
-Pool32 is **dense BF16,S6,75.497472MB**, not coded. The R1.032884 scenario targets current selected
-bytes; new exact coding can lower that target too. Complete site/shape sampling CIs: `night/SIZING.md`.
+| Arm (site: T, role, provider) | Six-load R [95% CI] | Changed load R [95% CI] | Receipt |
+|---|---|---|---|
+| PORT0 (1 qkv3 O) | 0.9929 [0.9902,0.9956] | d1 0.9581 [0.9532,0.9630] | f66e20e76c714cc8 |
+| PORT1 (1 gate P) | 0.9883 [0.9856,0.9910] | d1 0.9320 [0.9274,0.9367] | f66e20e76c714cc8 |
+| PORT2 (1 unpooler_slice P), selected | 1.0017 [0.9990,1.0045] | d1 1.0103 [1.0052,1.0154] | f66e20e76c714cc8 |
+| PORT3 (8 unpooler_slice N), selected | 1.0003 [0.9975,1.0030] | v1 1.0016 [0.9902,1.0132] | f66e20e76c714cc8 |
+| PORT4 (16 qkv_gate N), selected | 1.0003 [0.9976,1.0031] | d16 1.0021 [0.9990,1.0052] | f66e20e76c714cc8 |
+| PORT5 (16 qkv3 N) | 0.9997 [0.9970,1.0025] | d16 0.9984 [0.9954,1.0013] | f66e20e76c714cc8 |
+| PORT6 (16 gate P), selected | 1.0001 [0.9974,1.0028] | d16 1.0005 [0.9963,1.0048] | f66e20e76c714cc8 |
+| PORT7 (32 gate N) | 0.9978 [0.9951,1.0005] | d32 0.9867 [0.9844,0.9890] | f66e20e76c714cc8 |
+| PORT8 (32 o P) | 0.9991 [0.9964,1.0019] | d32 0.9948 [0.9920,0.9975] | f66e20e76c714cc8 |
+| PORT9 (32 pool_router P) | 0.9952 [0.9925,0.9979] | d32 0.9714 [0.9624,0.9805] | f66e20e76c714cc8 |
+| PORT10 (128 unpooler N) | 0.9998 [0.9971,1.0026] | v16 0.9991 [0.9958,1.0023] | f66e20e76c714cc8 |
+| PORT11 (256 qkv_gate N), selected | 1.0006 [0.9979,1.0034] | v32 1.0038 [1.0004,1.0071] | f66e20e76c714cc8 |
+| PORT12 (256 o P) | 0.9996 [0.9968,1.0023] | v32 0.9973 [0.9932,1.0015] | f66e20e76c714cc8 |
+| PORT13 (256 pool_router O) | 0.9997 [0.9969,1.0024] | v32 0.9980 [0.9946,1.0013] | f66e20e76c714cc8 |
+| PORT14 (256 unpooler N), selected | 1.0007 [0.9980,1.0034] | v32 1.0041 [0.9990,1.0093] | f66e20e76c714cc8 |
+| PORTS (all 15) | 0.9868 [0.9841,0.9895] | d1 0.9264, d32 0.9753 | f66e20e76c714cc8 |
+| CW8_WAIT pool T16/T32 | 0.9947 [0.9920,0.9975] | d16 1.0007, d32 0.9681 | f66e20e76c714cc8 |
+| CW8_EARLY pool T16/T32 | 0.9960 [0.9933,0.9987] | d16 1.0060, d32 0.9705 | f66e20e76c714cc8 |
+| CW8_S2 pool T16/T32, selected at T16 | 0.9998 [0.9971,1.0026] | d16 1.0225 [1.0187,1.0263], d32 0.9769 | f66e20e76c714cc8 |
+| CW8_S2_WAIT pool T16/T32 | 0.9982 [0.9955,1.0009] | d16 1.0178, d32 0.9719 | f66e20e76c714cc8 |
+| CW4_EARLY pool T16/T32 | 0.9855 [0.9828,0.9882] | d16 0.9720, d32 0.9425 | f66e20e76c714cc8 |
+| CW4_S2 pool T16/T32 | 0.9965 [0.9938,0.9992] | d16 1.0116, d32 0.9678 | f66e20e76c714cc8 |
+| TW256_S2 pool T16/T32 | 0.9603 [0.9577,0.9629] | d16 0.8951, d32 0.8759 | f66e20e76c714cc8 |
+| TW256_S2_E pool T16/T32 | 0.9627 [0.9601,0.9653] | d16 0.9026, d32 0.8820 | f66e20e76c714cc8 |
+| TW128_S3 pool T16/T32 | 0.9677 [0.9650,0.9703] | d16 0.9176, d32 0.8948 | f66e20e76c714cc8 |
+| TW128_S3_E pool T16/T32 | 0.9653 [0.9627,0.9680] | d16 0.9136, d32 0.8857 | f66e20e76c714cc8 |
 
-Built seven groups: NF12 S4/WK4/ST1 DSM RED3 at Q16/Q32/P16; NF12 S2/WK4/ST1 at U16/U32;
-NF12 S1/WK4/ST2 at O16; tiled TMA BN64/BK128/ST2/S3 DSM at P32. First codewords issue before the
-activation wait, outputs stay FP32 S1 with native consumers. CODED_P32 adds the same NF S4 schedule
-at MT4, sharing the P16 stream bank (one extra specialization, no extra weight bank). It is paired
-against raw P32 inside the full layer. Nine NF kernels sm90a-compile at64–96regs/zero spills; the TMA
-launcher explicitly enables PDL and the peeled-weight/address dependency prevents X hoisting.
-Local primary and parent-pool stress rehearsals each pass512layer+208original projection/router TASK,
-all5distinct stream/body/escape/origin inverses, and full-tail packet guards; exact production patch
-normal/forced13TASK+12graphs+6static each. These are glue/encoding/admission proofs, not H200 speed.
+Every pool schedule loses at T32 (S21's dense BF16 S6 stays); raw TMA tiles lose 8-12% at both T.
 
-One-shot dispatcher4088520 waits on corrected parent3966799's exact completion event. It validates
-that receipt, runs `whole_read.py`, drops mean-negative in-graph points, hands remaining points/pool
-schedules to P4 as an exact patch, then sends the admitted next batch at P10 PLAN priority. Only
-validated parent-selection constants can change; all kernels/source/seeds are pinned. The next lab
-uses8disjoint seeds/fresh weights/router, S21+that native portfolio, INC/A/AA/FULL,7leave-outs and the
-coded P32 alternative. All cyclic positions and exact reverses:16rounds at T16/T32,8elsewhere; every
-round retained, same official TASK. It prices the selected parent's composition and each new group
-inside one whole-graph boundary. New native ratios/prepare/G0 remain unmeasured. P4 must confirm
-any selected S2x composition with new held-out six-load G0. No physical/private-leader split is inferred.
-Host named pidfd wrappers were missing; direct Linux syscall434 and actual process/file completion
-events now pass. Failed startup workers sent nothing; `startup_failure.json` retains them. No polling,
-fixed delay, background git writes or repeated advice; worker exits after one send.
+**Held-out confirmation and seven new carriers, `72f273a83e6d4de5`** (8 new disjoint seeds, new
+weights/router, all cyclic positions and reverses, 512 TASK pass). A = S21 + the selected parent
+(PORT2/3/4/6/11/14 + CW8_S2 at T16); FULL = A + all seven groups. Leave-out R = T(NO_g) / T(FULL):
+above 1 means the group helps.
+
+| Comparison | Six-load R [95% CI] | Changed loads | Receipt |
+|---|---|---|---|
+| Parent A vs S21 (T_S21 / T_A) | **1.0071 [1.0052,1.0091]** | d1 1.0143 [1.0066,1.0222], d16 1.0208 [1.0186,1.0230], v32 1.0089 [1.0079,1.0098], v1 0.9966 [0.9897,1.0036] | 72f273a83e6d4de5 |
+| FULL vs S21 | 0.9933 [0.9914,0.9952] | d32 0.9076: the T32 groups cost 20.7 us | 72f273a83e6d4de5 |
+| FULL vs A | 0.9863 [0.9844,0.9881] | d16 1.0156, d32 0.9079 | 72f273a83e6d4de5 |
+| P16 (NF12 S4/WK4/ST1 DSM pool/router T16, vs CW8_S2) | **1.0021 [1.0002,1.0040]** | d16 1.0125 [1.0112,1.0139], 2.06 us | 72f273a83e6d4de5 |
+| O16 (NF12 S1/WK4/ST2 O T16) | 1.0002 [0.9983,1.0021] | d16 1.0013 [1.0000,1.0026] | 72f273a83e6d4de5 |
+| Q16 (NF12 S4 DSM QKV T16) | 0.9996 [0.9977,1.0015] | d16 0.9977 [0.9960,0.9994] | 72f273a83e6d4de5 |
+| U16 (NF12 S2 DSM unpooler T16) | 0.9991 [0.9973,1.0010] | d16 0.9948 [0.9931,0.9966] | 72f273a83e6d4de5 |
+| Q32 (NF12 S4 DSM QKV T32) | 0.9998 [0.9979,1.0017] | d32 0.9989 [0.9943,1.0034] | 72f273a83e6d4de5 |
+| U32 (NF12 S2 DSM unpooler T32) | 0.9953 [0.9934,0.9972] | d32 0.9720 [0.9664,0.9777], 6.2 us | 72f273a83e6d4de5 |
+| P32 (tiled raw TMA BN64/BK128 DSM pool/router T32) | 0.9893 [0.9874,0.9911] | d32 0.9374 [0.9329,0.9419], 14.0 us | 72f273a83e6d4de5 |
+| CODED_P32 (NF12 S4 at T32) vs raw P32 | coded = no-P32 parent: 1.0001 [0.9982,1.0019] | d32 equal to the S21 dense pool | 72f273a83e6d4de5 |
+
+The parent qualifies on held-out seeds, and P16 beats CW8_S2 at T16. Handoff to P4
+(`public_ports/P4_HANDOFF.json`): S22 `4b8c803d` + PORT2/4/6/11/14 + P16 (v1 PORT3 and CW8_S2 dropped),
+built by `night/s22_handoff.py`; MIT notices retained. P4 confirms it on S22 with fresh seeds; S22's
+d16S attention restore can interact with the d16 gate/QKV ports.
 
 Transport failures `f304369a` (222bytes over) and `24b58b2d` (156bytes over) are unmeasured, not
 kernel losses. Successful repeats keep all scoped observations/arms/seeds/rounds. `send.py` calls the
@@ -2250,26 +2199,29 @@ other shapes/large-M metadata unchanged. Its selected-load zero-added-cost S19
 deletion scenario isR1.013545, part of the1.020342 route lever; not an S22 gain.
 Old serial-row recipe closure does not cover this mechanism or the route lever.
 
-Both exact production-graph labs pass**480primary+54TASK/nearby checks locally**,
-all8fresh seeds and10symmetric rounds retained; exact busiest-shard/both-soft
-fixtures, own same-source A:A for each candidate. Two changed CUDA units pass
-sm90a compile; scaled-route Triton Hopper parts4/8×splits1/3/4 pass. Explicit
-S22 attention stand-ins/C1 boundary math only locally; native C4/C8 execution
-and whole-load times remain unmeasured. Full checksum/tail/roundtrip pass.
-Evidence [distributed/](../problems/muse_decode_layer/dev/p13_boundary/distributed/README.md).
+**BOUND measured, `7342f3682c6e462a`** (S22 `4b8c803d`, 8 fresh seeds x 10 symmetric rounds, all 12
+S/F shapes; 480 TASK + 54 nearby pass). R = S22 (INC) / candidate whole-load time; each arm has its own
+same-source A:A. Both lose at every load: the distributed cluster b1 with the row scale deferred into
+the route consumer costs more than the S22 b1 it replaces, most with C4/128 at T128/256.
 
-**All H200 host quotas exhausted**; no new native R/CI claimed. BOUND queued
-through normal h200_lab/okc_run on prefill for10-27 reset(dispatcher09:01KST),
-wrappera97c099b6b294ba5/payload9f7d2ec6b3335894, sender3893443. Bounded reader3893300
-waits on that exact sender's pidfd, validates its immutable receipt, then sends
-screened route69343e6f7fd894da and reports it. No cadence, advice posting, shared
-doc writes or automatic commits. Status: distributed/out/sequence_status.json.
-Own initial unsubmitted waiter was replaced after fixing the host Python's
-missing pidfd binding via the tested Linux syscall. The subsequent unsubmitted
-S21 queue was replaced with S22 at publication; no native quota spent. Actual
-per-load/six-load R and independent candidate prepare await native evidence.
-Only a passing whole-layer tools/promotion.py comparison can nominate; P4
-reconfirms the exact patch on its newest composed S2x with fresh seeds.
+| Recipe | Six-load R [95% CI] | d1 / d16 / d32 / v1 / v16 / v32 | Layer us vs S22 | Mechanism | Leaves open | Receipt |
+|---|---|---|---|---|---|---|
+| A: C8/256 at T<=32, C4/128 above | 0.9778 [0.9767,0.9789]; A:A 0.9996 | .980/.985/.985/.993/.964/.960 | +1.8 (d1) to +17.5 (v32) | Distributed cluster b1 statistics, row scale deferred into the route consumer | b1/b2 work without added cluster cost (oracle 1.0298) | 7342f3682c6e462a |
+| B: C8/256 at every T | 0.9875 [0.9855,0.9895]; A:A 1.0006 | .986/.984/.985/.994/.992/.985 | +1.3 (d1) to +6.3 (v32) | Same, C8/256 clusters throughout | Same | 7342f3682c6e462a |
+
+**Route measured, `9e79dda5ffd744f2`** (same protocol and checks, 480 TASK + 54 nearby pass): tile-
+interleaved independent M1 grids per token row with per-row arrival counters. Time grows about 5.4 us
+per extra row (+42.9 us at T8, +87.5 at T16), one M1 pool/router GEMV each: no same-call weight reuse.
+
+| Recipe | Six-load R [95% CI] | d1 / d16 / d32 / v1 / v16 / v32 | Layer us vs S22 | Mechanism | Leaves open | Receipt |
+|---|---|---|---|---|---|---|
+| Route A: per-row grids at T1/8/16 | 0.8928 [0.8903,0.8953]; A:A 0.9994 | 1.004/.669/.999/.754/1.001/.999 | -0.35 (d1), +87.5 (d16), +42.9 (v1) | Independent per-row M1 grids, per-row arrival counters; ~5.4 us per extra row | Row-parallel route reading each weight once per call (oracle 1.0203) | 9e79dda5ffd744f2 |
+| Route B: per-row grid at T1 only | 1.0008 [0.9990,1.0025]; A:A 1.0012 | 1.002/.999/1.001/1.001/1.002/.999 | -0.2 (d1); other loads unchanged code | Same at T1 only | Same | 9e79dda5ffd744f2 |
+
+Against the S19 deletion oracles (ROUTE 1.0203, BOUND b1+b2 1.0298, both 1.0513; `611341aa`), BOUND
+recovers nothing and the T1 route about 0.3 us per d1 layer (d1 1.0043 [1.0012,1.0073] in A, 1.0024
+[0.9983,1.0065] in B; six-load about 1.0005), short of a qualifying whole-load gain. The reader's
+receipt match was fixed (`sequence.py` matches the sent `.py`; `--kinds route` ran route alone).
 
 Exact S19 `62ea5bf4`; corrected **611341aaf8454a24**, projection-host import,
 8fresh160001021+104729*i seeds ×10complete symmetric cold rounds, all12S/F.
@@ -2502,6 +2454,8 @@ not close a family; incorrect/untimed implementations are suspect or unmeasured.
 
 | Symptom | Cause | Avoid / fix | Evidence |
 |---|---|---|---|
+| Attention lab-only receipt has no readable packet (`32889c27`) | The attention judge never calls prepare, so all 16 TASK cases call the stub `kernel_fn`; their 6,916 characters of tracebacks followed the packet and cut its head from the 16,000-character tail | `tools/h200_lab.py`: the attention lab-only stub replays the packet before each traceback (local emulation: an 11,474-byte packet survives) | `32889c27aa2840e4` |
+| Lane receipt readers stop after a good receipt (P13 `7342f368`, P3b `1b75cd73`) | They matched the judge's `content_hash` or a missing `sha256` field; the receipt's `.py` beside the JSON holds the sent source | Match `sha256(<receipt>.py)` | `7342f3682c6e462a`, `1b75cd73b9d547b0` |
 | Prefill lab passes at ~1.43x but no LAB markers survive | `--phase import --import-budget 550` printed before the unchanged host tuner; at least 18,818 later host characters displaced diagnostics from the 16,000-character tail, not a prepare timeout (host 113.9–134.5 s; all five compared sources share base `cb8939d0` and one payload) | Buffer import-phase lab diagnostics on hosts with judge-called prepare; emit after host prepare, preserving import execution/deadline and host state | Missing `4c86853a`, `841077ef`, `a05f9863`; working prepare-phase `a39a1f05`, `c773699a`; exact source hashes checked; local judge-image GPU0 proof: 24 wrapper cases pass |
 | Lab small-M MoE slower than judge | Write-flush leaves dirty L2 lines; zero_ adds MoE +1.82 / +4.88 / +2.72 / +1.87 us at M1/8/16/32 | Use `lab_cold_l2()` read flush; write-flushed absolute times are ~2-5 us high | `849e4017` |
 | Local flush makes lab 5x slower, 30/36 rows finish | uint8 sum over 1 GiB costs 39 ms on sm_120; int32 view 11 ms | Use a wider view; price flush cost in replay-heavy labs | commit `13801d3` |
@@ -2709,103 +2663,37 @@ All eight actual hybrid whole-MoE cells lose (O13/O2/O132/LF at M128: 1.092380/1
 
 Evidence: [native ratios](../problems/muse_decode_layer/dev/moe_public_ports/H200.md), [matched ABI](../problems/muse_decode_layer/dev/moe_public_ports/ABI_H200.md), [mechanisms](../problems/muse_decode_layer/dev/moe_public_ports/MECHANISMS.md), [P4 / P3a handoff](../problems/muse_decode_layer/dev/moe_public_ports/P4_HANDOFF.json). Receipts/source snapshots are in `runs/muse_prefill_layer/`; all raw rounds and source identities are in `receipt_data.json` / `abi_receipt_data.json`.
 
-### P3b exact S19 large-M excess ladder: queued, not yet measured (2026-10-26)
+### P3b exact S19 large-M excess ladder: measured `1b75cd73b9d547b0` (2026-10-27)
 
-P3b is active. Public MoE ports remain closed; the large-M S19 excess is still
-unassigned. Read S18 `3330edc2`: its ~15 us gather and 26/56 us sync belong to
-added transport paths, and the checksum stream changed granularity/addressing.
-Those results do not assign S19's 32.63/67.58 us MoE-core excess at M128/256.
+Exact S19 `62ea5bf4` heavy/medium/small branches at M128/256, W13 and W2, eight seeds x four symmetric
+rounds; clone/allocation controls within ~1 us; sink/control tax 27.1/13.9 (M128 W13/W2) and 36.6/19.8
+(M256) us inflates the cuts, so conditional terms overlap and over-sum. Measured BASE W13+W2 185.3 /
+253.0 us vs unique-byte STREAM 125.0 / 144.6: excess 60.3 / 108.4 us at M128 / M256. Six-load R is a
+transfer scenario on S19 walls 321.09 / 425.66 us (verify 16 / 32 only), not a G0 verdict.
 
-Built a single exact-S19 `62ea5bf4` cohort covering W13 and W2's three concurrent
-branches, including P7 small W2. L0 loads, L1 decode/scale, L2 MMA and L3
-epilogue retain tiles/grids/issue order. BASE/AA share the cuts' build with
-original allocations; on-chip MATH and unique-byte STREAM provide references.
-Original padded MATCH, full SHADOW, INIT and instrumented HIST expose
-resource/sink/observer costs. Eight fresh layer weight/router/input seeds, four
-rotated forward/reverse cold rounds, every integer-ns sample and round telemetry;
-expert counts, CTA/SM work histograms and exact last-CTA finish retained. Frozen
-metadata avoids atomic route-order changes; real W13 resets each W2 fixture.
+| Term (W13 + W2) | M128 us [95% CI] | M256 us [95% CI] | Six-load R, both loads | Receipt |
+|---|---|---|---|---|
+| Load issue/reuse/residency (L0 - STREAM) | 46.5 [42.2,50.8] | 81.8 [74.1,89.5] | 1.0636 (lower 1.0569); capped at the 1.3x-roof excess 1.0478 | 1b75cd73b9d547b0 |
+| MMA on decoded operands (L2 - L1) | 30.5 [28.5,32.5] | 53.4 [51.4,55.4] | 1.0397 (lower 1.0376) | 1b75cd73b9d547b0 |
+| Epilogue/readiness (L3 - L2) | 14.9 [10.4,19.4] | 18.0 [14.4,21.7] | 1.0152 (lower 1.0113) | 1b75cd73b9d547b0 |
+| Decode/scale (L1 - L0) | 8.5 [5.9,11.0] | 12.2 [8.3,16.0] | 1.0093 (lower 1.0064) | 1b75cd73b9d547b0 |
 
-**Checked locally, not H200 timings:** 384 full-math TASK comparisons, full wire
-cohort, all diagnostic eager/graph paths, two sm90a compiles, 64 actual SASS cut
-audits, and lossless independent reader/work-count validation. L0/L1 have no MMA;
-L0 no BF16 products; MATH/INIT no global async operand copies. Static spill
-bytes are disclosed: original/SHADOW heavy W2 4/4, L3 W13 8/8 and W2 12/16,
-HIST 64/56. Controls must qualify any attribution. Final packet 11,154 bytes
-under11,744; all1,536 timing integers remain exact. Histogram summaries use
-256ns bins and exact last-CTA timestamps, from one final HIST replay per seed.
+W13 carries ~2/3 of each term (load side 29.7/52.4 us vs W2 16.8/29.4). The largest term, load issue/
+reuse/residency, alone could cover the whole excess above the 1.3x roof. [Ladder](../problems/muse_decode_layer/dev/moe_excess/result/ladder.md).
 
-**Hard quota wait:** all five hosts0scored+0checks. Queued via h200_lab, laneP3b,
-decision"assign the large-M MoE excess", priority6. Wrapper `bad55569a98d1c1d`,
-payload `38c3c1f24bc1a0a3`; sender3645567 wakes2026-10-27 09:01KST.
-This is a queued source identity, not a judge receipt. It replaces unmeasured
-waiters4c0e2cd5/ad8b29e1 to improve lossless transport and put BASE/AA in the
-same translation units as the cuts at original allocation; no quota spent.
-Largest term/CI, term ceiling and ranked build remain pending. No G0 winner or
-patch has been handed to P4; no lane closure follows from quota exhaustion.
-Existing timeline9c16c850 full-removal scenario is R1.04778; it is not an
-achieved gain. P3a's row is unchanged.
+### P3b S22 outcome builds: every arm loses, `054e28849b424be2` (2026-10-27)
 
-[Design, caveats, queue and reproduction](../problems/muse_decode_layer/dev/moe_excess/README.md).
-`read.py` will emit native us/paired t7 CIs and conditional contrasts, verify
-all round/telemetry/work/TASK evidence, and report capped six-load scenarios.
-Fresh whole-layer candidate confirmation still requires tools/promotion.py.
-A local inotify/pidfd receipt reader is attached; it will materialize validated
-raw/summary/ladder artifacts on completion, without judge calls or promotion.
+Exact S22 `4b8c803d` production graphs (changed cells v16S/F, v32S/F; other rows take A2), 64 fresh
+seeds x 16 rounds, 3840 TASK + 1040 nearby pass; A:A 1.0001 [0.9997,1.0004]. R = S22 / candidate.
 
-### P3b overnight outcome builds on S22 (2026-10-27)
+| Recipe (targeted term) | Six-load R [95% CI] | v16 / v32 R | Mechanism / verdict | Leaves open | Receipt |
+|---|---|---|---|---|---|
+| REG: packed Q/scales straight to registers, one warpgroup, activation-only ring (load issue) | 0.9555 [0.9543,0.9567] | 0.865 / 0.880 | Loses 10-17% at every changed shape; not isolated | Load-path designs other than register staging | 054e28849b424be2 |
+| OCC: one warpgroup, 32-row tiles, three stages, 38.4 KiB (residency) | 0.9848 [0.9836,0.9861] | 0.962 / 0.949 | Loses 3-6% at every changed shape; not isolated | Residency without smaller tiles | 054e28849b424be2 |
+| PAD: exact 16/32/48/64-row WGMMA tails (MMA padding) | 0.9975 [0.9968,0.9982] | 0.988 / 0.998 | Small loss | Other MMA-tail schemes | 054e28849b424be2 |
+| BALANCE: flattened expert/row64/channel grid-stride tasks (tail) | 0.9964 [0.9958,0.9969] | 0.985 / 0.994 | Small loss | Other tail balancing | 054e28849b424be2 |
+| EPI: hoisted norm/global scales, warp-only PDL finalizer (epilogue) | 0.9979 [0.9974,0.9983] | 0.994 / 0.994 | Small loss | Other finalizers | 054e28849b424be2 |
+| DECODE: single decoded-fragment lifetime (register pressure) | 0.9998 [0.9993,1.0004] | 0.999 / 1.002 | Neutral; v32F 0.9956 is inside A2's 0.9966 | Other register-pressure cuts | 054e28849b424be2 |
 
-Built six exact production candidates on newest P4 S22 `4b8c803d`/`d1ccdc35`,
-whose large-M body remains S19. REG streams original packed Q/SF directly into
-registers with one warpgroup/activation-only shared ring (64KiB,144/140regs);
-DECODE shortens fragment lifetime with wait-before-reuse (99/101regs); PAD
-uses16/32/48/64-row WGMMA tails (100/104regs); OCC uses one WG/32rows/3stages
-(38,400B,88/89regs); BALANCE flattens expert,row64,channel work; EPI hoists norm/GS
-loads and uses the existing warp-only PDL finalizer. All retain original formats,
-K work, routes, FP32 Y/SS and the three-stream production DAG. No public port
-recipe reopened, and no new weight encoding or widened prepare values.
-
-**Local checked:**72 full-MoE TASK comparisons, eager+graph at M33/128/256/257
-and explicit all-tail-width fixtures.22 actual sm90a heavy kernels emit HGMMA
-and BF16 products, including64x48x16; all shipped-depth candidates have zero
-spills except EPI W2's unchanged4/4bytes. Original two-WG REG spilled; replaced
-with the one-WG layout before admission and reran component/native screens.
-Exact normal and forced Hopper-glue production rehearsals each pass3840TASK
-plus1040nearby,64fixed fresh seeds x16palindromic all-round arithmetic means;
-all6new phases execute eager/captured. Worst4primary full round/enqueue/telemetry
-traces retained exactly as P4 ec754e5; every round contributes to score samples.
-Final public packets/6decimal archive round trips and4000-character suffix tail
-checks pass. No local timing selects an arm.
-
-First nonblocking normal rehearsal produced asynchronous CUDA700 with no launch
-origin recovered. A fresh launch-blocking run and the final nonblocking normal/
-forced runs pass all4880checks; the initial event remains unattributed, not
-claimed repaired. Native faults invalidate their affected arms. Missing local
-pybind includes/import collision/exec alias were repaired before queueing.
-
-**Queued one whole-graph cohort** via h200_lab, laneP3b, decision"P3b: S22
-production builds for large-M MoE ladder outcomes": payload `fbbc47741b749b89`,
-wrapper `aa449a800d62484a`, sender384352. Same host/rank6, queued after diagnostic
-`bad55569`/sender3645567; all hosts quota0 until09:00KST/reset wake09:01. The CLI
-normalizes two850budget literals to850.0; exact-substitution equivalence proves
-payload/candidate/check/timing code identical to rehearsed wrapper7275744d.
-Exact queued wrapper transport passes; original rehearsal hashes are retained.
-
-S22 A/A2/INC controls plus6candidate arms, full kernel_fn graphs atv16S/F and
-v32S/F; unchanged other score rows use independentA2 per P4's restricted-arm
-protocol. Judge by46sliding+16full whole-load time and six-load R, not per-kernel
-transfer. read.py uses promotion.evaluate's identity/native/protocol/TASK health;
-selected pieces/composition need new disjoint confirmation. No H200 receipt,
-new G0 winner or winner patch exists yet. Exact candidate files/identities and
-P4_HANDOFF are ready for that decision.
-
-Finite worker408337 waits on diagnostic receipt events/pidfd, materializes its
-validated term table, drops only qualified refuted hypotheses while the paired
-snapshot is still local under the dispatch lock, then reads the production
-receipt and exits. Positive non-largest terms remain eligible; confounded
-controls cannot prune. If already admitted, the original cohort remains intact.
-It replaces our old duplicate reader3678796; other lanes' processes untouched.
-No periodic polling, model, scoring, promotion or shared-doc writing in worker.
-P3b remains active; P3a's row unchanged; no RULINGS entry.
-
-[Candidates, screens, caveats, queue and reproduction](../problems/muse_decode_layer/dev/moe_excess/builds/README.md).
+No P3b arm qualifies. The two recipes for the largest term (REG, OCC) lose the most; that term is
+assigned but unrecovered. [Builds](../problems/muse_decode_layer/dev/moe_excess/builds/README.md).

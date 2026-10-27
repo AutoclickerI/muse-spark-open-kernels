@@ -60,7 +60,9 @@ def install(m,forced=True):
     def _init_handles(self):pass
     def launch_metadata(self,*a):return None
    return Compiled()
- m._ng_cluster_pool=Cluster();old_pool=m.pp_pool_project;m._pp_pool_tma_early=m._cbf_skinny_gemm_tma_tiled_ppdl
+ m._ng_cluster_pool=Cluster()
+ if not hasattr(m,'pp_pool_project'):return  # composition without a parent pool schedule (S22 handoff)
+ old_pool=m.pp_pool_project;m._pp_pool_tma_early=m._cbf_skinny_gemm_tma_tiled_ppdl
  def pool_project(x,bank,pool,name):
   for (role,bk),wp in bank['tiled'].items():m._pp_local_lookup[wp.data_ptr(),bank['roles'][role].shape[0]]=bank['roles'][role]
   return old_pool(x,bank,pool,name)

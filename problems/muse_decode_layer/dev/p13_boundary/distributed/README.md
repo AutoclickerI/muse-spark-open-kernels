@@ -48,60 +48,19 @@ loads gives a zero-added-cost six-load scenario R1.013545, part of ROUTE's
 1.020342 overall ceiling. This is sizing, not a measured S22 gain. The
 T32/128/256 route opportunities remain open.
 
-## Complete local verification, native measurements pending
+## Measured: both recipes lose
 
-Each exact S22 production-graph batch passes 480 primary checks plus54
-public/nearby checks, including the complete 13 TASK cases. The existing
-explicit S22 Hopper stand-ins substitute unavailable attention execution. Boundary
-uses a C1 local stand-in for the distributed cluster math; the native C4/C8
-cluster execution remains unmeasured until H200.
+BOUND `7342f3682c6e462a` (S22, 8 fresh seeds x 10 symmetric rounds, 480 TASK + 54 nearby pass): A
+(C8/256 at T<=32, C4/128 above) six-load R 0.9778 [0.9767,0.9789], B (C8/256 everywhere) 0.9875
+[0.9855,0.9895], both losing at every load (A +17.5 us per layer at v32).
 
-Both changed CUDA units compile for sm90a. The changed Triton scaled route
-also compiles for Hopper at parts4/8 and splits1/3/4, including its GDC
-instructions. Full packet checksums, exact round/telemetry round trips and
-survival with a2000-byte suffix pass (BOUND10900B, ROUTE10424B).
-`validate_report.py` uses synthetic transport only to prove that stand-ins
-cannot qualify, optional arm failures stay isolated, wrong seed identities
-are rejected, exact winning suffixes are retained, and an official TASK
-result is still required for promotion.
+ROUTE `9e79dda5ffd744f2` (same protocol): A (T1/8/16) 0.8928 [0.8903,0.8953] with d16 0.669 and v1
+0.754 (+87.5 / +42.9 us per layer, about 5.4 us per extra row, one M1 pool/router GEMV each: the
+interleaving gives no same-call weight reuse); B (T1 only) 1.0008 [0.9990,1.0025], d1 1.0024 [0.9983,1.0065]. The T1
+route saves 0.2-0.35 us per d1 layer (six-load about 1.0005), far below the S19 ROUTE deletion
+oracle 1.0203. Nothing qualifies for P4; `*_result.json` and `*_HANDOFF.json` hold every load and A:A.
 
-Each prospective native cohort has INC/A/A2/B/B2, eight fixed fresh inputs,
-ten symmetric cold rounds and both S/F shapes at all six loads. Every arm
-has equal exposure to every position. Both layer types use soft inputs;
-the exact public reference chooses the busiest expert shard independently
-for each seed. All times, local_start and NVML snapshots are retained.
-A/A2 and B/B2 are independent captures of identical respective sources.
-Each comparison uses unchanged `tools/promotion.py` and its own A:A.
-
-BOUND seeds180003021+104729*i; route190003021+104729*i, i0..7.
-Weights/router seeds are180003003/180003009 and190003003/190003009.
-No local timings are claimed as native performance or used to promote.
-
-## Quota event and exact pending jobs
-
-All five H200 hosts had0scored+0check quota on10-26. The ordinary
-`h200_lab.py` sender queued BOUND on the prefill host for the10-27 reset;
-its dispatcher reports09:01KST. `boundary_queue.json` is the enqueue snapshot,
-not a completed receipt. Wrapper `a97c099b6b294ba5`, payload `9f7d2ec6b3335894`.
-The screened route payload is `69343e6f7fd894da` and is sent **only after the
-BOUND sender exits and its immutable receipt is validated and reported**.
-
-The bounded reader is intentionally detached: PID3893300 watches sender
-PID3893443 with a Linux pidfd. It has no polling cadence, posts no advice,
-edits no shared docs, and makes no automatic commits. It runs at most these
-two measurements and writes `boundary_result.json`, `route_result.json` and
-their source-pinned handoff JSONs containing exact winning suffixes. Failures stop it explicitly; raw receipts
-remain in `runs/`. Its live state/log are `out/sequence_status.json` and
-`out/sequence.log`. A first reader lacked Python's pidfd binding; it was
-replaced with the verified Linux syscall and only its own unsubmitted
-sender was replaced. The later unsubmitted S21 queue was replaced with
-the screened S22 batch when P4 published it. Neither replacement spent
-native quota. The newest source at the time of queueing is pinned; P4
-rechecks any subsequent composition on fresh seeds.
-
-Native per-load R, six-load CI, cluster execution and actual standalone
-candidate prepare are still unverified. New results, once present, are the
-authoritative measurements; the queue snapshot is not evidence of a win.
+`sequence.py` (fixed: it matches the receipt by the sent `.py`; `--kinds` runs one step) read both.
 
 ```bash
 python problems/muse_decode_layer/dev/p13_boundary/distributed/build_lab.py boundary
