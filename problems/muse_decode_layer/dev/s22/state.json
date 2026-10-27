@@ -11,10 +11,22 @@
         1.0084203032492265
       ],
       "decision": "confirm"
+    },
+    {
+      "phase": 1,
+      "job": "0e1f9bc8474648bc",
+      "receipt": "runs/muse_bf16_proj/20261027T011303Z_check_0e1f9bc8474648bc.json",
+      "source_sha256": "fd5e0ca2ef4bbc1128b04b68aa6802c9543b61808e7663ca5ad10ec4d957110b",
+      "R": 1.0099969751719673,
+      "CI95": [
+        1.0096685101221141,
+        1.01032554707797
+      ],
+      "decision": "score"
     }
   ],
   "worker_pid": 670583,
-  "status": "awaiting_native_lab",
+  "status": "scored_queued",
   "selected_config": {
     "phase": 1,
     "host": "muse_bf16_proj",
@@ -23,5 +35,9 @@
     ],
     "disabled_hybrids": []
   },
-  "phase": 1
+  "phase": 1,
+  "scored": {
+    "pid": 843359,
+    "sha256": "2287496067a3da750d43afd1943c12e69fb1d5337ce1c5e528d4b6c64649a6fd"
+  }
 }

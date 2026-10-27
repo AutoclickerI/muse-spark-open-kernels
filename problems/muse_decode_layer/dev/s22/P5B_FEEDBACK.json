@@ -1,5 +1,5 @@
 {
-  "latest_phase": 0,
+  "latest_phase": 1,
   "phases": {
     "p0": {
       "job": "6a1303c14c13406b",
@@ -219,6 +219,204 @@
             ],
             "n": 64,
             "log_se": 0.0007099204058378222,
+            "AA_log_se": 0.0,
+            "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+          },
+          "loses": false
+        }
+      }
+    },
+    "p1": {
+      "job": "0e1f9bc8474648bc",
+      "phase": 1,
+      "source_sha256": "fd5e0ca2ef4bbc1128b04b68aa6802c9543b61808e7663ca5ad10ec4d957110b",
+      "cells": {
+        "d32S": {
+          "measured": true,
+          "arm": "off_d32S",
+          "comparison": "time(leave-out)/time(S22); >1 favors keeping",
+          "cell": "d32S",
+          "R": 1.0094605971390727,
+          "CI95": [
+            1.006542497523349,
+            1.0123871567109215
+          ],
+          "n": 64,
+          "log_se": 0.0014174889452482676,
+          "AA_log_se": 0.000447870879852521,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+          "AA": {
+            "R": 1.004290359513686,
+            "CI95": [
+              1.0033721684735692,
+              1.0052093907951538
+            ],
+            "n": 64,
+            "log_se": 0.000447870879852521,
+            "AA_log_se": 0.0,
+            "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+          },
+          "loses": false
+        },
+        "v16S": {
+          "measured": true,
+          "arm": "off_v16S",
+          "comparison": "time(leave-out)/time(S22); >1 favors keeping",
+          "cell": "v16S",
+          "R": 1.0082953427364354,
+          "CI95": [
+            1.0046935611461822,
+            1.0119100365529887
+          ],
+          "n": 64,
+          "log_se": 0.0017522130671638375,
+          "AA_log_se": 0.00026644616381850205,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+          "AA": {
+            "R": 1.0011496679532619,
+            "CI95": [
+              1.000605027546151,
+              1.0016946048141828
+            ],
+            "n": 64,
+            "log_se": 0.00026644616381850205,
+            "AA_log_se": 0.0,
+            "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+          },
+          "loses": false
+        },
+        "v1F": {
+          "measured": true,
+          "arm": "off_v1F",
+          "comparison": "time(leave-out)/time(S22); >1 favors keeping",
+          "cell": "v1F",
+          "R": 1.0400520162838525,
+          "CI95": [
+            1.0332354691101147,
+            1.0469135341508744
+          ],
+          "n": 64,
+          "log_se": 0.003219711371939723,
+          "AA_log_se": 0.0002654788855857007,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+          "AA": {
+            "R": 0.9959696644301863,
+            "CI95": [
+              0.9954298084646451,
+              0.9965098131782634
+            ],
+            "n": 64,
+            "log_se": 0.0002654788855857007,
+            "AA_log_se": 0.0,
+            "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+          },
+          "loses": false
+        },
+        "v1S": {
+          "measured": true,
+          "arm": "off_v1S",
+          "comparison": "time(leave-out)/time(S22); >1 favors keeping",
+          "cell": "v1S",
+          "R": 1.0268008455030426,
+          "CI95": [
+            1.0215685915113808,
+            1.0320598979711462
+          ],
+          "n": 64,
+          "log_se": 0.002501450617097149,
+          "AA_log_se": 0.00041881028122536617,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+          "AA": {
+            "R": 1.0030513638088683,
+            "CI95": [
+              1.0021937844411213,
+              1.003909677009117
+            ],
+            "n": 64,
+            "log_se": 0.00041881028122536617,
+            "AA_log_se": 0.0,
+            "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+          },
+          "loses": false
+        },
+        "v32S": {
+          "measured": true,
+          "arm": "off_v32S",
+          "comparison": "time(leave-out)/time(S22); >1 favors keeping",
+          "cell": "v32S",
+          "R": 1.0050984476060734,
+          "CI95": [
+            1.0018347634756868,
+            1.008372763863125
+          ],
+          "n": 64,
+          "log_se": 0.0015925242017817507,
+          "AA_log_se": 0.00018549513931150137,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+          "AA": {
+            "R": 1.0000476973732257,
+            "CI95": [
+              0.9996689143336861,
+              1.000426623936875
+            ],
+            "n": 64,
+            "log_se": 0.00018549513931150137,
+            "AA_log_se": 0.0,
+            "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+          },
+          "loses": false
+        }
+      },
+      "hybrids": {
+        "d32S": {
+          "measured": true,
+          "arm": "no_HY_d32S",
+          "comparison": "time(leave-out)/time(S22); >1 favors keeping",
+          "cell": "d32S",
+          "R": 0.9987386318075996,
+          "CI95": [
+            0.9978255165372426,
+            0.9996525826744443
+          ],
+          "n": 64,
+          "log_se": 0.00044209160898193897,
+          "AA_log_se": 0.000447870879852521,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+          "AA": {
+            "R": 1.004290359513686,
+            "CI95": [
+              1.0033721684735692,
+              1.0052093907951538
+            ],
+            "n": 64,
+            "log_se": 0.000447870879852521,
+            "AA_log_se": 0.0,
+            "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+          },
+          "loses": true
+        },
+        "v1S": {
+          "measured": true,
+          "arm": "no_HY_v1S",
+          "comparison": "time(leave-out)/time(S22); >1 favors keeping",
+          "cell": "v1S",
+          "R": 1.0177284157320285,
+          "CI95": [
+            1.0164613520630592,
+            1.0189970588514492
+          ],
+          "n": 64,
+          "log_se": 0.0006099826571420781,
+          "AA_log_se": 0.00041881028122536617,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+          "AA": {
+            "R": 1.0030513638088683,
+            "CI95": [
+              1.0021937844411213,
+              1.003909677009117
+            ],
+            "n": 64,
+            "log_se": 0.00041881028122536617,
             "AA_log_se": 0.0,
             "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
           },

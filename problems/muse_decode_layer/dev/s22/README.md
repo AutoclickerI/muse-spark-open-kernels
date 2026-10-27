@@ -1,6 +1,6 @@
 # S22 integration
 
-phase0 R 1.007814 [1.007209,1.008420] (`6a1303c1`); selected drop=['v16F'], disabled hybrids=[]; phase1 fresh-seed G0 vs S21 pending (sender 669314).
+phase0 R 1.007814 [1.007209,1.008420] (`6a1303c1`); selected drop=['v16F'], disabled hybrids=[]; phase1 native G0 passes: R 1.009997 [1.009669,1.010326], prepare 179.87s (`0e1f9bc8`); official scored run sender 843359 pending.
 
 Base is S21 `eacc087b` / expanded `109c0135`, frozen at official 1.8781x (`ec8cc95c`). Exact12 gate at d1S, native-layout T128 banks, C3 full d16/d32 and v32F Rw4 remain.
 Current shipment: `problems/muse_decode_layer/cand_r3_best7_s22p1_final.py` (phase 1).
@@ -36,3 +36,17 @@ Phase 0, job `6a1303c14c13406b`: R 1.007814 [1.007209,1.008420], prepare **170.8
 | v32S (cells) | 1.012656 | [1.009996,1.015324] |
 | d32S (hybrids) | 1.000817 | [0.999956,1.001679] |
 | v1S (hybrids) | 1.010727 | [1.009065,1.012393] |
+
+Phase 1, job `0e1f9bc8474648bc`: R 1.009997 [1.009669,1.010326], prepare **179.87s**; per load decode 1 0.9990, decode 16 1.0489, decode 32 1.0016, verify 1 1.0103, verify 16 1.0009, verify 32 1.0002.
+
+| Cell/arm | R | 95% CI |
+|---|---:|---|
+| d32S (cells) | 1.009461 | [1.006542,1.012387] |
+| v16S (cells) | 1.008295 | [1.004694,1.011910] |
+| v1F (cells) | 1.040052 | [1.033235,1.046914] |
+| v1S (cells) | 1.026801 | [1.021569,1.032060] |
+| v32S (cells) | 1.005098 | [1.001835,1.008373] |
+| d32S (hybrids) | 0.998739 | [0.997826,0.999653] |
+| v1S (hybrids) | 1.017728 | [1.016461,1.018997] |
+
+Official scored run sender 843359 is pending; no freeze before its TASK result.
