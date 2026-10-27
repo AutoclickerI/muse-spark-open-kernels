@@ -29,7 +29,8 @@ always use checks. Payloads own setup and honor deadline. lab_cold_l2 reads a bu
 
 The judge keeps a 16,000-character tail. Ordinary transports reserve 9,000 wire bytes
 for packets/markers, leaving 7,000 characters for profiler/error suffixes. --lab-only
-reserves 12,000: its deliberate prepare stop skips profiling and leaves 4,000 for errors. Queue rank comes from the
+reserves 12,000: its deliberate prepare stop skips profiling and leaves 4,000 for errors. On the attention host,
+whose judge never calls prepare, the stub kernel_fn replays the evidence before each TASK case's traceback. Queue rank comes from the
 PLAN lane of the decision, independently of the host used for quota and transport.
 """
 
@@ -373,10 +374,15 @@ def build(embedded: list, host: str, import_budget: float = IMPORT_BUDGET_S, pha
         sys.exit("--lab-only supplies its own host; omit --base-file")
     if lab_only:
         base = {"job": "lab-only " + host}
+        # Attention's judge never calls prepare: every TASK case calls kernel_fn, and each failure prints a
+        # ~430-character traceback (6,916 characters after 32889c27's packet, which lost its head). There the
+        # stub replays the evidence before raising, so the tail ends with the packet and one traceback.
+        stub = ("def kernel_fn(*args):\n    for _line in _lab_output:print(_line, flush=True)\n"
+                "    raise RuntimeError('lab-only host')\n") if host == "muse_attention_decode" else \
+            "def kernel_fn(*args):raise RuntimeError('lab-only host')\n"
         src = (f"# okc: problem={host}\nimport torch\n"
                "def prepare(weights):raise RuntimeError('lab-only host: evidence completed at import')\n"
-               "def kernel_fn(*args):raise RuntimeError('lab-only host')\n"
-               "kernel=kernel_fn\n")
+               + stub + "kernel=kernel_fn\n")
         phase = "import"
     else:
         base = best_source(host) if base_file is None else {"source": str(base_file), "job": "candidate " + str(base_file)}
@@ -403,7 +409,8 @@ def build(embedded: list, host: str, import_budget: float = IMPORT_BUDGET_S, pha
     out += "\n_lab_packet_ns = {}\nexec(" + repr(helpers) + ", _lab_packet_ns)\n_lab_encode_packet = _lab_packet_ns['encode_packet']\n"
     out += WRAPPER.format(
         names=", ".join(f"{n} {s}" for n, s, _ in embedded), base=base["job"], payloads=embedded,
-        limit=output_budget, print_line="_lab_output.append(line)" if has_prepare and not prepare_phase else "print(line, flush=True)")
+        limit=output_budget, print_line="_lab_output.append(line)" if (has_prepare and not prepare_phase) or (lab_only and host == "muse_attention_decode")
+        else "print(line, flush=True)")
     out += (PREPARE_WRAPPER if prepare_phase else IMPORT_WRAPPER).format(
         budget=300 - MARGIN_S if prepare_phase else import_budget)
     if has_prepare and not prepare_phase:

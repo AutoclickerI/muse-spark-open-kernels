@@ -4,6 +4,7 @@ Local helper only. Uses inotify and pidfd completion signals; no polling, judge
 calls, extra quota, model invocation, automatic promotion or shared-doc edits.
 """
 import ctypes
+import hashlib
 import json
 import os
 import select
@@ -21,7 +22,8 @@ def matching_receipt(directory, identity):
             data = json.loads(path.read_text())
         except (OSError, ValueError):
             continue
-        if data.get('content_hash') == identity and data.get('status') == 'done':
+        source = path.with_suffix('.py')
+        if source.exists() and hashlib.sha256(source.read_bytes()).hexdigest() == identity and data.get('status') == 'done':
             return path
     return None
 

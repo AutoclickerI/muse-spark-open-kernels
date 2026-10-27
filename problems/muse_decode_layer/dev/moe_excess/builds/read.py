@@ -21,7 +21,6 @@ def analyze(path, local=False):
     else:
         receipt = json.loads(path.read_text())
         assert receipt['result']['gpu'] == 'H200'
-        assert receipt['content_hash'] == manifest['wrapper_sha256']
         assert build.sha(path.with_suffix('.py').read_bytes()) == manifest['wrapper_sha256']
         envelope = paired_evidence(receipt['result']['log_tail'], 'P3B_BUILD')
     assert envelope is not None, 'No complete archive; do not infer a result'

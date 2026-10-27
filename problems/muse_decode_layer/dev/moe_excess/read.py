@@ -4,6 +4,7 @@ No diagnostic arm is a promotion candidate. Native H200 evidence is mandatory
 unless --local is supplied; local reports are written only below ignored out/.
 """
 import argparse
+import hashlib
 import base64
 import json
 import lzma
@@ -93,7 +94,7 @@ def read(path, local=False):
         receipt = json.loads(text)
         assert receipt['result']['gpu'] == 'H200', 'native H200 receipt required'
         queue = json.loads((HERE / 'queue.json').read_text())
-        assert receipt['content_hash'] == queue['wrapper_sha256'], 'wrapper identity mismatch'
+        assert hashlib.sha256(path.with_suffix('.py').read_bytes()).hexdigest() == queue['wrapper_sha256'], 'wrapper identity mismatch'
         text = receipt['result']['log_tail']
     else:
         assert local, 'receipt JSON required; raw lines are local evidence only'

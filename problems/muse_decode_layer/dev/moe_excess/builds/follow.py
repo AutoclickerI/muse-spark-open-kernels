@@ -5,6 +5,7 @@ snapshot is still local, then read the one admitted production cohort. No
 automatic promotion/scoring, periodic polling, detached model, or shared-doc edit.
 """
 import ctypes
+import hashlib
 import fcntl
 import json
 import os
@@ -26,7 +27,8 @@ def receipt(identity):
             data = json.loads(path.read_text())
         except (ValueError, OSError):
             continue
-        if data.get('content_hash') == identity and data.get('status') == 'done':
+        source = path.with_suffix('.py')
+        if source.exists() and hashlib.sha256(source.read_bytes()).hexdigest() == identity and data.get('status') == 'done':
             return path
     return None
 

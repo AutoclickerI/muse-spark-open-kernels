@@ -49,7 +49,7 @@ def one(kind,host):
                     try:d=json.loads(p.read_text())
                     except json.JSONDecodeError:continue  # a CLOSE_WRITE event follows
                     if folder==host:
-                        if d.get('sha256')==expected:dest.append(d)
+                        if p.with_suffix('.py').exists() and sha(p.with_suffix('.py'))==expected:dest.append(d)
                     elif d.get('file')==source and d.get('lane')=='P13':dest.append(d)
             if waiting or pending or finished:break
             select.select([notify],[],[]);os.read(notify,65536)
@@ -75,24 +75,23 @@ def one(kind,host):
         subprocess.run([sys.executable,str(R/'tools/okc_run.py'),'collect',pending[0]['job']],cwd=R,check=True)
     matches=[]
     for path in (R/'runs'/host).glob('*.json'):
-        if path.name.endswith('_'+kind+'.json'):continue
-        d=json.loads(path.read_text())
-        if d.get('sha256')==expected:matches.append(path)
+        # Receipt JSONs carry the judge's result, not our wrapper hash; the .py beside it is the exact source sent.
+        source_copy=path.with_suffix('.py')
+        if source_copy.exists() and sha(source_copy)==expected:matches.append(path)
     assert len(matches)==1,('sender ended without one matching immutable receipt',kind,matches)
     result=report(matches[0],kind)
     state(phase=kind+'_complete',job=result['job'],lab_winners=result['lab_winners'])
     return result
 
-def run(host):
+def run(host,kinds):
     try:
-        first=one('boundary',host)
-        second=one('route',host)
-        state(phase='complete',boundary=first['job'],route=second['job'],boundary_winners=first['lab_winners'],route_winners=second['lab_winners'])
+        results={kind:one(kind,host) for kind in kinds}
+        state(phase='complete',**{kind:v['job'] for kind,v in results.items()},**{kind+'_winners':v['lab_winners'] for kind,v in results.items()})
     except BaseException as exc:
         state(phase='stopped_with_error',error=type(exc).__name__+':'+str(exc));raise
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('--host',default='muse_prefill_layer');parser.add_argument('--detach',action='store_true');args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('--host',default='muse_prefill_layer');parser.add_argument('--kinds',nargs='+',choices=('boundary','route'),default=['boundary','route']);parser.add_argument('--detach',action='store_true');args=parser.parse_args()
     if args.detach:
         (H/'out').mkdir(exist_ok=True)
         previous=H/'out/sequence_status.json'
@@ -103,6 +102,6 @@ if __name__=='__main__':
                 except ProcessLookupError:pass
                 else:raise RuntimeError('P13 receipt reader already running: '+str(pid))
         with (H/'out/sequence.log').open('a') as log:
-            child=subprocess.Popen([sys.executable,str(Path(__file__).resolve()),'--host',args.host],cwd=R,stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
+            child=subprocess.Popen([sys.executable,str(Path(__file__).resolve()),'--host',args.host,'--kinds',*args.kinds],cwd=R,stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
         print('P13 bounded receipt reader PID',child.pid,'status',H/'out/sequence_status.json')
-    else:run(args.host)
+    else:run(args.host,args.kinds)
