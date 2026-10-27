@@ -1,0 +1,88 @@
+{
+ "board": "muse_bf16_proj",
+ "call_id": "sfo3b:kc-0d7f2e48dca1484a",
+ "cluster": "sfo3b",
+ "content_hash": "0b879c087d19202ac4142f2534674015e3a01a99b589b2268190b764ea2fbeb2",
+ "created_at": 1793065589.3044653,
+ "dedicated": false,
+ "duplicate_of": null,
+ "finished_at": 1793066267.3095877,
+ "id": "0d7f2e48dca1484a",
+ "mode": "check",
+ "output": {
+  "log": "/home/jihoon/competitions/muse_kernel/runs/sent/3b4aff3b3759d3ce/profiles/lab_s23_pair.0d7f2e48dca1484a.log"
+ },
+ "payload_ref": "muse_bf16_proj/0b879c087d19202ac4142f2534674015e3a01a99b589b2268190b764ea2fbeb2.py",
+ "result": {
+  "checks": {
+   "flagged": [],
+   "ok": true,
+   "rejected": []
+  },
+  "error": null,
+  "evaluator": {
+   "code_sha256": "986ed3ebb096eab83d16797609f4c0e7895248d6bce33252d25dd306cbe5d018",
+   "files": {
+    "challenge/checks.py": "9a046c3c38db28b325dcd1557baecdf6bc9ef941d2175f9a900ba4c230bb8055",
+    "challenge/nvfp4.py": "cfdf37c7bc14b10f7353aba7d4632f4767401b92b4b073941a8030d9a961aaaf",
+    "configs/muse-spark-open.yaml": "98f07230e4e64fe91b7c76d9a3ce04948053c043d494d5f1fae56cfe2de033af",
+    "harness/eval.py": "0051a1bfac67a9f1fad06086b306653c6643b2bb253e15a794aa672312f070a9",
+    "harness/runner.py": "c905e5c80264c6d27620b6fc7d55b162dccdb8ed7282f8a513a4d2e6f2f226f2",
+    "harness/static_checks.py": "c5588b69e9e86229459a525c61b30096f6f13ff2add6cadf98f272c4ac8ca0c2",
+    "harness/worker.py": "950437610f57ddffbc1176b65d9c2ae909c47bf67b1e3fe0716a81946986f568",
+    "problems/muse_bf16_proj/baseline.py": "39f52ea5b65505958aa9dee9c8129dd394cbba4e670046f862b5a88ce91a0574",
+    "problems/muse_bf16_proj/reference.py": "e62491abc9ddcad33f5faba8b0ee74cf6370b7be5dd2dc05031742f3ebf7147d",
+    "problems/muse_bf16_proj/task.yml": "18e9da6357144b0a1348434a18bd2d1938b1948d9f2130876f6b6706588470c9"
+   },
+   "image": "localhost:30500/kc/judge@sha256:9a7f287b80d772c6f636bbcb57422c619fe326e2aabc53803b85007bca93f68e"
+  },
+  "flags": [],
+  "gpu": "H200",
+  "log_tail": "LAB_BEGIN s23_pair 5a4f57ad85d729b3\nEND complete=False\nLAB_PACKET s23_pair 5a4f57ad85d729b3 ca88651a66a24ddf2236a3891c3b834d7dd959c400c5c3eb1dfd0d996a6344f2 c-m!D%Wm5+5d0NF7q@^*@F9_sfgIA-L3>CVI6*IQK+qCxtDz-Dr1L<KfA3PZWCZ~XSlXGLUG8x87UlJ>vBsNdR_(2wM(euWX&=oZYc@K6{btL`xM&(3{%3d5<^1*>-7t!_wezTHO`}_b*1EK&Kq~|J2KlW)jV@cr1E#uO%&*TEbM&^1OxxD&GMX);zuNB2JiN}(RgGF>jdmb$b%ESgHwJy7Vu~h@4^L{Ny_tMnM$=^!imGE#<v@sL0&@UX`_dL&1gfa*tLg&qN-*d^Xb1B9))dP60izse34rZWuBvreyb!gki@h~~F?qn0qe7XcRM+Rf7vaH=I2mSXpTC0k=?5$kV~l;kBpqvC{aIXwhw8-P1ao%aWXf$Gho%9D(;j$kPlq8C^P%I7tykKrAC#pkcPCj&IOZ9!HqAJgU>T;US~k)XIFX$mc-ZV$w#-i;<5-9u%(og^KVccp(suxxEu4EWrMK<bl$)&&(K|3_N@<4U`yjP4&L_(6D+8^CzV0ZaSWF2f11>uJGuCA_ZT-*WzN{-ZX3!I3bPIZh{HUS5H&u{OP2Ku+ZOi&Ivp-5}^11-Em98GfEFM_Zy61I}OfZ=O&N>Ab4<aG?*e?T$z+yP9Jl%EUeOYaeycDW%oZR<r_pHKLuR987m`z0tXYY(S;@uVpd>MV8-`ozHX{>Hw`OZQbm9axx-NKB@UFpv_A+FoKL&mT3oB0iLaPX>dXK$0Eo0A#p#?1&zc_ugkDGK`wMykpK3Zo;0Qb9?arBb9!%2<RAADMQbNuE*3sRVwU5V(S9GMEy|;3T6UCAefV11)a8kpxIC*S5E$Q{qf;%3>N52KN<yfs`EP4Fni8PesNO29=Ujgm#<4hGDMD7a+idX#%?e6Uih=DSux^_wVpgn_vAz{fG1HLR)7b{vQtBqR9\nLAB_END lab_s=197.0 import_s=197.0\nLAB_BEGIN s23_pair 5a4f57ad85d729b3\nEND complete=False\nLAB_PACKET s23_pair 5a4f57ad85d729b3 ca88651a66a24ddf2236a3891c3b834d7dd959c400c5c3eb1dfd0d996a6344f2 c-m!D%Wm5+5d0NF7q@^*@F9_sfgIA-L3>CVI6*IQK+qCxtDz-Dr1L<KfA3PZWCZ~XSlXGLUG8x87UlJ>vBsNdR_(2wM(euWX&=oZYc@K6{btL`xM&(3{%3d5<^1*>-7t!_wezTHO`}_b*1EK&Kq~|J2KlW)jV@cr1E#uO%&*TEbM&^1OxxD&GMX);zuNB2JiN}(RgGF>jdmb$b%ESgHwJy7Vu~h@4^L{Ny_tMnM$=^!imGE#<v@sL0&@UX`_dL&1gfa*tLg&qN-*d^Xb1B9))dP60izse34rZWuBvreyb!gki@h~~F?qn0qe7XcRM+Rf7vaH=I2mSXpTC0k=?5$kV~l;kBpqvC{aIXwhw8-P1ao%aWXf$Gho%9D(;j$kPlq8C^P%I7tykKrAC#pkcPCj&IOZ9!HqAJgU>T;US~k)XIFX$mc-ZV$w#-i;<5-9u%(og^KVccp(suxxEu4EWrMK<bl$)&&(K|3_N@<4U`yjP4&L_(6D+8^CzV0ZaSWF2f11>uJGuCA_ZT-*WzN{-ZX3!I3bPIZh{HUS5H&u{OP2Ku+ZOi&Ivp-5}^11-Em98GfEFM_Zy61I}OfZ=O&N>Ab4<aG?*e?T$z+yP9Jl%EUeOYaeycDW%oZR<r_pHKLuR987m`z0tXYY(S;@uVpd>MV8-`ozHX{>Hw`OZQbm9axx-NKB@UFpv_A+FoKL&mT3oB0iLaPX>dXK$0Eo0A#p#?1&zc_ugkDGK`wMykpK3Zo;0Qb9?arBb9!%2<RAADMQbNuE*3sRVwU5V(S9GMEy|;3T6UCAefV11)a8kpxIC*S5E$Q{qf;%3>N52KN<yfs`EP4Fni8PesNO29=Ujgm#<4hGDMD7a+idX#%?e6Uih=DSux^_wVpgn_vAz{fG1HLR)7b{vQtBqR9\nLAB_END lab_s=197.0 import_s=197.0\nTraceback (most recent call last):\n  File \"/tmp/muse_bf16_proj-1ionspzb/run/worker.py\", line 423, in child_main\n    send(_setup_op(msg, module, state, sync, perf))\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_bf16_proj-1ionspzb/run/worker.py\", line 322, in _setup_op\n    state[\"prep\"] = prepare(weights)\n                    ^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_bf16_proj-1ionspzb/run/submission.py\", line 117, in prepare\n    return _lab_base_prepare(weights)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_bf16_proj-1ionspzb/run/submission.py\", line 3, in prepare\n    def prepare(weights):raise RuntimeError('lab-only host: evidence completed at import')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host: evidence completed at import\n",
+  "machine": {
+   "gpu_after": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.178.04",
+    "name": "NVIDIA H200",
+    "power.draw": 124.61,
+    "power.limit": 700,
+    "temperature.gpu": 33
+   },
+   "gpu_before": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.178.04",
+    "name": "NVIDIA H200",
+    "power.draw": 129.38,
+    "power.limit": 700,
+    "temperature.gpu": 33
+   },
+   "node": "n-scsqx5dijepif7d54nrfvvircu"
+  },
+  "passed": false,
+  "records": [
+   {
+    "baseline_copies": 16,
+    "baseline_prepare_pad": 17526272,
+    "copies": null,
+    "error": "RuntimeError: lab-only host: evidence completed at import",
+    "event": "setup",
+    "first": "baseline",
+    "prepare_pad": null,
+    "prepare_s": null,
+    "status": "fail"
+   }
+  ],
+  "returncode": 112,
+  "score_us": null,
+  "speedup": null,
+  "speedup_ci": null,
+  "status": "ok"
+ },
+ "started_at": 1793066046.367859,
+ "status": "done",
+ "team": "AutoclickerI"
+}

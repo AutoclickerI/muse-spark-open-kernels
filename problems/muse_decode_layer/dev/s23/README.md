@@ -33,5 +33,11 @@ Local checks: 25 contracts (`contracts.py`, including S22's base contracts for d
 normal/forced stand-in screens 13 TASK + 12 graphs each (P10's `night/screen_s22.py`), exact packed rehearsal 3136
 TASK + 260 nearby with every arm complete (`screen_lab.py`), lab-only transport. Wire 8938 bytes.
 
-Sent: `lab_s23_pair.py` on muse_bf16_proj as a check, wrapper `3b4aff3b`, lane P4. Results: `results.json` after
+First send `0d7f2e48` (wrapper `3b4aff3b`) stopped in the host's prepare: `No released NF shape (16, 'qkv_gate')`.
+Cause, lab-only: the S19 HOOK times `nf_prepare` through a closure; `pp_prepare` rebinds globals with `pp_clone`, which
+cannot rebind a closure's captured function, so PORT4's NF build ran the module's selected-only `_s15n_nf_key`, missed
+its plan natively (`missing NF plan`) and pp_prepare recorded the error; the warm call then raised. The shipped file
+has no HOOK, and arms (no HOOK) were unaffected. sm_120 hides it: there the same miss falls back to `torch.mm`.
+`build_lab.py` now leaves `nf_prepare` out of the HOOK's phase timer. No timing or TASK data was observed, so the
+seeds stay. Resent as wrapper `c5503fe0` (lane P4). Results: `results.json` after
 `python3 problems/muse_decode_layer/dev/s23/report.py <receipt>`.

@@ -48,6 +48,10 @@ def main():
  problem=R/'problems/muse_decode_layer';ref='\n'.join(x for x in (problem/'reference.py').read_text().splitlines() if not x.startswith(('from checks import','from nvfp4 import')))
  checker='\n'.join(x for t in ((problem/'checks.py').read_text(),(problem/'nvfp4.py').read_text(),ref) for x in t.splitlines() if not x.startswith('from __future__ import'))
  sd=seed_manifest(phase);hook=next(ast.literal_eval(n.value) for n in ast.parse((H.parent/'s19/build_lab.py').read_text()).body if isinstance(n,ast.Assign) and getattr(n.targets[0],'id','')=='HOOK')
+ # The HOOK's phase timer wraps nf_prepare in a closure; pp_prepare's pp_clone cannot rebind a closure's captured
+ # function, so on the lab host P10's NF ports ran the module's selected-only _s15n_nf_key and failed natively
+ # (0d7f2e48: No released NF shape (16, 'qkv_gate')). The shipped file has no HOOK; time nf_prepare via the delta.
+ old="'_best7_prepare_settings','nf_prepare','_s16_prepare_delta'";assert hook.count(old)==1;hook=hook.replace(old,"'_best7_prepare_settings','_s16_prepare_delta'")
  bundle=base64.b85encode(lzma.compress(json.dumps(dict(host=source,arms=arms),separators=(',',':')).encode(),preset=9)).decode()
  body='import torch,types,time,statistics,math\n'+(H.parent/'s19/graph_helpers.py.inc').read_text()+'\n'+(H.parent/'s21/timing.py.inc').read_text()+'\nAB_SEEDS='+repr(tuple(sd['confirmation_seeds']))+'\n'
  body+=f"S17_WEIGHT_SEED={sd['weight_seed']}\nS17_ROUTER_SEED={sd['router_seed']}\n"
