@@ -1,14 +1,13 @@
 # Plan
 
-## Status (2026-10-27 09:15 KST, day 6 of 14; the kernel track closes 2026-11-05 16:59 KST)
-- Board (SOTA "Leaderboard", 09:13): S19 `8b415553` 1.8621x, 111th of 755; leader 2.3797x, 10th 2.2210x, 50th
-  2.0061x. Gap and target: GOAL "Target".
-- Confirmed incumbent: S19 `62ea5bf4` (`cand_r3_best7_s19_final.py`, `dev/s19/frozen.json`), scored
-  `fd4d153f` 1.8621x with the official TASK passing; R 1.014463 [1.013044, 1.015885] over S18 (`6ac9317e`).
-- S21 `109c0135` (shipment `eacc087b`, [dev/s21](../problems/muse_decode_layer/dev/s21/README.md)): S19 + C3 +
-  exact12 gate + Rw4 + NP T128 + public attention ports (Lee, operatorstack; R-20261026-1). Native G0 passes, R
-  1.002638 [1.001195, 1.004084] over S19 (`58645631`, 64 seeds x 16 symmetric rounds); the 1.0197 per-call
-  projection did not transfer (decode16 .958: the d16S port blocks the gate-GEMM overlap). Scored sender 3225144.
+## Status (2026-10-27 09:22 KST, day 6 of 14; the kernel track closes 2026-11-05 16:59 KST)
+- Board (SOTA "Leaderboard", 09:20): S21 `eacc087b` 1.8781x, 105th of 755; leader 2.3797x, 10th 2.2210x, 50th
+  2.0182x. Gap and target: GOAL "Target".
+- Confirmed incumbent: S21 `109c0135` (`cand_r3_best7_s21_final.py`, `dev/s21/frozen.json`), scored `ec8cc95c`
+  1.8781x with the official TASK passing (S19 scored 1.8621x, `fd4d153f`). S21 = S19 + C3 + exact12 gate + Rw4 +
+  NP T128 + public attention ports (Lee, operatorstack; R-20261026-1); native G0 R 1.002638 [1.001195, 1.004084]
+  over S19 (`58645631`). Its 1.0197 per-call projection did not transfer (decode16 .958: the d16S port blocks the
+  gate-GEMM overlap).
 - S22 `4b8c803d` ([dev/s22](../problems/muse_decode_layer/dev/s22/README.md)): S21 + S19 at d16S + direct-input
   v1S / d32S hybrids, with in-graph leave-outs per ported cell; lab 3725147 in flight, worker 3807459 prunes,
   confirms and scores.

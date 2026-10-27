@@ -6,27 +6,27 @@ times (API, 2026-10-23): proj 4,830.8; attention 3,766.3; MoE 13,448.5; decode l
 step; prefill 387,403.9 us per prefill load (`upstream/api/problems/*.json`, `sglang_us`). Its per-shape times
 and where they go are in [FINDINGS](FINDINGS.md).
 
-## Leaderboard (snapshot `runs/boards/20261027T001346Z`, 2026-10-27 09:13 KST)
+## Leaderboard (snapshot `runs/boards/20261027T002046Z`, 2026-10-27 09:20 KST)
 
-**Overall board (openkernelchallenge.dev/leaderboard): rank 111 of the teams that solved all four.** The API gives
+**Overall board (openkernelchallenge.dev/leaderboard): rank 105 of the teams that solved all four.** The API gives
 overall ranks only. Our fit (`python3 tools/board_model.py <snapshot>`; derivation in FINDINGS "Boards") is
 max(decode, 0.351 + 0.312 MoE + 0.268 proj + 0.105 attention), prefill ignored: Kendall tau 0.963 over all teams,
-0.999 over the top 300, the top 50 exact; it predicts our rank 111 exactly. **The overall board is the decode-layer
-board.** Rank 50 needs decode 2.0061x (+0.144); serving-queue priority goes to the top 50 at the kernel close
+0.999 over the top 300, the top 50 exact; it predicts our rank 105 exactly. **The overall board is the decode-layer
+board.** Rank 50 needs decode 2.0182x (+0.140); serving-queue priority goes to the top 50 at the kernel close
 (llms.txt:120).
 
 | Problem | Our best run on the board | Our rank / entries | Leader | 10th | 50th |
 |---|---|---|---|---|---|
-| muse_decode_layer | 1.8621x S19 `8b415553` | 111 / 755 | 2.3797x (colinlikescode) | 2.2210x | 2.0061x |
+| muse_decode_layer | 1.8781x S21 `eacc087b` | 105 / 755 | 2.3797x (colinlikescode) | 2.2210x | 2.0182x |
 | muse_moe_w4a16 | 2.0319x (`1da2153a`) | 149 / 873 | 2.6196x (Abarbir12) | 2.4432x | 2.2273x |
 | muse_attention_decode | 1.6696x (`b05713ec`, a lab host run) | 354 / 829 | 3.0316x (pjmullin3) | 2.6146x | 2.4005x |
 | muse_bf16_proj | 1.2024x (`08cc9405`, P12's component run) | 617 / 1104 | 1.6367x (colinlikescode) | 1.5606x | 1.5254x |
 | muse_prefill_layer | 1.4538x | 187 / 487 | 2.0252x (ericligit05) | 1.8455x | 1.6743x |
 
-Our decode entries: S17 1.8379x (`5f35323a`) -> S18 1.8484x (`28b5c189`) -> S19 1.8621x (`fd4d153f`, 10-27 09:01).
-S21 (lab R 1.0026 over S19) is scored next. The field moves faster than our steps: the decode leader went 2.2849
+Our decode entries: S17 1.8379x (`5f35323a`) -> S18 1.8484x (`28b5c189`) -> S19 1.8621x (`fd4d153f`, 10-27 09:01) -> S21
+1.8781x (`ec8cc95c`, 09:02; lab R 1.0026 over S19). The field moves faster than our steps: the decode leader went 2.2849
 (10-25 11:27) -> 2.3797x (10-26 17:24) and has held since; 10th 2.0663 -> 2.1761 -> 2.2210 and 50th 1.8258 ->
-1.9561 -> 2.0061 over the same 46 hours, so our rank went 90 -> 100 -> 111 while our score rose. Component entries
+1.9561 -> 2.0182 over the same 46 hours, so our rank went 90 -> 100 -> 105 while our score rose. Component entries
 are lab hosts and P12 runs, not tuned for those boards; per-stage gaps to the leaders are PLAN's P12 numbers. Boards
 come from `okc leaderboard [<problem>] --json`.
 
