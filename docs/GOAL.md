@@ -8,9 +8,9 @@ no load or stage has to win on its own (gate: PLAN "Ranked work"). By our fit (F
 overall score is max(decode layer, a weighted component sum), and the layer wins even at the leaders' components.
 
 ## Target
-Decode layer 1.8781x (S21 `eacc087b`), 105th of 755 at 10-27 09:20 KST; 1st is 2.3797x, flat for 16 hours after
-+4.1% (SOTA "Leaderboard"); we size for ~2.6x at the close (estimate). Gap 1.27x now, ~1.38x at 2.6x
-(21-28% less time per layer): removing 60-85% of our time above the stage roofs (PLAN "Levers").
+Decode layer 1.8892x (S22 `22874960`), 101st of 757 at 10-27 10:51 KST; 1st is 2.3797x, flat for 17 hours after
++4.1% (SOTA "Leaderboard"); we size for ~2.6x at the close (estimate). Gap 1.26x now, ~1.38x at 2.6x
+(21-27% less time per layer): removing 60-85% of our time above the stage roofs (PLAN "Levers").
 
 ## Subgoals (ranked)
 

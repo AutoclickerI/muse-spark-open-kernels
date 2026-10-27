@@ -1,17 +1,13 @@
 # Plan
 
-## Status (2026-10-27 09:22 KST, day 6 of 14; the kernel track closes 2026-11-05 16:59 KST)
-- Board (SOTA "Leaderboard", 09:20): S21 `eacc087b` 1.8781x, 105th of 755; leader 2.3797x, 10th 2.2210x, 50th
-  2.0182x. Gap and target: GOAL "Target".
-- Confirmed incumbent: S21 `109c0135` (`cand_r3_best7_s21_final.py`, `dev/s21/frozen.json`), scored `ec8cc95c`
-  1.8781x with the official TASK passing (S19 scored 1.8621x, `fd4d153f`). S21 = S19 + C3 + exact12 gate + Rw4 +
-  NP T128 + public attention ports (Lee, operatorstack; R-20261026-1); native G0 R 1.002638 [1.001195, 1.004084]
-  over S19 (`58645631`). Its 1.0197 per-call projection did not transfer (decode16 .958: the d16S port blocks the
-  gate-GEMM overlap).
-- S22 `fd5e0ca2` (shipment `22874960`, [dev/s22](../problems/muse_decode_layer/dev/s22/README.md)): S21 + S19 d16S +
-  direct-input v1S/d32S hybrids; phase0 R 1.007814 [1.007209,1.008420] (`6a1303c1`); selected drop=['v16F'],
-  disabled hybrids=[]; phase1 native G0 passes: R 1.009997 [1.009669,1.010326], prepare 179.87s (`0e1f9bc8`);
-  official 1.8892x (`210d40e0`), TASK pass, frozen.
+## Status (2026-10-27 10:55 KST, day 6 of 14; the kernel track closes 2026-11-05 16:59 KST)
+- Board (SOTA "Leaderboard", 10:51): S22 `22874960` 1.8892x, 101st of 757; leader 2.3797x, 10th 2.2210x, 50th
+  2.0242x. Gap and target: GOAL "Target".
+- Confirmed incumbent: S22 `fd5e0ca2` (shipment `22874960`, [dev/s22](../problems/muse_decode_layer/dev/s22/README.md)),
+  official 1.8892x (`210d40e0`, TASK pass): S21 + S19 kernel at d16S + direct-input v1S/d32S hybrids, v16F port
+  dropped by its leave-out; native G0 R 1.009997 [1.009669, 1.010326] over S21 (`0e1f9bc8`), prepare 179.87 s.
+  Scored chain: S19 1.8621x (`fd4d153f`) -> S21 1.8781x (`ec8cc95c`; public attention ports, R-20261026-1) -> S22.
+- S23 (S22 + P10 projection ports, in-graph R 1.0071 [1.0052, 1.0091] on S21): paired lab `0d7f2e48` in flight.
 - Rule from S21: judge every candidate by whole-load time in the production graph; per-call ratios do not transfer.
 - Where the time goes: S19 timeline `9c16c850` ([H200.md](../problems/muse_decode_layer/dev/s19_timeline/result/H200.md));
   walls 81 / 190 / 246 / 130 / 321 / 426 us per layer at d1 / d16 / d32 / v1 / v16 / v32. Deletion oracles: setup
