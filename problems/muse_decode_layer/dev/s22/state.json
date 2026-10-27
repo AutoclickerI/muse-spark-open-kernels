@@ -1,5 +1,27 @@
 {
-  "history": [],
-  "worker_pid": 3807459,
-  "status": "awaiting_native_lab"
+  "history": [
+    {
+      "phase": 0,
+      "job": "6a1303c14c13406b",
+      "receipt": "runs/muse_bf16_proj/20261027T000206Z_check_6a1303c14c13406b.json",
+      "source_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+      "R": 1.0078142749121224,
+      "CI95": [
+        1.0072086107786584,
+        1.0084203032492265
+      ],
+      "decision": "confirm"
+    }
+  ],
+  "worker_pid": 670583,
+  "status": "awaiting_native_lab",
+  "selected_config": {
+    "phase": 1,
+    "host": "muse_bf16_proj",
+    "dropped_cells": [
+      "v16F"
+    ],
+    "disabled_hybrids": []
+  },
+  "phase": 1
 }

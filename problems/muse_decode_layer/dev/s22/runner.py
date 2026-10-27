@@ -4,7 +4,6 @@ from pathlib import Path
 import compose
 H=compose.H;R=compose.R;ENV=dict(os.environ,CUDA_VISIBLE_DEVICES='0')
 sys.path.insert(0,str(R/'tools'));import h200_lab
-DECISION='S22: d16S restore + direct-input hybrids, per-cell leave-outs'
 
 def run(cmd,log,retry_oom=False):
  attempts=[]
@@ -68,34 +67,36 @@ def send_current():
    if p:return q
    try:os.kill(q['sender_pid'],0);return q
    except (OSError,KeyError):pass
- note=f"P4 S22 phase{m['phase']} source{m['sha256'][:12]} shipped{m['shipped_sha256'][:12]}; S21 baseline, d16S restored, direct-input hybrids; 64 fresh seeds x16 symmetric rounds; six remaining S19 per-cell swaps and incremental hybrid arms where active. Contracts, both local TASK/graph screens and exact packed rehearsal passed; preserve all cell ratios, rounds and telemetry. S21 scored sender3225144 unchanged."
- cmd=[sys.executable,'tools/h200_lab.py','send',m['payload'],'--host',chosen,'--lab-only','--phase','import','--import-budget','820','--lane','P4','--decision',DECISION,'--note',note]
+ note=f"P4 S22 phase{m['phase']} source{m['sha256'][:12]} shipped{m['shipped_sha256'][:12]} vs frozen S21 eacc087b; d16S restored, direct-input hybrids, drops{m['dropped_cells']}, disabled hybrids{m['disabled_hybrids']}; 64 fresh seeds x16 symmetric rounds; S19 per-cell swaps and hybrid arms for every active cell. Contracts, both local TASK/graph screens and exact packed rehearsal passed; preserve all cell ratios, rounds and telemetry."
+ decision=f"S22 phase{m['phase']} confirmation vs S21"
+ cmd=[sys.executable,'tools/h200_lab.py','send',m['payload'],'--host',chosen,'--lab-only','--phase','import','--import-budget','820','--lane','P4','--decision',decision,'--note',note]
  if check:cmd+=['--check']
  run(cmd,'send.log');pid=sender_pid(m['sent_wrapper']);rp=receipt_for(m['wrapper_sha256']);assert pid or rp,'Sender disappeared without a receipt'
- q=dict(phase=m['phase'],source_sha256=m['sha256'],shipped_sha256=m['shipped_sha256'],wrapper_sha256=m['wrapper_sha256'],payload_sha256=m['payload_sha256'],host=chosen,sender_pid=pid,decision=DECISION,quota_at_send=left,waiting_for_reset=not sum(left.get(chosen,(0,0))),receipt=str(rp.relative_to(R)) if rp else None)
+ q=dict(phase=m['phase'],source_sha256=m['sha256'],shipped_sha256=m['shipped_sha256'],wrapper_sha256=m['wrapper_sha256'],payload_sha256=m['payload_sha256'],host=chosen,sender_pid=pid,decision=decision,quota_at_send=left,waiting_for_reset=not sum(left.get(chosen,(0,0))),receipt=str(rp.relative_to(R)) if rp else None)
  qpath.write_text(json.dumps(q,indent=2)+'\n');(H/'stages'/f"p{m['phase']}"/'queue.json').write_text(json.dumps(q,indent=2)+'\n');return q
 
 def wait_receipt(q):
  sha=q['wrapper_sha256'];rp=receipt_for(sha)
  if rp:return rp
- pid=q['sender_pid'];assert platform.machine()=='x86_64'
+ pid=q.get('sender_pid');assert platform.machine()=='x86_64'
  # Linux x86_64 __NR_pidfd_open=434, verified in the host's unistd_64.h.
  # Wait for this one sender's completion signal, never a polling cadence.
- libc=ctypes.CDLL(None,use_errno=True);libc.syscall.restype=ctypes.c_long
- fd=libc.syscall(ctypes.c_long(434),ctypes.c_int(pid),ctypes.c_uint(0))
- if fd<0:
-  error=ctypes.get_errno()
-  if error!=errno.ESRCH:raise OSError(error,os.strerror(error))
- else:
-  try:select.select([fd],[],[])
-  finally:os.close(fd)
+ if pid:
+  libc=ctypes.CDLL(None,use_errno=True);libc.syscall.restype=ctypes.c_long
+  fd=libc.syscall(ctypes.c_long(434),ctypes.c_int(pid),ctypes.c_uint(0))
+  if fd<0:
+   error=ctypes.get_errno()
+   if error!=errno.ESRCH:raise OSError(error,os.strerror(error))
+  else:
+   try:select.select([fd],[],[])
+   finally:os.close(fd)
  rp=receipt_for(sha)
  if rp:return rp
  pending=[json.loads(p.read_text()) for p in (R/'runs/pending').glob('*.json')]
  entry=next((x for x in pending if x.get('sha256')==sha),None)
  if entry:run([sys.executable,'tools/okc_run.py','collect',entry['job']],'collect.log')
  rp=receipt_for(sha)
- if rp is None:raise RuntimeError('S22 sender ended without paired evidence; no scoring action taken')
+ if rp is None:raise RuntimeError('S22 sender ended without a receipt; no further action taken')
  return rp
 
 if __name__=='__main__':

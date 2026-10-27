@@ -15,6 +15,8 @@ def decide(result,config):
  if not result.get('measured'):raise RuntimeError('Primary paired evidence is unmeasured')
  for group in ('cells','hybrids'):
   if any(not v['measured'] for v in result[group].values()):raise RuntimeError('Missing requested per-cell/hybrid evidence')
+ # A fresh confirmation of a selection that passes G0 is scored; losses it resolves go to the next integration batch.
+ if config['phase']>0 and result['lab_gate']:return dict(action='score')
  dropped=set(config['dropped_cells']);disabled=set(config['disabled_hybrids'])
  dropped.update(n for n,v in result['cells'].items() if v['CI95'][1]<1)
  disabled.update(n for n,v in result['hybrids'].items() if v['CI95'][1]<1)
@@ -29,19 +31,30 @@ def save(state):
 def score_current(m,r):
  path=R/m['shipped_source'];assert hashlib.sha256(path.read_bytes()).hexdigest()==m['shipped_sha256']
  assert r['lab_gate'] and r['source_sha256']==m['sha256']
- assert not r['drop_cells'] and not r['disable_hybrids'],'Selected losses require a fresh confirmed build'
  assert all(v['measured'] for group in ('cells','hybrids') for v in r[group].values())
- note=f"P4 S22 phase{m['phase']} source{m['sha256'][:12]} shipped{m['shipped_sha256'][:12]}: native G0 over accepted S21 R{r['score']['R']:.6f} CI{r['score']['CI95']}, prepare{r['prepare']['host_prepare_s']:.2f}s. Drops{m['dropped_cells']}; disabled hybrids{m['disabled_hybrids']}. All selected changes confirmed on this phase's new64seeds x16symmetric rounds; per-cell TASK/CIs complete. After unchanged S21 sender3225144 at09:02; no new freeze."
- cmd=[sys.executable,'tools/okc_run.py','send',m['shipped_source'],'--scored','--not-before','2026-10-27T09:03:00+09:00','--lane','P4','--decision','S22 selected composition official TASK and decode score after S21; fresh G0 passed','--note',note]
+ loads=', '.join(f"{k} {v['R']:.4f}" for k,v in r['score']['loads'].items())
+ note=f"P4 S22 phase{m['phase']} source{m['sha256'][:12]} shipped{m['shipped_sha256'][:12]}: S21 + S19 d16S + direct-input v1S/d32S hybrids, drops{m['dropped_cells']}, disabled hybrids{m['disabled_hybrids']}. Native fresh-seed G0 over frozen S21 eacc087b ({r['job']}, 64 seeds x16 symmetric rounds): R{r['score']['R']:.6f} CI{[round(x,6) for x in r['score']['CI95']]}; {loads}; in-lab TASK {r['checks']['task_checks']}+{r['checks']['nearby_task_checks']} nearby pass; prepare{r['prepare']['host_prepare_s']:.2f}s."
+ cmd=[sys.executable,'tools/okc_run.py','send',m['shipped_source'],'--scored','--lane','P4','--decision',f"S22 phase{m['phase']} official score",'--note',note]
  runner.run(cmd,'score_send.log');pid=runner.sender_pid(m['shipped_source'])
- if pid:
-  path=R/'runs/waiting'/f'{pid}.json'
-  entry=json.loads(path.read_text()) if path.exists() else dict(pid=pid,sha256=m['shipped_sha256'],not_before='2026-10-27T09:03:00+09:00')
-  assert entry['sha256']==m['shipped_sha256'];return entry
- pending=[json.loads(p.read_text()) for p in (R/'runs/pending').glob('*.json')]
- entry=next((x for x in pending if x.get('sha256')==m['shipped_sha256']),None)
- if entry:return dict(pid=None,**entry)
- raise RuntimeError('Scored send did not leave a live sender or accepted pending job')
+ if pid:return dict(pid=pid,sha256=m['shipped_sha256'])
+ rp=runner.receipt_for(m['shipped_sha256'])
+ if rp:return dict(pid=None,sha256=m['shipped_sha256'])
+ raise RuntimeError('Scored send left neither a live sender nor a receipt')
+
+def freeze(m,r,scored):
+ """Wait for the official scored receipt; freeze only when the judge's checks pass."""
+ rp=runner.wait_receipt(dict(wrapper_sha256=m['shipped_sha256'],sender_pid=scored.get('pid')));x=json.loads(rp.read_text());res=x['result']
+ row=next(json.loads(l) for l in (R/'runs/ledger.jsonl').read_text().splitlines() if json.loads(l).get('job')==x['id'])
+ ok=row['mode']=='submit' and res.get('passed') is True and res.get('checks',{}).get('ok') is True and res.get('speedup')
+ setup=next((y for y in res.get('records',[]) if y.get('event')=='setup' and y.get('prepare_s')),{})
+ f=dict(name='S22',phase=m['phase'],expanded_sha256=m['sha256'],shipped_sha256=m['shipped_sha256'],file=m['shipped_source'],dropped_cells=m['dropped_cells'],disabled_hybrids=m['disabled_hybrids'],
+  scored_job=x['id'],scored_speedup=res.get('speedup'),scored_interval=res.get('speedup_ci'),scored_receipt=str(rp.relative_to(R)),official_prepare_s=setup.get('prepare_s'),
+  official_TASK_run=f"{x['id']} ({'checks ok' if ok else 'FAILED: passed='+str(res.get('passed'))+' checks='+json.dumps(res.get('checks'))})",
+  confirmation_job=r['job'],confirmation_host=m['host']+' import-time lab',R=r['score']['R'],CI95=r['score']['CI95'],loads={k:v['R'] for k,v in r['score']['loads'].items()},over='S21 109c0135/eacc087b',
+  seeds=r['score']['n'],rounds=r['measurement_protocol']['rounds'],TASK_checks=r['checks']['task_checks'],nearby_TASK_checks=r['checks']['nearby_task_checks'],prepare_s=r['prepare']['host_prepare_s'],
+  licenses='Lee v56 (Apache-2.0) and operatorstack (MIT) notices shipped, R-20261026-1')
+ if not ok:raise RuntimeError('Official scored run did not pass: '+f['official_TASK_run'])
+ (H/'frozen.json').write_text(json.dumps(f,indent=2)+'\n');return f
 
 def work(expected):
  with (H/'followthrough.lock').open('a') as lock:
@@ -64,7 +77,8 @@ def _work_locked(expected):
    history[:]=[x for x in history if x['phase']!=m['phase']];history.append(entry)
    q.update(receipt=str(rp.relative_to(R)),lab_complete=True,job=result['job']);(H/'queue.json').write_text(json.dumps(q,indent=2)+'\n')
    if choice['action']=='score':
-    state.update(status='scored_queued',scored=score_current(m,result));save(state);finish.render();finish.commit(f"P4: S22 phase{m['phase']} passes fresh G0; queue scored build after S21");return
+    state.update(status='scored_queued',scored=score_current(m,result));save(state);finish.render();finish.commit(f"P4: S22 phase{m['phase']} passes fresh G0 over S21; queue its scored run")
+    f=freeze(m,result,state['scored']);state.update(status='frozen',frozen=f);save(state);finish.render();finish.commit(f"P4: freeze S22 phase{m['phase']} at {f['scored_speedup']:.4f}x (official TASK pass)");return
    if choice['action']=='stop':
     state['status']='G0_failed';save(state);finish.render();finish.commit(f"P4: retain measured S22 phase{m['phase']} negative G0 and per-cell evidence");return
    assert choice['config']['phase']<=8,'More than eight monotone selection steps'

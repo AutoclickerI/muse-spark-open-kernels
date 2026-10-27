@@ -1,0 +1,127 @@
+{
+  "source_sha256": "fd5e0ca2ef4bbc1128b04b68aa6802c9543b61808e7663ca5ad10ec4d957110b",
+  "shipped_sha256": "2287496067a3da750d43afd1943c12e69fb1d5337ce1c5e528d4b6c64649a6fd",
+  "contracts": 1820,
+  "steps": {
+    "static": [
+      {
+        "log": "static.log",
+        "returncode": 0
+      }
+    ],
+    "normal": [
+      {
+        "log": "screen_normal.log",
+        "returncode": 0
+      }
+    ],
+    "forced": [
+      {
+        "log": "screen_forced.log",
+        "returncode": 0
+      }
+    ],
+    "packed": [
+      {
+        "log": "rehearsal.log",
+        "returncode": 0
+      }
+    ],
+    "transport": [
+      {
+        "log": "transport.log",
+        "returncode": 0
+      }
+    ]
+  },
+  "packed": {
+    "wrapper_sha256": "1d71f4d43c06d15b0cd8e442d56e9c6487e32ea03ea576c5922ff47341b22438",
+    "payload_sha256": "453b73829519f447b9d58d3bc55d2601fb354da14ab1b8865a07519a19315d87",
+    "source_sha256": "fd5e0ca2ef4bbc1128b04b68aa6802c9543b61808e7663ca5ad10ec4d957110b",
+    "complete": true,
+    "failures": [],
+    "TASK": 2752,
+    "nearby": 260,
+    "per_cell_samples": {
+      "d32S": {
+        "A2": 64,
+        "no_HY_d32S": 64,
+        "off_d32S": 64
+      },
+      "v1S": {
+        "A2": 64,
+        "no_HY_v1S": 64,
+        "off_v1S": 64
+      },
+      "v1F": {
+        "A2": 64,
+        "off_v1F": 64
+      },
+      "v16S": {
+        "A2": 64,
+        "off_v16S": 64
+      },
+      "v32S": {
+        "A2": 64,
+        "off_v32S": 64
+      }
+    },
+    "sampling_plan_admitted": true,
+    "archive_round_trip_exact": true,
+    "tail_with_4000_suffix_pass": true,
+    "wire_bytes": 10911,
+    "import_s": 220.6
+  },
+  "transport": {
+    "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/dev/s22/generated/wrapper.py",
+    "sha256": "1d71f4d43c06d15b0cd8e442d56e9c6487e32ea03ea576c5922ff47341b22438",
+    "tier": "wrapper",
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "dynamic state contract: requires changed-unit/H200 checks"
+      },
+      {
+        "name": "wrapper_lab-only",
+        "ok": true,
+        "packets": 1
+      }
+    ]
+  },
+  "normal": {
+    "TASK": 13,
+    "graphs": 12,
+    "passed": true
+  },
+  "forced": {
+    "TASK": 13,
+    "graphs": 12,
+    "passed": true
+  }
+}

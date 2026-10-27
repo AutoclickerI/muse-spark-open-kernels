@@ -43,7 +43,16 @@ class SelectionTests(unittest.TestCase):
    def send():
     q=dict(wrapper_sha256='wrapper1');write('queue.json',q);return q
    def score(m,r):scores.append(m['phase']);self.assertEqual(waits,['wrapper0','wrapper1']);return dict(pid=999)
-   with patch.object(follow,'H',temp),patch.object(follow.signal,'signal'),patch.object(follow.runner,'wait_receipt',side_effect=wait),patch.object(follow.report,'analyze',side_effect=[r0,r1]),patch.object(follow.runner,'run',side_effect=run),patch.object(follow.runner,'validate_current'),patch.object(follow.runner,'send_current',side_effect=send),patch.object(follow,'score_current',side_effect=score),patch.object(follow.finish,'render'),patch.object(follow.finish,'commit'):
+   with patch.object(follow,'H',temp),patch.object(follow.signal,'signal'),patch.object(follow.runner,'wait_receipt',side_effect=wait),patch.object(follow.report,'analyze',side_effect=[r0,r1]),patch.object(follow.runner,'run',side_effect=run),patch.object(follow.runner,'validate_current'),patch.object(follow.runner,'send_current',side_effect=send),patch.object(follow,'score_current',side_effect=score),patch.object(follow,'freeze',return_value=dict(scored_speedup=1.9)),patch.object(follow.finish,'render'),patch.object(follow.finish,'commit'):
     follow.work('wrapper0')
-   self.assertEqual(scores,[1]);self.assertEqual(json.loads((temp/'state.json').read_text())['status'],'scored_queued')
+   self.assertEqual(scores,[1]);self.assertEqual(json.loads((temp/'state.json').read_text())['status'],'frozen')
+class PlanTests(unittest.TestCase):
+ def test_plan_refresh_never_asserts_on_orchestrator_prose(self):
+  for text in ('# Plan\n\nNo S22 bullet and no ranked table.\n','| Rank | Id |\n|---|---|\n| 3 | P5 | G1 | x | y | z | w |\n'):
+   self.assertEqual(follow.finish.update_plan(text),text)
+ def test_plan_refresh_touches_only_s22_bullet_and_p4_work(self):
+  text='## Status\n- Board line.\n- S22 `old` (stale): text\n  continued.\n- Rule line.\n\n| Rank | Id | Serves | Work | Done | Who | State |\n|---|---|---|---|---|---|---|\n| 2 | P4 | G1 | old work | done | lane | active |\n'
+  out=follow.finish.update_plan(text);lines=out.splitlines()
+  self.assertIn('- Board line.',lines);self.assertIn('- Rule line.',lines);self.assertNotIn('  continued.',lines);self.assertNotIn('old work',out)
+  row=next(x for x in lines if '| P4 |' in x).split('|');self.assertEqual([c.strip() for c in row[5:8]],['done','lane','active'])
 if __name__=='__main__':unittest.main()

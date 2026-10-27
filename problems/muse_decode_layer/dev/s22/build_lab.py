@@ -35,7 +35,7 @@ def main():
  cfg=json.loads((H/'config.json').read_text());phase=cfg['phase'];host=cfg['host'];budget=820.
  source,meta=compose.build(cfg['dropped_cells'],cfg['disabled_hybrids']);specs=compose.arm_specs(cfg['dropped_cells'],cfg['disabled_hybrids']);arms={}
  (H/'generated').mkdir(exist_ok=True);(H/'generated/s22.py').write_text(source)
- shipped='\n'.join(x.rstrip() for x in pack(source).splitlines())+'\n';candidate=P/'cand_r3_best7_s22_final.py';candidate.write_text(shipped)
+ shipped='\n'.join(x.rstrip() for x in pack(source).splitlines())+'\n';candidate=P/('cand_r3_best7_s22_final.py' if phase==0 else f'cand_r3_best7_s22p{phase}_final.py');candidate.write_text(shipped)  # phase 0 stays: other lanes build on it
  lines=source.splitlines(True)
  for name,spec in specs.items():
   text=spec['source'];other=text.splitlines(True)

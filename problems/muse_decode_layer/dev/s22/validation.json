@@ -1,14 +1,46 @@
 {
-  "source_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
-  "shipped_sha256": "d1ccdc358ef5fb0f038a1d0e741465f512f498e90d39a16e56f3f0b0e47615f3",
-  "contracts": 2024,
+  "source_sha256": "fd5e0ca2ef4bbc1128b04b68aa6802c9543b61808e7663ca5ad10ec4d957110b",
+  "shipped_sha256": "2287496067a3da750d43afd1943c12e69fb1d5337ce1c5e528d4b6c64649a6fd",
+  "contracts": 1820,
+  "steps": {
+    "static": [
+      {
+        "log": "static.log",
+        "returncode": 0
+      }
+    ],
+    "normal": [
+      {
+        "log": "screen_normal.log",
+        "returncode": 0
+      }
+    ],
+    "forced": [
+      {
+        "log": "screen_forced.log",
+        "returncode": 0
+      }
+    ],
+    "packed": [
+      {
+        "log": "rehearsal.log",
+        "returncode": 0
+      }
+    ],
+    "transport": [
+      {
+        "log": "transport.log",
+        "returncode": 0
+      }
+    ]
+  },
   "packed": {
-    "wrapper_sha256": "f923c406edb9ce95d7578ddab0486481aead7d00753ae904278f6f35883ef1c3",
-    "payload_sha256": "403ff22fe051272ddc3b2e154de6b7529998399a4ab284ae62cb47b1264caf9a",
-    "source_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+    "wrapper_sha256": "1d71f4d43c06d15b0cd8e442d56e9c6487e32ea03ea576c5922ff47341b22438",
+    "payload_sha256": "453b73829519f447b9d58d3bc55d2601fb354da14ab1b8865a07519a19315d87",
+    "source_sha256": "fd5e0ca2ef4bbc1128b04b68aa6802c9543b61808e7663ca5ad10ec4d957110b",
     "complete": true,
     "failures": [],
-    "TASK": 2816,
+    "TASK": 2752,
     "nearby": 260,
     "per_cell_samples": {
       "d32S": {
@@ -29,10 +61,6 @@
         "A2": 64,
         "off_v16S": 64
       },
-      "v16F": {
-        "A2": 64,
-        "off_v16F": 64
-      },
       "v32S": {
         "A2": 64,
         "off_v32S": 64
@@ -41,12 +69,12 @@
     "sampling_plan_admitted": true,
     "archive_round_trip_exact": true,
     "tail_with_4000_suffix_pass": true,
-    "wire_bytes": 11461,
-    "import_s": 246.2
+    "wire_bytes": 10911,
+    "import_s": 220.6
   },
   "transport": {
     "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/dev/s22/generated/wrapper.py",
-    "sha256": "f923c406edb9ce95d7578ddab0486481aead7d00753ae904278f6f35883ef1c3",
+    "sha256": "1d71f4d43c06d15b0cd8e442d56e9c6487e32ea03ea576c5922ff47341b22438",
     "tier": "wrapper",
     "static": [
       {
@@ -86,17 +114,6 @@
       }
     ]
   },
-  "native_compile": [
-    {
-      "name": "HY_LEE_HYBRID",
-      "ok": true,
-      "msg": ""
-    }
-  ],
-  "selection_tests": 9,
-  "tool_tests": 34,
-  "pidfd_completion_wait_tested": true,
-  "local_reader_rejects_non_native": true,
   "normal": {
     "TASK": 13,
     "graphs": 12,

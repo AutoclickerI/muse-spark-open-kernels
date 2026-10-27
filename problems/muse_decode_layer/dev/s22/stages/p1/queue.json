@@ -1,0 +1,34 @@
+{
+  "phase": 1,
+  "source_sha256": "fd5e0ca2ef4bbc1128b04b68aa6802c9543b61808e7663ca5ad10ec4d957110b",
+  "shipped_sha256": "2287496067a3da750d43afd1943c12e69fb1d5337ce1c5e528d4b6c64649a6fd",
+  "wrapper_sha256": "1d71f4d43c06d15b0cd8e442d56e9c6487e32ea03ea576c5922ff47341b22438",
+  "payload_sha256": "453b73829519f447b9d58d3bc55d2601fb354da14ab1b8865a07519a19315d87",
+  "host": "muse_bf16_proj",
+  "sender_pid": 669314,
+  "decision": "S22 phase1 confirmation vs S21",
+  "quota_at_send": {
+    "muse_bf16_proj": [
+      8,
+      19
+    ],
+    "muse_attention_decode": [
+      10,
+      18
+    ],
+    "muse_moe_w4a16": [
+      10,
+      16
+    ],
+    "muse_decode_layer": [
+      8,
+      20
+    ],
+    "muse_prefill_layer": [
+      8,
+      20
+    ]
+  },
+  "waiting_for_reset": false,
+  "receipt": null
+}

@@ -1,42 +1,52 @@
-"""Render current S22 facts and append only P4's paths to the shared repository."""
-import datetime,json,os,re,subprocess
+"""Render current S22 facts and append only P4's paths to the shared repository.
+
+PLAN is orchestrator-owned prose: refresh only P4's own S22 Status bullet and the
+P4 Ranked-work cell when they exist, and never assert on any other wording.
+"""
+import json,os,re,subprocess,textwrap
 from pathlib import Path
 import compose
 H=compose.H;R=compose.R
+BASE='S21 `eacc087b` / expanded `109c0135`, frozen at official 1.8781x (`ec8cc95c`)'
 
 def facts():
  m=json.loads((H/'manifest.json').read_text());q=json.loads((H/'queue.json').read_text()) if (H/'queue.json').exists() else {};s=json.loads((H/'state.json').read_text()) if (H/'state.json').exists() else {}
  r=json.loads((H/'results.json').read_text()) if (H/'results.json').exists() else {};v=json.loads((H/'validation.json').read_text()) if (H/'validation.json').exists() else {}
- if (H/'worker.json').exists():s['worker_pid']=json.loads((H/'worker.json').read_text())['pid']
  return m,q,s,r,v
 
+def ci(x):return f"R {x['R']:.6f} [{x['CI95'][0]:.6f},{x['CI95'][1]:.6f}]"
+
 def description():
- m,q,s,r,v=facts();measured=r.get('phase')==m['phase'] and r.get('measured');score=s.get('scored',{})
- if measured:out=f"native G0 {'passes' if r['lab_gate'] else 'does not pass'}: R {r['score']['R']:.6f} [{r['score']['CI95'][0]:.6f},{r['score']['CI95'][1]:.6f}], prepare {r['prepare']['host_prepare_s']:.2f}s, job{r['job']}"
- elif r and r.get('phase')==m['phase']:out='native evidence unmeasured; job'+r['job']+'; '+r.get('reason','invalid primary/control evidence')
- else:out='native G0/per-cell CIs pending; '+('all hosts quota0 at send, awaiting reset' if q.get('waiting_for_reset') else 'paired lab queued/running')
- out+=f"; phase{m['phase']}, source{m['sha256'][:8]}, shipment{m['shipped_sha256'][:8]}; dropped={m['dropped_cells']}, disabled hybrids={m['disabled_hybrids']}"
- out+=f"; sender{q.get('sender_pid')}, payload{m['payload_sha256'][:16]}"
- if score:out+=f"; scored sender{(score.get('pid') or score.get('job'))} after S21's09:02"
- else:out+=f"; finite follow-through worker{s.get('worker_pid')} selects resolved losers, confirms on new64seeds, scores only after passing G0"
- return out
+ m,q,s,r,v=facts();out=[]
+ for x in s.get('history',[]):
+  if x['phase']<m['phase'] and x.get('R') is not None:out.append(f"phase{x['phase']} {ci(x)} (`{x['job'][:8]}`)")
+ if m['phase']>0:out.append(f"selected drop={m['dropped_cells']}, disabled hybrids={m['disabled_hybrids']}")
+ if r.get('phase')==m['phase'] and r.get('measured'):out.append(f"phase{m['phase']} native G0 {'passes' if r['lab_gate'] else 'fails'}: {ci(r['score'])}, prepare {r['prepare']['host_prepare_s']:.2f}s (`{r['job'][:8]}`)")
+ elif r.get('phase')==m['phase']:out.append(f"phase{m['phase']} unmeasured (`{r['job'][:8]}`): {r.get('reason','invalid primary/control evidence')}")
+ else:out.append(f"phase{m['phase']} fresh-seed G0 vs S21 pending (sender {q.get('sender_pid')})")
+ f=s.get('frozen');sc=s.get('scored')
+ if f:out.append(f"official {f['scored_speedup']:.4f}x (`{f['scored_job'][:8]}`), TASK pass, frozen")
+ elif sc:out.append(f"official scored run {sc.get('job') or 'sender '+str(sc.get('pid'))} pending")
+ return '; '.join(out)
 
 def update_plan(text):
- m,q,s,r,v=facts();status='- P4 S22 `'+m['sha256'][:8]+'` (shipment `'+m['shipped_sha256'][:8]+'`, [dev/s22](../problems/muse_decode_layer/dev/s22/README.md)): '+description()+'.\n'
- status+='  S21+d16S restore+direct-input v1S/d32S hybrids. Six remaining ported cells have S19 in-graph leave-outs;\n  both hybrids also have prior-port arms. 64freshseeds x16symmetric rounds, all rounds/telemetry retained.\n  CI upper<1 drops a cell/hybrid; each selected composition requires fresh disjoint G0 before scoring.\n  S21 scored sender3225144 at09:02 and S19 sender4046452 at09:01 stay; no new freeze.\n'
- if '- P4 S22 ' in text:text,n=re.subn(r'- P4 S22 .*?(?=^- )',lambda _:status,text,count=1,flags=re.S|re.M);assert n==1
- else:
-  assert '- P12 component' in text;text=text.replace('- P12 component',status+'- P12 component',1)
- work="Integration/scoring: board S18 28b5c189 1.8484x; S19 62ea5bf4 G0 1.014463, scored sender4046452 at09:01; accepted S21 109c0135/eacc087b G0 1.002638[1.001195,1.004084],prepare145.86s, scored sender3225144 at09:02 unchanged. S22 "+description()+". S19 d16S restored; direct-input OP v1S and Lee d32S; six S19 per-cell leave-outs plus incremental hybrid arms. Same64x16symmetric telemetry; upperCI<1 selects losses, fresh confirmation required after any selection. [S22](../problems/muse_decode_layer/dev/s22/README.md). No new freeze."
- lines=text.splitlines(True)
- for i,line in enumerate(lines):
-  if re.match(r'^\|\s*1\s*\|\s*P4\s*\|',line):
-   parts=line.split('|');parts[4]=' '+work+' ';lines[i]='|'.join(parts);break
- else:raise AssertionError('P4 row missing')
- now=datetime.datetime.now().strftime('%Y-%m-%d %H:%M');return re.sub(r'## Status \([^,]+,',f'## Status ({now} KST,',''.join(lines),count=1)
+ m,q,s,r,v=facts();d=description()
+ bullet=textwrap.fill(f"- S22 `{m['sha256'][:8]}` (shipment `{m['shipped_sha256'][:8]}`, [dev/s22](../problems/muse_decode_layer/dev/s22/README.md)): S21 + S19 d16S + direct-input v1S/d32S hybrids; {d}.",width=116,subsequent_indent='  ',break_on_hyphens=False,break_long_words=False)+'\n'
+ work=f"Integration/scoring: {BASE.replace('`','')}. S22 {m['sha256'][:8]}/{m['shipped_sha256'][:8]}: {d}. Per-cell S19 leave-outs and hybrid arms on 64 fresh seeds x16 symmetric rounds; upper CI<1 selects a loss, each selection needs a fresh disjoint G0 before scoring. [S22](../problems/muse_decode_layer/dev/s22/README.md)."
+ lines=text.splitlines(True);out=[];i=0;bullet_done=False
+ while i<len(lines):
+  line=lines[i]
+  if not bullet_done and re.match(r'- (P4 )?S22 `',line):
+   out.append(bullet);bullet_done=True;i+=1
+   while i<len(lines) and lines[i].startswith('  ') and lines[i].strip():i+=1
+   continue
+  parts=line.split('|')
+  if len(parts)>=9 and re.fullmatch(r'\s*P4\s*',parts[2]):parts[4]=' '+work+' ';line='|'.join(parts)
+  out.append(line);i+=1
+ return ''.join(out)
 
 def render():
- m,q,s,r,v=facts();d=set(m['dropped_cells']);disabled=set(m['disabled_hybrids']);rows=[]
+ m,q,s,r,v=facts();d=set(m['dropped_cells']);disabled=set(m['disabled_hybrids'])
  def pick(label):
   if label in ('d1S','d1F','d16S') or label in d:return 'S19'
   if label in ('d16F','d32F'):return 'C3'
@@ -44,34 +54,37 @@ def render():
   if label in compose.HYBRIDS and label not in disabled:return 'direct OP' if label=='v1S' else 'direct Lee'
   return 'operatorstack' if label=='v1S' else 'Lee'
  text='# S22 integration\n\n'+description()+'.\n\n'
- text+='Base is accepted S21 `eacc087b` / expanded `109c0135`; its scored sender3225144 is unchanged.\nExact12 gate at d1S, native-layout T128 banks, C3 full d16/d32 and v32F Rw4 remain.\n\n| Load | Sliding attention | Full attention |\n|---|---|---|\n'
+ text+=f"Base is {BASE}. Exact12 gate at d1S, native-layout T128 banks, C3 full d16/d32 and v32F Rw4 remain.\nCurrent shipment: `{m['shipped_source']}` (phase {m['phase']}).\n\n| Load | Sliding attention | Full attention |\n|---|---|---|\n"
  for label in ('d1','d16','d32','v1','v16','v32'):text+=f'| {label} | {pick(label+"S")} | {pick(label+"F")} |\n'
- text+='\nThe licensed hybrid patch is `9b043487`, receipt `cde88b9136de4093`; embedded MIT/Apache/NOTICE text and measured sources are preserved. The original d16S port is removed.\n\n'
- text+='Each remaining ported cell has one whole-layer CUDA-graph arm replacing only that cell with exact S19 attention. Both direct-input hybrids also have an arm restoring the previous S21 port, so the d32S nomination whose CI crosses1 is isolated. All active arms get TASK checks on64freshseeds and16symmetric all-round timings; A:A and before/after-block clocks, temperature, power and enqueue traces remain. Per-cell R is time(leave-out)/time(S22): >1 favors retaining the port. `P5B_FEEDBACK.json` supplies the per-cell evidence after the receipt.\n\n'
- text+='The prospectively declared drop rule is an upper95% CI below1. A selected composition uses new disjoint64seeds and new weights/router seeds before scoring. The finite worker stops on a failed/unmeasured final G0 or any execution error; it never silently scores incomplete cell evidence. Primary G0 remains the unchanged held-out six-load lower-bound gate through `tools/promotion.py`; prepare must fit300s. No new freeze precedes official TASK results.\n\n'
+ text+='\nThe licensed hybrid patch is `9b043487`, receipt `cde88b9136de4093`; embedded MIT/Apache/NOTICE text and measured sources are preserved. The S21 d16S port is removed (S19 at d16S).\n\n'
+ text+='Each remaining ported cell has one whole-layer CUDA-graph arm replacing only that cell with exact S19 attention; each active direct-input hybrid also has an arm restoring the previous S21 port. All arms get TASK checks on 64 fresh seeds and 16 symmetric all-round timings, with A:A and before/after-block clocks, temperature, power and enqueue traces. Per-cell R is time(leave-out)/time(S22): >1 favors keeping the port. `P5B_FEEDBACK.json` holds the per-cell evidence.\n\n'
+ text+='Rule: a cell or hybrid whose upper 95% CI is below 1 is selected for removal, and a selected composition is confirmed on new disjoint seeds and new weight/router seeds before scoring. A confirmation whose lower bound is above 1 (GOAL G0 through `tools/promotion.py`, in-lab TASK and nearby checks complete, prepare <= 300 s) is scored; per-cell losses it resolves go to the next integration batch. `TASK_pass` in `results.json` is false on lab-only hosts by construction (their receipt fails setup after the import-time lab); the official TASK result comes from the scored run.\n\n'
  if v.get('source_sha256')==m['sha256']:
   text+=f"Checks: **{v['contracts']} contracts**, normal/forced **{v['normal']['TASK']} TASK + {v['normal']['graphs']} graphs each**; exact packed **{v['packed']['TASK']} TASK + {v['packed']['nearby']} nearby**. Wire **{v['packed']['wire_bytes']} bytes**, full4000-character suffix and exact archive round trip pass.\n\n"
  else:text+='Current build checks are being completed.\n\n'
- text+='Payload SHA256 `'+m['payload_sha256']+'`; wrapper `'+m['wrapper_sha256']+'`.\n\n'
- text+='Current queue/state: [queue.json](queue.json), [state.json](state.json). Worker '+str(s.get('worker_pid'))+' waits on this one sender completion event. Each phase is archived under `stages/pN/`; canonical receipts remain in `runs/`.\n\n'
+ text+='Payload SHA256 `'+m['payload_sha256']+'`; wrapper `'+m['wrapper_sha256']+'`. Queue/state: [queue.json](queue.json), [state.json](state.json); each phase is archived under `stages/pN/`; canonical receipts are in `runs/`.\n\n'
  for p in sorted((H/'stages').glob('p*/results.json')):
   x=json.loads(p.read_text());text+='Phase '+str(x['phase'])+', job `'+x['job']+'`: '
   if not x.get('measured'):text+='unmeasured; '+x.get('reason','invalid primary/control evidence')+'.\n\n';continue
-  text+=f"R **{x['score']['R']:.6f} [{x['score']['CI95'][0]:.6f},{x['score']['CI95'][1]:.6f}]**, prepare **{x['prepare']['host_prepare_s']:.2f}s**.\n\n| Cell/arm | R | 95% CI |\n|---|---:|---|\n"
+  text+=f"{ci(x['score'])}, prepare **{x['prepare']['host_prepare_s']:.2f}s**; per load "+', '.join(f"{k} {z['R']:.4f}" for k,z in x['score']['loads'].items())+".\n\n| Cell/arm | R | 95% CI |\n|---|---:|---|\n"
   for group in ('cells','hybrids'):
    for label,z in x[group].items():
     if z['measured']:text+=f"| {label} ({group}) | {z['R']:.6f} | [{z['CI95'][0]:.6f},{z['CI95'][1]:.6f}] |\n"
     else:text+=f'| {label} ({group}) | unmeasured | |\n'
   text+='\n'
- if s.get('scored'):text+='Official S22 scored sender **'+str(s['scored'].get('pid') or s['scored'].get('job'))+'**, earliest09:03KST10-27, after S21. Official TASK/score remain pending.\n'
+ f=s.get('frozen')
+ if f:text+=f"Frozen: phase {f['phase']} `{f['file']}`, official **{f['scored_speedup']:.4f}x** (job `{f['scored_job']}`, checks ok); see [frozen.json](frozen.json).\n"
+ elif s.get('scored'):text+='Official scored run '+str(s['scored'].get('job') or 'sender '+str(s['scored'].get('pid')))+' is pending; no freeze before its TASK result.\n'
  if s.get('error'):text+='Follow-through stopped: '+s['error']+'\n'
  (H/'README.md').write_text(text.rstrip()+'\n');p=R/'docs/PLAN.md';p.write_text(update_plan(p.read_text()))
 
 def commit(message):
  def git(*args,env=None,input=None,check=True):return subprocess.run(['git',*args],cwd=R,env=env,input=input,text=True,capture_output=True,check=check)
  def blob(text):return git('hash-object','-w','--stdin',input=text).stdout.strip()
- m,q,state,r,v=facts();receipts=[x['receipt'] for x in state.get('history',[]) if x.get('receipt')];jobs={x['job'] for x in state.get('history',[]) if x.get('job')}
- paths=['problems/muse_decode_layer/dev/s22','problems/muse_decode_layer/cand_r3_best7_s22_final.py']+sum(([p,str(Path(p).with_suffix('.py'))] for p in receipts),[])
+ m,q,state,r,v=facts();history=state.get('history',[])+[x for x in (state.get('scored'),state.get('frozen')) if x]
+ receipts=[x[k] for x in history for k in ('receipt','scored_receipt') if x.get(k)];jobs={x[k] for x in history for k in ('job','scored_job') if x.get(k)}
+ shipped={m['shipped_source']}|{json.loads(p.read_text())['shipped_source'] for p in (H/'stages').glob('p*/manifest.json')}
+ paths=['problems/muse_decode_layer/dev/s22',*sorted(shipped)]+sum(([p,str(Path(p).with_suffix('.py'))] for p in receipts),[])
  log_lines=(R/'runs/ledger.jsonl').read_text().splitlines();own=[x for x in log_lines if json.loads(x).get('job') in jobs]
  def ledger(text):
   lines=text.splitlines()
