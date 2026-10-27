@@ -18,8 +18,8 @@ reintroducing that port into S22.
 
 `manifest.json` records full source, shipment, module and patch hashes.
 `build.py` regenerates the candidates/patches from the exact base and the
-reviewed `public_vector` sources. Generated files are ignored in `out/`;
-the sealed live bundle remains there while the queued worker needs it.
+reviewed `public_vector` sources. Generated files, including the `bundle.json`
+`build_lab.py` reads, are ignored in `out/`.
 No candidate is nominated before a native receipt.
 
 ## Verification
@@ -28,17 +28,16 @@ No candidate is nominated before a native receipt.
   `tools/local_eval.py` in the judge image on GPU0: **156 TASK checks and
   144 production-graph checks**, all pass. All 13 public TASK cases and
   all 12 scored cells run for every exact candidate/mode.
-- Final packed batch, normal and forced, context4096: **116 TASK +260
+- Six-arm packed batch (`10c8f076`'s payload), normal and forced, context4096: **116 TASK +260
   nearby checks each**, all pass. Nearby means the audit's 65 cases,
   two seeds, A and primary arm. Context4096 exercises multiple K tiles;
   the native payload retains the exact scored context80000.
-- Exact ec754e5 full-protocol local rehearsal: **64 fresh seeds x16
-  symmetric rounds**, **3712 TASK +260 nearby**. Full counts, transport
-  validation and payload identity are in `normal_protocol_screen.json`.
+- Split labs (below), each in normal and forced mode, context 257: core **92 TASK + 260
+  nearby**, stage **88 + 260**, all pass. Exact ec754e5 full-protocol rehearsal (64 fresh seeds x 16
+  symmetric rounds): core **2,944 TASK + 260 nearby**, 8,694-byte wire; stage **2,816 + 260**,
+  9,103 bytes; both complete with no failure, each packet read back after a 4,000-character
+  suffix. Counts and wire sizes are in `p5b_<lab>_<mode>_screen.json`.
   Local times are never used to rank candidates.
-- Pruned-portfolio rehearsal (DIRECT/CHAIN absent, STAGE renamed to the
-  protocol's primary INC): forced, **96 TASK +260 nearby**, all pass.
-  Candidate source identities remain unchanged; pruning only removes arms.
 - Native sm90a compile: staged six-kernel family plus O128/O256, all
   pass; dependency release/wait instructions present. Stage NL2 uses96
   initial registers, NL1 uses80; **both still spill**. O kernels use90/154
@@ -56,22 +55,36 @@ sm120 cannot execute the native Hopper WGMMA/DSM/PDL paths. Stand-ins
 exercise their arithmetic, Python dispatch, allocation, capture and pointer
 glue; native TASK, two-CTA residency and speed remain unmeasured.
 
-## One paired check (sent 10-27)
+## Paired checks
 
-The in-graph diagnostic `32889c27aa2840e4` is **unmeasured**: its 16 public TASK cases each called
-the lab-only `kernel_fn` stub, and their 6,916 characters of tracebacks pushed the head of the
-LAB_PACKET line out of the judge's 16,000-character tail. `tools/h200_lab.py` now makes the
-attention lab-only stub replay the packet before each traceback (local emulation: an 11,474-byte
-packet survives 16 judge-length tracebacks; without replay it is lost). The dependency worker
-stopped on that unmeasured receipt and sent nothing. By the rule below an unmeasured diagnostic
-prunes nothing, so all six arms went in one paired check: job **10c8f0762f7246de** (attention host,
-`--lane P5b`, payload `3262bcf8`, wrapper `a12a145d` in `lab_manifest.json`). Read it with
-`read.py <receipt>`.
+`10c8f0762f7246de` (all six arms, 840 s import budget, sent 10-27) is **unmeasured**: the judge killed
+it at the 900 s cap (`timeout`, returncode -9) and returns no log on a timeout, so neither the packet
+nor the attention replay fix in `tools/h200_lab.py` was exercised. A run that progresses needs about
+400-550 s: P3a's S22 build lab `f6970526` (7 arms x 12 cells, the same 64 x 16 protocol, 5,376 TASK)
+finished its import in 405 s, and this one had 3,712 TASK. Timing stops at the deadline, so a stall
+outside that loop (setup, compile, or a native hang in kernels never run on Hopper) is likelier than
+the budget; the receipt cannot say which. (The in-graph diagnostic `32889c27` that was to prune
+CHAIN/DIRECT is also unmeasured: its packet was cut by TASK-stub tracebacks, which the replay fix
+addresses.)
 
-Decision rule (diagnostic pruning, now moot): remove CHAIN only if every changed cell's diagnostic D
-new/control lower95CI is >=1; remove DIRECT only if all six F and both native d1 V cells meet that
-condition. A partial/uncertain loss retains the whole candidate. STAGE/LANE1/SOFTMAX/OCHAIN are new
-implementations and are not refuted by another recipe's loss.
+Resent 10-27 as two lab-only checks on the attention host with the same seeds, built by
+`build_lab.py --keep out/keep_<lab>.json --name p5b_<lab>`; the riskier new staged kernel family is
+isolated so a stall there cannot cost the other arms:
+
+| Lab | Arms (primary runs all 12 cells as INC) | TASK | Job |
+|---|---|---|---|
+| `p5b_core` | DIRECT (INC), CHAIN, OCHAIN | 2,944 + 260 nearby | `5caaec87d4984c85` |
+| `p5b_stage` | STAGE (as INC), LANE1, SOFTMAX | 2,816 + 260 nearby | `d97ca0e9571c46a0` |
+
+Each lab prints `P5N_STEP` at every setup phase and cell and keeps them in its packet, declares a
+720 s budget (300 s compile + 400 s run), and runs a watchdog thread that prints `P5N_STALL` with
+the current phase, cell, arm and seed and exits 50 s after the deadline, inside the cap. On a
+simulated GPU hang (sync, `.item()`, graph replay, full launch queue, and both payloads with a
+hung host build) it printed its line and exited at the guard time.
+The judge rejects sources that start processes, so a main thread blocked while holding the GIL is
+not covered; the `P5N_STEP` lines still name the last phase then. `read.py <receipt>` picks the
+manifest (`lab_manifest_<lab>.json`) by the sent wrapper's sha and returns the progress lines when
+there is no packet.
 
 The paired batch uses P4 **ec754e5**: fixed64 disjoint held-out input seeds,
 new weight/router seeds,16 forward/exact-reverse cold rounds, arithmetic

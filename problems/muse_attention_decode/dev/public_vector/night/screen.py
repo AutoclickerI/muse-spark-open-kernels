@@ -4,7 +4,7 @@ from pathlib import Path
 H=Path(__file__).resolve().parent;R=H.parents[4];O=H/'out';F=H.parents[1]/'full_attention'
 sys.path[:0]=[str(R/'tools'),str(F),str(R/'problems/muse_decode_layer/dev/s15')]
 import local_eval as ev
-ap=argparse.ArgumentParser();ap.add_argument('--forced',action='store_true');ap.add_argument('--full-protocol',action='store_true');ap.add_argument('--ctx',type=int,default=257);a=ap.parse_args();mode=('forced' if a.forced else 'normal')+('_protocol' if a.full_protocol else '')
+ap=argparse.ArgumentParser();ap.add_argument('--forced',action='store_true');ap.add_argument('--full-protocol',action='store_true');ap.add_argument('--ctx',type=int,default=257);ap.add_argument('--name',default='p5b_night');a=ap.parse_args();mode=a.name+'_'+('forced' if a.forced else 'normal')+('_protocol' if a.full_protocol else '')
 def load(path,name):
  sp=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m);return m
 scr=load(R/'problems/muse_decode_layer/dev/s22/screen.py','p5b_night_s22_standins');stand=load(H.parents[1]/'public_ports/local_standins.py','p5b_night_public_standins')
@@ -22,7 +22,7 @@ def install(m):
  if hasattr(m,'_p5b_merge_setup'):m._p5b_merge_setup()
  # Native d1 last-CTA uses the existing pointer/glue stand-in. Its vector
  # readers and exact sm90a source were checked separately in public_vector.
-payload=(O/'p5b_night.py').read_text();preview=O/('screen_'+mode+'.py')
+payload=(O/(a.name+'.py')).read_text();preview=O/('screen_'+mode+'.py')
 preview.write_text('# okc: problem=muse_decode_layer\n'+payload+"\ndef prepare(weights):return None\ndef kernel_fn(data,state):raise RuntimeError('batch screen must call lab')\n")
 holder={};oldload=ev.load_module
 flush=[]

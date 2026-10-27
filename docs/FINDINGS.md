@@ -1694,24 +1694,22 @@ The in-graph diagnostic `32889c27aa2840e4` (eight seeds, 7 S19 restores, D/V/F) 
 its 16 TASK cases on the lab-only attention host printed 6,916 characters of stub tracebacks after the
 packet and cut its head from the 16,000-character tail (Failures). Nothing is inferred from it.
 
-### P5b overnight S22 outcome portfolio: one paired check in flight
+### P5b overnight S22 outcome portfolio: unmeasured, resent split
 
-Six exact candidates on P4 S22 `4b8c803d`; local normal/forced 156 TASK + 144 graphs and the exact
-64-seed x 16-round rehearsal (3712 TASK + 260 nearby) pass; no native result yet.
+Six exact candidates on P4 S22 `4b8c803d`; local screens and the 64-seed x 16-round rehearsal pass.
+`10c8f0762f7246de` (all six, attention host) hit the judge's 900 s cap with an empty log (Failures),
+so no arm has a native time and nothing is closed or nominated. Resent as two lab-only checks with
+stall reporting: `p5b_core` `5caaec87d4984c85` and `p5b_stage` `d97ca0e9571c46a0`.
 [Sources, screens and decision](../problems/muse_attention_decode/dev/public_vector/night/README.md).
 
 | Recipe | Mechanism | Leaves open | Receipt |
 |---|---|---|---|
-| CHAIN `92367a26` | PDL entry release; independent history/CTA prologue before the consumer wait at six public cells | Unmeasured; nothing closed | pending `10c8f0762f7246de` |
-| DIRECT (INC) `9eedddf9` | 16-byte ordered partial loads, once-per-CTA query/own-KV readers, PDL; native d1S/F readers | Unmeasured; nothing closed | pending `10c8f0762f7246de` |
-| STAGE `5d3d6f89` | First 1280 Q/K/V columns reduced once into 20 KB of dead V shared storage (v1F, v16S/F, v32S) | Unmeasured; nothing closed | pending `10c8f0762f7246de` |
-| LANE1 `d0c044f1` | One request lane, 384 threads, 80 initial registers; targets two CTAs/SM | Unmeasured; nothing closed | pending `10c8f0762f7246de` |
-| SOFTMAX `f2116fdc` | Staged path with 50% FMA-polynomial / 50% MUFU exponentials | Unmeasured; nothing closed | pending `10c8f0762f7246de` |
-| OCHAIN `b92d9094` | Notice-preserved NF BF16 O128/O256 joined by PDL | Unmeasured; nothing closed | pending `10c8f0762f7246de` |
-
-The diagnostic that was to prune CHAIN/DIRECT is unmeasured, so by the lane's rule all six arms run.
-`10c8f0762f7246de` (attention host, ec754e5 protocol: 64 disjoint seeds x 16 rounds, A/A2, TASK per arm)
-uses the replaying lab-only stub; `night/read.py` reads it.
+| CHAIN `92367a26` | PDL entry release; independent history/CTA prologue before the consumer wait at six public cells | Unmeasured; nothing closed | `10c8f076` timeout; resent `5caaec87d4984c85` |
+| DIRECT (INC) `9eedddf9` | 16-byte ordered partial loads, once-per-CTA query/own-KV readers, PDL; native d1S/F readers | Unmeasured; nothing closed | `10c8f076` timeout; resent `5caaec87d4984c85` |
+| STAGE `5d3d6f89` | First 1280 Q/K/V columns reduced once into 20 KB of dead V shared storage (v1F, v16S/F, v32S) | Unmeasured; nothing closed | `10c8f076` timeout; resent `d97ca0e9571c46a0` |
+| LANE1 `d0c044f1` | One request lane, 384 threads, 80 initial registers; targets two CTAs/SM | Unmeasured; nothing closed | `10c8f076` timeout; resent `d97ca0e9571c46a0` |
+| SOFTMAX `f2116fdc` | Staged path with 50% FMA-polynomial / 50% MUFU exponentials | Unmeasured; nothing closed | `10c8f076` timeout; resent `d97ca0e9571c46a0` |
+| OCHAIN `b92d9094` | Notice-preserved NF BF16 O128/O256 joined by PDL | Unmeasured; nothing closed | `10c8f076` timeout; resent `5caaec87d4984c85` |
 
 ## Projections and verify dense
 
@@ -2455,6 +2453,7 @@ not close a family; incorrect/untimed implementations are suspect or unmeasured.
 | Symptom | Cause | Avoid / fix | Evidence |
 |---|---|---|---|
 | Attention lab-only receipt has no readable packet (`32889c27`) | The attention judge never calls prepare, so all 16 TASK cases call the stub `kernel_fn`; their 6,916 characters of tracebacks followed the packet and cut its head from the 16,000-character tail | `tools/h200_lab.py`: the attention lab-only stub replays the packet before each traceback (local emulation: an 11,474-byte packet survives) | `32889c27aa2840e4` |
+| Attention lab-only paired check killed at the 900 s cap with an empty log (`10c8f076`) | Unknown: the judge returns no log on a timeout and the lab printed nothing before its packet. Not the 840 s budget alone: timing stops at the deadline, and a comparable 64 x 16 lab (`f6970526`, 7 arms x 12 cells, 5,376 TASK) finished import in 405 s versus this lab's 3,712 TASK; a stall in setup/compile or a native hang in kernels never run on Hopper is likelier | Labs print `P5N_STEP` per phase and cell, budget 720 s, and a watchdog thread prints the current position and exits 50 s after the deadline (on a simulated GPU hang it prints and exits at the guard time); isolate never-run native kernels in their own lab | `10c8f0762f7246de`; resends `5caaec87d4984c85`, `d97ca0e9571c46a0` |
 | Lane receipt readers stop after a good receipt (P13 `7342f368`, P3b `1b75cd73`) | They matched the judge's `content_hash` or a missing `sha256` field; the receipt's `.py` beside the JSON holds the sent source | Match `sha256(<receipt>.py)` | `7342f3682c6e462a`, `1b75cd73b9d547b0` |
 | Prefill lab passes at ~1.43x but no LAB markers survive | `--phase import --import-budget 550` printed before the unchanged host tuner; at least 18,818 later host characters displaced diagnostics from the 16,000-character tail, not a prepare timeout (host 113.9–134.5 s; all five compared sources share base `cb8939d0` and one payload) | Buffer import-phase lab diagnostics on hosts with judge-called prepare; emit after host prepare, preserving import execution/deadline and host state | Missing `4c86853a`, `841077ef`, `a05f9863`; working prepare-phase `a39a1f05`, `c773699a`; exact source hashes checked; local judge-image GPU0 proof: 24 wrapper cases pass |
 | Lab small-M MoE slower than judge | Write-flush leaves dirty L2 lines; zero_ adds MoE +1.82 / +4.88 / +2.72 / +1.87 us at M1/8/16/32 | Use `lab_cold_l2()` read flush; write-flushed absolute times are ~2-5 us high | `849e4017` |
