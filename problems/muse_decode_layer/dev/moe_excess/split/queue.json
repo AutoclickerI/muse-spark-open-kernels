@@ -1,0 +1,15 @@
+{
+  "J": {
+    "job": "c22acbbfdcd94fe1",
+    "host": "muse_moe_w4a16",
+    "wrapper_sha256": "77e0641f284f8b0009c73d3a49ddaffa020f62c74377f53084b0d9c7822d3d1c",
+    "source": "runs/muse_moe_w4a16/20261027T014731Z_check_c22acbbfdcd94fe1.py"
+  },
+  "I": {
+    "job": "c67e0a1ecb984506",
+    "host": "muse_prefill_layer",
+    "wrapper_sha256": "b885f019f09b07e7c92deae915b524d25a4b9f7982da13cf3bd169ace2f7f37a",
+    "source": "runs/muse_prefill_layer/20261027T014740Z_check_c67e0a1ecb984506.py"
+  },
+  "command": "tools/h200_lab.py send out/split_{J,I}.py --lab-only --import-budget 840 --check --lane P3b"
+}
