@@ -2728,7 +2728,8 @@ This corrects the ladder (`1b75cd73`): its L0 - STREAM term was mostly L0's own 
 + epilogue sum (53.9 / 83.6 us) matches the full-math exposure BASE - L0N here (53.6 / 84.8): the same
 excess seen by work type. By branch, that compute is exposed because heavy cannot run beside the other
 branches' streams; at M128 heavy alone (93.8) is below STREAM (124.2) and would hide entirely. In-flight
-depth is at its shared-memory bound, and L2 prefetch only adds traffic. Production candidates on S22: PF (`8e23096f`, expected to lose
-from J); RESH1 (heavy pinned to 1 CTA/SM so a small or three medium CTAs fit beside it), CO (an expert's
+depth is at its shared-memory bound, and L2 prefetch only adds traffic. Production on S22 (64 seeds x 16 rounds, A:A 1.0000): PF loses, six-load R 0.9857
+[0.9851,0.9863] (v16 0.952, v32 0.963; `8e23096fa1f34984`), as J's transfer predicted (0.9863
+[0.9840,0.9886]). Queued: RESH1 (heavy pinned to 1 CTA/SM so a small or three medium CTAs fit beside it), CO (an expert's
 64-row chunks on adjacent CTAs), XW4 (four warpgroups share each X stage). I2 measures heavy alone and
 joint at 1 CTA/SM with CTA timelines. [Split](../problems/muse_decode_layer/dev/moe_excess/split/README.md).

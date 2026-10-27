@@ -41,7 +41,7 @@ reads it with `tools/promotion.py`.
 
 | Arm | Mechanism |
 |---|---|
-| PF | In-kernel L2 bulk prefetch ahead of each branch's ring (J predicts a loss) |
+| PF | In-kernel L2 bulk prefetch ahead of each branch's ring: loses, R 0.9857 [0.9851,0.9863] (`8e23096f`; J predicted 0.9863) |
 | RESH1 | Heavy ring reserved at half the SM, so one small or three medium CTAs co-reside with one heavy CTA |
 | CO | An expert's 64-row chunks on adjacent CTAs, so its weight rereads share L2 |
 | XW4 | Four warpgroups share each heavy X stage (one 512-thread CTA per SM) |
