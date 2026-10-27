@@ -1,45 +1,21 @@
 # Plan
 
-## Status (2026-10-26 23:10 KST, day 5 of 14; the kernel track closes 2026-11-05 16:59 KST)
-- Board (SOTA "Leaderboard", 17:24): S18 `28b5c189` 1.8484x, 100th of 719; leader 2.3797x, 10th 2.1761x, 50th
-  1.9561x. Gap and target: GOAL "Target".
-- Confirmed incumbent: S18 `95df42fe` (`cand_r3_best7_s18_final.py`, `dev/s18/frozen.json`), scored `28b5c189`
-  1.8484x, R 1.004321 [1.002314, 1.006332] over S17 `fea71760` (`5d0282bb`, import-time lab on a lab-only prefill
-  host). S18 = S17 + P3a small-M cells (SHARD2+INDEX M1, PAIR M8, PAIR+BLOCK M16 / 32), PDL metadata before wait +
-  d1F glue, full-attention V-wait removal at v16F / v32F, P5 D8 / D4 at d16S / d32S, pool128. S17 holds S16,
-  guarded S15n, P5 v1 DSM, P7's P shell and v1F tail, CHUNK4 at M128 / 256, the fused pool_router and composition C.
-- With P4: S19 `62ea5bf4` (`cand_r3_best7_s19_final.py`, `dev/s19/frozen.json`) lab-confirmed at R 1.014463
-  [1.013044, 1.015885] over S18 (`6ac9317e`, 16 fresh seeds, import-time lab on the prefill host); its scored
-  decode run waits for the 10-27 09:01 KST reset, and promotion completes when it passes TASK.
-- P4 S20 `9e6f525f` (shipment `f9bd44d4`, [dev/s20](../problems/muse_decode_layer/dev/s20/README.md))
-  **fails G0**: R 1.002271 [0.996468, 1.008109] over S19, one native prefill check `0640cce4b12f42f9`.
-  All 960 TASK + 260 nearby checks pass; prepare 157.65 s. Seven leave-outs resolve C3/M64 gains and B1 loss
-  (no_B1/S20 .997004 [.996359, .997649]); other pieces unresolved. One v16S/verify16 seed inflates the CI;
-  it is retained. No scored S20 queued and neither candidate newly frozen. S19 sender 4046452 is unchanged.
-- P4 S21 `109c0135` (shipment `eacc087b`, [dev/s21](../problems/muse_decode_layer/dev/s21/README.md)):
-  S19+C3+exact12 gate+v32F Rw4+NP T128, Lee at d16S/d32S/v1F/v16S/v16F/v32S and operatorstack v1S;
-  MIT/Apache/NOTICE shipped. Native G0 **passes**, R **1.002638 [1.001195,1.004084]** over S19 on 64 fresh seeds
-  x16 symmetric rounds (`5864563117fd44b6`, projection checks), 3136 TASK+260 nearby and five fixture checks pass;
-  full prepare **145.86 s**. Point projection 1.019738 did not transfer: decode16 R .958360; grouped port leave-out
-  .998709 [.997343,1.000077] has no established net port gain. A:A R1.000991 (+0.10% drift), supplementary INC/A2
-  1.001646 [1.000178,1.003116]; primary gate unchanged. 1167 contracts, both13TASK+12graphs, native compiles,
-  exact packed rehearsal and10820-byte tail transport pass;34 tool tests. Payload `7a5b62175cd8`, wrapper `702486c83f56`.
-  Scored sender **3225144**, 10-27 **09:02 KST**, after unchanged S19 sender4046452 at09:01. No new freeze.
-  Next batch: restore S19 at d16S (~+.71% six-load point from production leave-out), with new disjoint G0 seeds;
-  no separate small confirmation. Exact old S20 fixture did not recur; its original round/cause stay unproven.
-- P4 S22 `4b8c803d` (shipment `d1ccdc35`, [dev/s22](../problems/muse_decode_layer/dev/s22/README.md)): native G0/per-cell CIs pending; all hosts quota0 at send, awaiting reset; phase0, source4b8c803d, shipmentd1ccdc35; dropped=[], disabled hybrids=[]; sender3725147, payload403ff22fe051272d; finite follow-through worker3807459 selects resolved losers, confirms on new64seeds, scores only after passing G0.
-  S21+d16S restore+direct-input v1S/d32S hybrids. Six remaining ported cells have S19 in-graph leave-outs;
-  both hybrids also have prior-port arms. 64freshseeds x16symmetric rounds, all rounds/telemetry retained.
-  CI upper<1 drops a cell/hybrid; each selected composition requires fresh disjoint G0 before scoring.
-  S21 scored sender3225144 at09:02 and S19 sender4046452 at09:01 stay; no new freeze.
-- P12 component gaps (ours / leader's time): attention 1.80x, projections 1.36x, MoE 1.26x (`4e108beb`,
-  `08cc9405`, `97f5e7f3`); matching all three is ~1.30x: today's leader, ~76% of the gap to ~2.6x. Projections sit at our fitted roof yet
-  1.36x behind, so our dense roof is not the leader's limit.
-- Where the time goes (S15 timeline `7eaa262a`, `dev/s15_timeline/H200.md`): critical time above the stage roof
-  as a share of wall at d1 / d16 / d32 / v1 / v16 / v32: MoE 18.7 / 18.2 / 21.4 / 14.8 / 17.3 / 24.2%; attention
-  7.6 / 8.5 / 9.2 / 13.0 / 9.2 / 8.6%; projections 1.9 / 2.6 / 3.9 / 1.9 / 4.1 / 7.4%; glue 3.6 / 0.5 / 0.5 / 0.7
-  / 1.3 / 1.5%; GPU idle <= 1.7%. Ceilings on S11: every stage at its roof (2.36 us + bytes at 4.58 TB/s each)
-  2.79x; one continuous stream 3.08x; the 4.8 TB/s floor 3.31x.
+## Status (2026-10-27 09:15 KST, day 6 of 14; the kernel track closes 2026-11-05 16:59 KST)
+- Board (SOTA "Leaderboard", 09:13): S19 `8b415553` 1.8621x, 111th of 755; leader 2.3797x, 10th 2.2210x, 50th
+  2.0061x. Gap and target: GOAL "Target".
+- Confirmed incumbent: S19 `62ea5bf4` (`cand_r3_best7_s19_final.py`, `dev/s19/frozen.json`), scored
+  `fd4d153f` 1.8621x with the official TASK passing; R 1.014463 [1.013044, 1.015885] over S18 (`6ac9317e`).
+- S21 `109c0135` (shipment `eacc087b`, [dev/s21](../problems/muse_decode_layer/dev/s21/README.md)): S19 + C3 +
+  exact12 gate + Rw4 + NP T128 + public attention ports (Lee, operatorstack; R-20261026-1). Native G0 passes, R
+  1.002638 [1.001195, 1.004084] over S19 (`58645631`, 64 seeds x 16 symmetric rounds); the 1.0197 per-call
+  projection did not transfer (decode16 .958: the d16S port blocks the gate-GEMM overlap). Scored sender 3225144.
+- S22 `4b8c803d` ([dev/s22](../problems/muse_decode_layer/dev/s22/README.md)): S21 + S19 at d16S + direct-input
+  v1S / d32S hybrids, with in-graph leave-outs per ported cell; lab 3725147 in flight, worker 3807459 prunes,
+  confirms and scores.
+- Rule from S21: judge every candidate by whole-load time in the production graph; per-call ratios do not transfer.
+- Where the time goes: S19 timeline `9c16c850` ([H200.md](../problems/muse_decode_layer/dev/s19_timeline/result/H200.md));
+  walls 81 / 190 / 246 / 130 / 321 / 426 us per layer at d1 / d16 / d32 / v1 / v16 / v32. Deletion oracles: setup
+  R1.0159 (`ca022370`), boundary b1+b2 1.0298 and route 1.0203, both 1.0513 (`611341aa`).
 
 ## Critical path
 Loop: a lane edits a candidate or lab payload → static preflight, changed-unit compile/check, one transport
