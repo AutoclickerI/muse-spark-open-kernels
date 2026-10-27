@@ -13,6 +13,42 @@
       ],
       "mechanism": "L0N - PFN / weight bytes in flight: in-kernel L2 bulk prefetch of each branch weight stream ahead of its ring",
       "kind": 0
+    },
+    "RESH1": {
+      "sha256": "7fbbe5861c52b06bffed6d782b217116c5fe5a5373fc3c654ca9303044b2ef09",
+      "shipped_sha256": "5b9c6f3310f50d57ddd2e3bebc11b20ae5c5f01cd5e23701f2333aaefb187ee0",
+      "rows": [
+        "v16S",
+        "v16F",
+        "v32S",
+        "v32F"
+      ],
+      "mechanism": "RES1/RES3 + HISTN branch serialization: one heavy CTA per SM so small/medium CTAs stream beside heavy compute",
+      "kind": 1
+    },
+    "CO": {
+      "sha256": "89ca03406e2642107526a30b061a7960d72fa41ad1bcd8e6bb9a43c359c292b1",
+      "shipped_sha256": "1bdc0c7a3e717778b80a74984c8f6a810e275014eea798ad0d3c958ae8e1f1c6",
+      "rows": [
+        "v16S",
+        "v16F",
+        "v32S",
+        "v32F"
+      ],
+      "mechanism": "L0N - REUSE / weight rereads: an expert's 64-row chunks run on adjacent CTAs so rereads share L2",
+      "kind": 2
+    },
+    "XW4": {
+      "sha256": "71df9db9a066fdb82813d11395c2bf07577c49513d5b88b0b3d5b74b6cd56c90",
+      "shipped_sha256": "2f4dfa8453099651f9f56049f57a96b6dcf22a91b1d52b22d25ca166f4e3961c",
+      "rows": [
+        "v16S",
+        "v16F",
+        "v32S",
+        "v32F"
+      ],
+      "mechanism": "L0N - NOX / activation copies: four warpgroups share each heavy X stage (half the heavy L2 activation traffic), one 512-thread CTA/SM",
+      "kind": 3
     }
   }
 }

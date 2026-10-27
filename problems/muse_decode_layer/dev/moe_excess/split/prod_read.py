@@ -18,8 +18,8 @@ from promotion import evaluate, interval
 codec = build.load(P / 'dev/s21/evidence.py', 'p3b_build_codec')
 
 
-def analyze(path, local=False):
-    manifest = json.loads((H / 'prod_manifest.json').read_text())
+def analyze(path, tag, local=False):
+    manifest = json.loads((H / f'prod_manifest_{tag}.json').read_text())
     if local:
         envelope = paired_evidence(path.read_text(), 'P3B_SPLIT')
         receipt = dict(id='LOCAL_ONLY', result=dict(gpu='sm120', passed=False))
@@ -61,7 +61,7 @@ def analyze(path, local=False):
                   TASK=raw['task_checks'], nearby=raw['nearby_task_checks'],
                   AA=interval(aa), arms=results,
                   decision='Rank whole-load R. Selected pieces/composition need new disjoint confirmation and official TASK before scoring; no stage-time transfer substituted.')
-    target = H / ('out/prod_local_report' if local else 'prod_result')
+    target = H / ('out/prod_local_report' if local else 'prod_result') / tag
     target.mkdir(parents=True, exist_ok=True)
     (target / 'raw.json').write_text(json.dumps(raw, indent=2) + '\n')
     (target / 'promotion_protocol.json').write_text(json.dumps(full, indent=2) + '\n')
@@ -74,6 +74,7 @@ def analyze(path, local=False):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('receipt', type=Path)
+    parser.add_argument('tag')
     parser.add_argument('--local', action='store_true')
     args = parser.parse_args()
-    analyze(args.receipt, args.local)
+    analyze(args.receipt, args.tag, args.local)

@@ -78,11 +78,12 @@ def main(enabled=None):
     payload += '_body=lzma.decompress(base64.b85decode(' + repr(encoded_body) + ')).decode()\n'
     payload += 'assert hashlib.sha256(_body.encode()).hexdigest()==' + repr(sha(body)) + '\n'
     payload += '_f="<p3b-production-' + sha(body)[:12] + '>"\nlinecache.cache[_f]=(len(_body),None,_body.splitlines(True),_f)\nexec(compile(_body,_f,"exec"),globals())\n_run=globals()["lab"]\ndef lab(deadline,weights,state):return _run(deadline,weights,state)\n'
-    path = H / 'out/p3b_split_prod.py'
+    tag = '_'.join(enabled)
+    path = H / ('out/p3b_split_prod.py' if tag == 'PF' else f'out/p3b_split_prod_{tag}.py')
     path.write_text(payload)
     wrapper, _ = h200_lab.build([(path.stem, sha(payload)[:16], payload)], 'muse_moe_w4a16',
                                phase='import', import_budget=850.0, lab_only=True)
-    (H / 'out/prod_wrapper.py').write_text(wrapper)
+    (H / f'out/prod_wrapper_{tag}.py').write_text(wrapper)
     assert len(wrapper.encode()) < 1000000
     expected = 64 * (12 * 3 + sum(len(a['rows']) for n, a in arms.items() if n != 'INC'))
     manifest = dict(sha256=sha(source), base_sha256=sha(source), baseline_arm='INC',
@@ -96,7 +97,7 @@ def main(enabled=None):
         nearby_expected_checks=len(cases) * 2 * len(nearby_arms),
         interpretation='Optional-arm time/S22; below one favors the arm. Selection needs fresh disjoint confirmation; no official scored TASK is inferred from the lab-only host.',
         protocol_source_commit='ec754e50641f0bffa77e4d17422a39e7815ae480')
-    (H / 'prod_manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+    (H / f'prod_manifest_{tag}.json').write_text(json.dumps(manifest, indent=2) + '\n')
     print('production batch', list(arms), 'TASK', expected, 'nearby', manifest['nearby_expected_checks'],
           'payload', sha(payload)[:16], 'wrapper', sha(wrapper)[:16], 'bytes', len(wrapper.encode()))
     return manifest

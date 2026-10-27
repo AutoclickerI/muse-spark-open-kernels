@@ -2696,3 +2696,39 @@ seeds x 16 rounds, 3840 TASK + 1040 nearby pass; A:A 1.0001 [0.9997,1.0004]. R =
 
 No P3b arm qualifies. The two recipes for the largest term (REG, OCC) lose the most; that term is
 assigned but unrecovered. [Builds](../problems/muse_decode_layer/dev/moe_excess/builds/README.md).
+
+### P3b S22 large-M split: the load term was a sink artifact; branch serialization is largest (2026-10-27)
+
+Exact S22 `4b8c803d` large-M branches (byte-identical to S19's), M128/M256, W13 and W2 as isolated phases,
+eight seeds x four symmetric rounds, every round kept; J `c22acbbfdcd94fe1` (joint arms) and I
+`c67e0a1ecb984506` (branches alone). Full-math arms pass TASK before and after timing; A:A 0.0 / -0.5 us.
+Six-load R removes the term at verify 16 / 32 on S19 walls 321.09 / 425.66 us (transfer scenario, not G0).
+
+| Term (W13 + W2) | M128 us [95% CI] | M256 us [95% CI] | Six-load R [95% CI] |
+|---|---|---|---|
+| Ladder's load term L0 - STREAM | 45.1 [38.8,51.3] | 80.4 [72.3,88.5] | 1.0620 |
+| of which sink tax in L0 (L0 - L0N) | 38.5 [33.6,43.4] | 56.1 [51.0,61.2] | measurement artifact |
+| True loads-only term L0N - STREAM | 6.6 [3.6,9.6] | 24.2 [18.5,30.0] | 1.0133 [1.0099,1.0168] |
+| Weight rereads (heavy reads each expert ceil(n/64) times) | 2.5 [-0.6,5.5] | 14.2 [9.4,18.9] | 1.0070 [1.0048,1.0092] |
+| Activation copies | 2.5 [0.2,4.8] | 7.3 [4.4,10.3] | 1.0042 [1.0029,1.0055] |
+| Per-thread issue (same bytes, 16 B/thread, fewer requests) | 0.9 [-0.7,2.6] | 2.7 [1.2,4.2] | 1.0016 [1.0008,1.0023] |
+| Residency: heavy 1 CTA/SM / ring 3 at 2/SM / 3 CTAs/SM at ring 3 vs L0N | +9.1 / +7.5 / +0.6 | +11.0 / +10.1 / +3.7 | every change costs |
+| L2 bulk prefetch of each weight stream (loads-only / full math) | +16.4 / +14.2 slower | +27.9 / +17.2 slower | 0.9813 / 0.9863 |
+| **Branch serialization**: joint above max(heavy alone, STREAM) | 53.2 [46.5,59.9] | 80.0 [65.5,94.5] | **1.0673 [1.0569,1.0777]** |
+
+Mechanism of the largest term: the three branch kernels cannot share an SM. Heavy at 2 CTAs/SM uses
+2 x 256 threads x 128 registers (the whole register file) and 200 KiB; small at 2/SM uses 188 KiB. HISTN
+traces show small CTAs entering at a median 33 / 54 us into W13 (M128 / M256). Branch-alone times sum
+50 / 52 us above the joint, so they overlap only at the edges. Heavy alone is 93.8 / 164.4 us against its
+BF16 tensor roof of 26.9 / 61.1 us (rows 156 / 387 padded to 264 / 600 by 64-row tiles) and its unique
+stream of 32.4 / 51.5 us: it is neither byte- nor tensor-bound. Each weight byte is read by one CTA; heavy
+rereads cost 3.7 / 17.0 us of duplicated bytes at 4.8 TB/s.
+
+This corrects the ladder (`1b75cd73`): its L0 - STREAM term was mostly L0's own sink tax. Its decode + MMA
++ epilogue sum (53.9 / 83.6 us) matches the full-math exposure BASE - L0N here (53.6 / 84.8): the same
+excess seen by work type. By branch, that compute is exposed because heavy cannot run beside the other
+branches' streams; at M128 heavy alone (93.8) is below STREAM (124.2) and would hide entirely. In-flight
+depth is at its shared-memory bound, and L2 prefetch only adds traffic. Production candidates on S22: PF (`8e23096f`, expected to lose
+from J); RESH1 (heavy pinned to 1 CTA/SM so a small or three medium CTAs fit beside it), CO (an expert's
+64-row chunks on adjacent CTAs), XW4 (four warpgroups share each X stage). I2 measures heavy alone and
+joint at 1 CTA/SM with CTA timelines. [Split](../problems/muse_decode_layer/dev/moe_excess/split/README.md).

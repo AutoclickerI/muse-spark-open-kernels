@@ -1,11 +1,13 @@
 # P3b: assign the S19 large-M MoE excess
 
-**Measured `1b75cd73b9d547b0`; P3b parked.** W13+W2 BASE 185.3 / 253.0 us vs unique-byte STREAM
-125.0 / 144.6 at M128 / M256. Terms (us, 95% CI; conditional, overlapping): load issue/reuse/residency
-(L0 - STREAM) 46.5 [42.2,50.8] / 81.8 [74.1,89.5], six-load R 1.0636 if fully removed (1.0478 capped
-at the 1.3x-roof excess); MMA 30.5 / 53.4 (R1.0397); epilogue/readiness 14.9 / 18.0 (R1.0152);
-decode/scale 8.5 / 12.2 (R1.0093). [result/ladder.md](result/ladder.md), `result/summary.json`. The six
-S22 builds that priced these terms all lose (`054e28849b424be2`, [builds](builds/README.md)).
+**Measured `1b75cd73b9d547b0`; corrected by the S22 split ([split/](split/README.md)).** W13+W2 BASE
+185.3 / 253.0 us vs unique-byte STREAM 125.0 / 144.6 at M128 / M256. Compute cuts: MMA 30.5 / 53.4 us,
+epilogue/readiness 14.9 / 18.0, decode/scale 8.5 / 12.2; their sum (53.9 / 83.6) matches the split's
+full-math exposure BASE - L0N (53.6 / 84.8), while the split between them carries unequal sink volumes.
+The load term L0 - STREAM (46.5 / 81.8) was mostly L0's own sink tax;
+the split measures the true loads-only term at 6.6 / 24.2 us and branch serialization, the largest term,
+at 53 / 80 us. [result/ladder.md](result/ladder.md), `result/summary.json`. The six S22 builds that priced
+the ladder terms all lose (`054e28849b424be2`, [builds](builds/README.md)).
 
 ## Baseline and prior evidence
 
@@ -138,6 +140,5 @@ muse_moe_w4a16 --lab-only --import-budget 840 --check --lane P3b --decision
 
 ## Decision
 
-No candidate: the ladder is excluded-work diagnostics. The largest term (load issue/reuse/residency,
-mostly W13) is assigned; its two production recipes (REG, OCC) lose the most in `054e2884`, and the
-MMA, epilogue, decode and tail recipes lose by 0.02-0.4%. Nothing goes to P4.
+No candidate: the ladder is excluded-work diagnostics. Its load term is superseded by the split; the
+MMA, epilogue, decode and tail recipes lose by 0.02-0.4% (`054e2884`). Nothing goes to P4 from here.

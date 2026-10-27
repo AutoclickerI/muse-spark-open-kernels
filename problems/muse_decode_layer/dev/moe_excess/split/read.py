@@ -3,7 +3,7 @@ duplicated-byte reuse cost from the actual tiling, and each part's six-load tran
 
 Loads-only arms are excluded-work oracles and never promote. PF is full math (TASK-checked,
 bit-compared with BASE); its phase ratio ranks it for a production whole-load build only.
-Usage: read.py <J receipt.json> <I receipt.json> [--local]
+Usage: read.py <J receipt.json> [<I receipt.json> [<I2 receipt.json>]] [--local]
 """
 import argparse, hashlib, json, math, statistics as st, sys
 from pathlib import Path
@@ -42,6 +42,20 @@ CONTRASTS_I = {
     'joint L0N - STREAM': ('L0N', 'STREAM'),
     'A:A AA - BASE': ('AA', 'BASE'),
 }
+CONTRASTS_I2 = {
+    'heavy alone 1 vs 2 CTAs/SM H_R1 - H_BASE': ('H_R1', 'H_BASE'),
+    'joint, heavy 1 CTA/SM R1 - BASE': ('R1', 'BASE'),
+    'joint above heavy alone BASE - H_BASE': ('BASE', 'H_BASE'),
+    'joint above heavy alone at 1/SM R1 - H_R1': ('R1', 'H_R1'),
+    'heavy added to medium+small BASE - MS': ('BASE', 'MS'),
+    'heavy 1/SM added to medium+small R1 - MS': ('R1', 'MS'),
+    'observer BH - BASE': ('BH', 'BASE'),
+    'observer R1H - R1': ('R1H', 'R1'),
+    'A:A AA - BASE': ('AA', 'BASE'),
+}
+TABLES = dict(J=CONTRASTS_J, I=CONTRASTS_I, I2=CONTRASTS_I2)
+FULL = dict(J=('BASE', 'AA', 'PF'), I=('BASE', 'AA'), I2=('BASE', 'AA', 'R1', 'BH', 'R1H'))
+HIST = dict(J=('HISTN',), I=(), I2=('BH', 'R1H'))
 
 
 def mean_ci(values):
@@ -75,7 +89,7 @@ def load(path, name, local):
     assert set(raw['round_units32']) == set(LABELS)
     for rows in raw['round_units32'].values():
         assert len(rows) == 8 and all(len(r) == len(raw['arms']) and all(len(v) == 4 and min(v) * 32 > raw['fixed_ns'] for v in r) for r in rows)
-    full = [a for a in ('BASE', 'AA', 'PF') if a in raw['arms']]
+    full = FULL[name]
     for when in ('before', 'after'):
         assert raw['checks'][when] == {a: 32 for a in full}, raw['checks']
     assert len(raw['work_counts']) == 16
@@ -98,7 +112,7 @@ def summarize(raws):
     counts = None
     for name, (raw, receipt) in raws.items():
         report['receipts'][name] = receipt['id'] if receipt else 'LOCAL'
-        s = samples(raw); table = CONTRASTS_J if name == 'J' else CONTRASTS_I
+        s = samples(raw); table = TABLES[name]
         report['arms'][name] = {l: {a: mean_ci(x) for a, x in arms.items()} for l, arms in s.items()}
         report['contrasts'][name] = {l: {k: mean_ci([a - b for a, b in zip(arms[hi], arms[lo])]) for k, (hi, lo) in table.items()} for l, arms in s.items()}
         per_m = {}
@@ -109,12 +123,36 @@ def summarize(raws):
         six = {}
         for k, (hi, lo) in table.items():
             g = {m: [sum(s[f'{m}:{p}'][hi][i] - s[f'{m}:{p}'][lo][i] for p in ('w13', 'w2')) for i in range(8)] for m in (128, 256)}
-            rr = [six_load(g[128][i], g[256][i]) for i in range(8)]
-            six[k] = interval(rr)
+            # A single interrupted round (e.g. 2.5 ms) can push a seed's gain past the wall; every round
+            # stays in the means, and such a contrast's six-load ratio is reported as undefined.
+            ok = all(WALL[m] - g[m][i] > 0 for m in (128, 256) for i in range(8))
+            six[k] = interval([six_load(g[128][i], g[256][i]) for i in range(8)]) if ok else dict(R=math.nan, CI95=[math.nan, math.nan], undefined='a seed gain exceeds the wall')
         report['six_load'][name] = six
+        if 'H_BASE' in raw['arms']:
+            # Branch serialization: the joint phase above the slower of (heavy alone, unique-byte stream),
+            # both measured in the same rounds. With unchanged kernels no schedule beats that floor.
+            ser = {m: [sum(s[f'{m}:{p}']['BASE'][i] - max(s[f'{m}:{p}']['H_BASE'][i], s[f'{m}:{p}']['STREAM'][i]) for p in ('w13', 'w2')) for i in range(8)] for m in (128, 256)}
+            alone = {m: [sum(s[f'{m}:{p}'][f + '_BASE'][i] for p in ('w13', 'w2') for f in 'HMS') - sum(s[f'{m}:{p}']['BASE'][i] for p in ('w13', 'w2')) for i in range(8)] for m in (128, 256)}
+            report.setdefault('serialization', {})[name] = dict(
+                definition='per seed and phase: joint BASE - max(heavy alone BASE, joint STREAM), summed over W13+W2',
+                per_M={str(m): mean_ci(ser[m]) for m in (128, 256)},
+                six_load=interval([six_load(ser[128][i], ser[256][i]) for i in range(8)]),
+                overlap_already_us={str(m): mean_ci(alone[m]) for m in (128, 256)})
+        if HIST[name]:
+            # Per hist arm, M and branch: seed means of median entry, median and last finish (us from the
+            # phase's first CTA entry), and the last CTA's entry.
+            rows = raw['histograms']; arms = HIST[name]; k = 0; acc = {}
+            for si in range(8):
+                for m in (128, 256):
+                    for ph in ('w13', 'w2'):
+                        for a in arms:
+                            for b, v in zip('HMS', rows[k]):
+                                acc.setdefault((a, m, ph, b), []).append([v[1] * .256, v[4] * .256, v[5] * .256, v[10] / 1000, v[11] / 1000])
+                            k += 1
+            assert k == len(rows)
+            report['histograms'][name] = {f'{a}:{m}:{ph}:{b}': dict(zip(('entry_med', 'finish_med', 'finish_last', 'last_entry', 'last_finish'), [st.mean(c) for c in zip(*v)])) for (a, m, ph, b), v in acc.items()}
         if name == 'J':
             report['ratios_vs_BASE'] = {l: {a: interval([b / x for b, x in zip(arms['BASE'], arms[a])], [b / x for b, x in zip(arms['BASE'], arms['AA'])]) for a in ('PF', 'AA')} for l, arms in s.items()}
-            report['histograms']['HISTN'] = raw['histograms']
         report['resources'][name] = raw['resources']
         report['checks'][name] = raw['checks']
         report.setdefault('telemetry', {})[name] = raw['telemetry_min_sm_mem_max_temp_W']
@@ -131,7 +169,14 @@ def summarize(raws):
             per.append(dict(heavy=[n for n in c if n > 16], dup_reads=dup, dup_MB=dup * (EB['w13'] + EB['w2']) / 1e6,
                             dup_us_4p8=dup * (EB['w13'] + EB['w2']) / 4.8e6, CTAs_reading_each_byte=1,
                             reads_per_heavy_expert=[math.ceil(n / 64) for n in c if n > 16]))
-        report['reuse_tiling'][str(m)] = dict(seeds=per, mean_dup_us=st.mean(p['dup_us_4p8'] for p in per))
+        # BF16 tensor roof (989 TFLOP/s) of the heavy branch's 64-row-padded and exact rows, W13+W2.
+        flops = lambda r: r * (8192 + 4096) * 4096 * 2 / 989e6
+        heavy = [[n for n in counts[(si, m)] if n > 16] for si in range(8)]
+        report['reuse_tiling'][str(m)] = dict(seeds=per, mean_dup_us=st.mean(p['dup_us_4p8'] for p in per),
+            heavy_experts=st.mean(len(h) for h in heavy), heavy_rows=st.mean(sum(h) for h in heavy),
+            heavy_padded_rows=st.mean(sum(math.ceil(n / 64) * 64 for n in h) for h in heavy),
+            heavy_tensor_roof_padded_us=st.mean(flops(sum(math.ceil(n / 64) * 64 for n in h)) for h in heavy),
+            heavy_tensor_roof_exact_us=st.mean(flops(sum(h)) for h in heavy))
     return report
 
 
@@ -149,6 +194,17 @@ def markdown(report):
     out += ['## Reuse from the tiling', '']
     for m, r in report['reuse_tiling'].items():
         out.append(f"M{m}: mean duplicated-byte time {r['mean_dup_us']:.2f} us at 4.8 TB/s (W13+W2); each weight byte is read by one CTA, ceil(count/64) times for heavy experts.")
+    for m, r in report['reuse_tiling'].items():
+        out.append(f"M{m}: {r['heavy_experts']:.1f} heavy experts, {r['heavy_rows']:.0f} rows padded to {r['heavy_padded_rows']:.0f}; heavy BF16 tensor roof {r['heavy_tensor_roof_padded_us']:.1f} us padded / {r['heavy_tensor_roof_exact_us']:.1f} exact (W13+W2).")
+    for name, z in report.get('serialization', {}).items():
+        out += ['', f'## Branch serialization ({name})', '', z['definition'] + '.', '']
+        for m in ('128', '256'):
+            a, b = z['per_M'][m], z['overlap_already_us'][m]
+            out.append(f"M{m}: {a['us']:.1f} [{a['CI95'][0]:.1f},{a['CI95'][1]:.1f}] us; sum of branch-alone times exceeds the joint by {b['us']:.1f} us.")
+        out.append(f"Six-load R if removed: {z['six_load']['R']:.4f} [{z['six_load']['CI95'][0]:.4f},{z['six_load']['CI95'][1]:.4f}] (transfer scenario).")
+    for name, h in report['histograms'].items():
+        out += ['', f'## CTA timelines ({name}; us from first entry, seed means)', '', '| arm:M:phase:branch | entry median | finish median | finish last |', '|---|---:|---:|---:|']
+        out += [f"| {k} | {v['entry_med']:.1f} | {v['finish_med']:.1f} | {v['finish_last']:.1f} |" for k, v in h.items()]
     if 'ratios_vs_BASE' in report:
         out += ['', '## PF (full math) vs BASE, phase ratio BASE/PF', '']
         for l, v in report['ratios_vs_BASE'].items():
@@ -158,10 +214,10 @@ def markdown(report):
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument('J', type=Path); ap.add_argument('I', type=Path, nargs='?'); ap.add_argument('--local', action='store_true')
+    ap.add_argument('receipts', type=Path, nargs='+', help='J, I and I2 receipts in that order (a prefix is fine)')
+    ap.add_argument('--local', action='store_true')
     a = ap.parse_args()
-    raws = {'J': load(a.J, 'J', a.local)}
-    if a.I: raws['I'] = load(a.I, 'I', a.local)
+    raws = {n: load(path, n, a.local) for n, path in zip(('J', 'I', 'I2'), a.receipts)}
     report = summarize(raws)
     dest = HERE / ('out/local_read' if a.local else 'result'); dest.mkdir(parents=True, exist_ok=True)
     (dest / 'raw.json').write_text(json.dumps({k: v[0] for k, v in raws.items()}, indent=1) + '\n')

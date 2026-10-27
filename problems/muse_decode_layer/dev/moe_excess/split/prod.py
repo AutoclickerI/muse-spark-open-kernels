@@ -53,9 +53,51 @@ def pf_small(cu):
     return cu[:a] + k2 + cu[end:]
 
 
+def xw4(cu):
+    # Four warpgroups (4 x 64 output channels) share each 64-token X stage: heavy activation copies from
+    # L2 halve, per-thread registers and the per-warpgroup weight stream stay identical; one 512-thread
+    # CTA per SM (139 KiB ring at depth 4) replaces two 256-thread CTAs. sm_120 stand-in uses depth 2.
+    cu = once(cu, 'constexpr int KT=128,QB=4096,SB=512,WG=2;', 'constexpr int KT=128,QB=4096,SB=512,WG=4;')
+    cu = once(cu, 'template<int DEPTH,bool F>__global__ void __launch_bounds__(256,2) kernel(', 'template<int DEPTH,bool F>__global__ void __launch_bounds__(512,1) kernel(')
+    cu = once(cu, ' constexpr int S=BR_HOPPER?DEPTH:3,MT=F?64:32;', ' constexpr int S=BR_HOPPER?DEPTH:2,MT=F?32:16;')
+    cu = once(cu, 'mt*2+(threadIdx.x>>7),nullptr,nullptr,0x70007000u,red)', 'mt*4+(threadIdx.x>>7),nullptr,nullptr,0x70007000u,red)')
+    cu = once(cu, 'int bytes=major==9?chunk::dyn<S,64>():chunk::dyn<3,64>();', 'int bytes=major==9?chunk::dyn<S,64>():chunk::dyn<2,64>();')
+    cu = once(cu, '(depth==3?chunk::dyn<3,64>():chunk::dyn<4,64>()):chunk::dyn<3,64>();', '(depth==3?chunk::dyn<3,64>():chunk::dyn<4,64>()):chunk::dyn<2,64>();')
+    cu = once(cu, 'cudaOccupancyMaxActiveBlocksPerMultiprocessor(&n,chunk::kernel<S,F>,256,bytes)', 'cudaOccupancyMaxActiveBlocksPerMultiprocessor(&n,chunk::kernel<S,F>,512,bytes)')
+    cu = once(cu, 'chunk::kernel<S,F><<<grid,256,bytes,(cudaStream_t)stream>>>', 'chunk::kernel<S,F><<<grid,512,bytes,(cudaStream_t)stream>>>')
+    return cu
+
+
+def resh1(cu):
+    # One heavy CTA per SM on Hopper: the depth-4 ring is reserved at half the SM's shared memory, so a
+    # small (94 KiB) or up to three medium CTAs co-reside with each heavy CTA and stream while it computes.
+    pad = 'major==9?std::max(chunk::dyn<S,64>(),116736):chunk::dyn<3,64>()'
+    cu = once(cu, 'int bytes=major==9?chunk::dyn<S,64>():chunk::dyn<3,64>();cudaFuncAttributes a{};', 'int bytes=' + pad + ';cudaFuncAttributes a{};')
+    cu = once(cu, 'int bytes=major==9?(depth==3?chunk::dyn<3,64>():chunk::dyn<4,64>()):chunk::dyn<3,64>();',
+              'int bytes=major==9?std::max(depth==3?chunk::dyn<3,64>():chunk::dyn<4,64>(),116736):chunk::dyn<3,64>();')
+    return cu
+
+
+def co(cu):
+    # Co-schedule an expert's 64-row chunks: tasks are (expert, channel tile, chunk) with the chunk fastest,
+    # so adjacent CTAs read the same weight tile together and the reread hits L2 instead of HBM.
+    old = (' for(int u=blockIdx.x;u<32*MT;u+=gridDim.x){int e=ORDER[u/MT],mt=u%MT,n=C[e];if(n<=16)continue;\n'
+           '  for(int row=0;row<n;row+=64){int rem=min(n-row,64);\n')
+    new = (' __shared__ int chunks[33];\n if(threadIdx.x==0){int s=0;chunks[0]=0;for(int i=0;i<32;i++){int n=C[ORDER[i]];s+=n>16?(n+63)/64:0;chunks[i+1]=s;}}\n __syncthreads();\n'
+           ' for(int u=blockIdx.x;u<chunks[32]*MT;u+=gridDim.x){int ix=0;\n  for(int d=16;d;d>>=1)if(chunks[ix+d]*MT<=u)ix+=d;\n'
+           '  int nc=chunks[ix+1]-chunks[ix],rel=u-chunks[ix]*MT,mt=rel/nc,e=ORDER[ix],n=C[e];\n'
+           '  {int row=(rel%nc)*64,rem=min(n-row,64);\n')
+    return once(cu, old, new)
+
+
 ARMS = {
     'PF': dict(mechanism='L0N - PFN / weight bytes in flight: in-kernel L2 bulk prefetch of each branch weight stream ahead of its ring',
                P3B_CUDA=lambda cu: pf_small(pf_medium(pf_heavy(cu))), MT_PMZ_CUDA=pf_small),
+    'RESH1': dict(mechanism='RES1/RES3 + HISTN branch serialization: one heavy CTA per SM so small/medium CTAs stream beside heavy compute',
+                  P3B_CUDA=resh1),
+    'CO': dict(mechanism='L0N - REUSE / weight rereads: an expert\'s 64-row chunks run on adjacent CTAs so rereads share L2', P3B_CUDA=co),
+    'XW4': dict(mechanism='L0N - NOX / activation copies: four warpgroups share each heavy X stage (half the heavy L2 activation traffic), one 512-thread CTA/SM',
+                P3B_CUDA=xw4),
 }
 
 

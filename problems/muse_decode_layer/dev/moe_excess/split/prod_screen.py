@@ -17,8 +17,9 @@ def main():
     mode = 'forced' if forced else 'normal'
     screen = build.load(P / 'dev/s22/screen.py', 'p3b_split_screen')
     codec = build.load(P / 'dev/s21/evidence.py', 'p3b_night_codec')
-    manifest = json.loads((H / 'prod_manifest.json').read_text())
-    path = H / 'out/prod_wrapper.py'
+    tag = next(a for a in sys.argv[1:] if not a.startswith('--'))
+    manifest = json.loads((H / f'prod_manifest_{tag}.json').read_text())
+    path = H / f'out/prod_wrapper_{tag}.py'
     source = path.read_text()
     assert build.sha(source) == manifest['wrapper_sha256']
     module = types.ModuleType('submission')
@@ -34,7 +35,7 @@ def main():
             record = screen.install(m, forced)
             calls.append(record)
         module.S16_LOCAL_INSTALL = local
-        module.S21_LOCAL_ARCHIVE = lambda raw: (H / 'out' / ('prod_' + mode + '_raw.json')).write_text(json.dumps(raw))
+        module.S21_LOCAL_ARCHIVE = lambda raw: (H / 'out' / f'prod_{tag}_{mode}_raw.json').write_text(json.dumps(raw))
         original = module._lab_run_one
         def run(name, src, deadline, weights, state):
             try:
@@ -74,7 +75,7 @@ def main():
                   exact_tail_transport=True, wire_bytes=max(len(s.encode()) for s in emitted if s.startswith('LAB_PACKET ')),
                   elapsed_s=round(time.monotonic() - start, 2),
                   limitation='Local sm120/stand-ins; no native performance claim')
-    (H / ('prod_' + mode + '_validation.json')).write_text(json.dumps(result, indent=2) + '\n')
+    (H / f'prod_{tag}_{mode}_validation.json').write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps(result, indent=2))
 
 

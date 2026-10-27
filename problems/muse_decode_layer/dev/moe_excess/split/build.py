@@ -178,9 +178,11 @@ def main():
     runtime = (H / 'runtime.py.inc').read_text(); lab = (H / 'lab.py.inc').read_text()
     manifest = dict(source_sha256=sha(source), cuda_sha256=sha(cu), pmcuda_sha256=sha(pmcu), identities_sha256=sha(source + cu + pmcu),
                     weight_seeds=WEIGHT_SEEDS, seeds=SEEDS, rounds=4, payloads={})
-    for name in ('J', 'I'):
+    for name in ('J', 'I', 'I2'):
+        # I2's arm table follows the shared runtime, so the sent J and I payloads stay byte-identical.
+        extra = (H / 'arms_I2.py.inc').read_text() + '\n' if name == 'I2' else ''
         text = ('import base64,gc,hashlib,json,linecache,lzma,math,statistics,struct,time,types\nimport torch\n'
-                f'ARMSET={name!r}\nB=json.loads(lzma.decompress(base64.b85decode(' + blob + ')))\n' + helpers + '\n' + runtime + '\n' + lab)
+                f'ARMSET={name!r}\nB=json.loads(lzma.decompress(base64.b85decode(' + blob + ')))\n' + helpers + '\n' + runtime + '\n' + extra + lab)
         compile(text, f'<split-{name}>', 'exec')
         (out / f'split_{name}.py').write_text(text)
         manifest['payloads'][name] = sha(text)
