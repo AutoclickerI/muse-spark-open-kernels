@@ -1,6 +1,6 @@
 # S22 integration
 
-phase0 R 1.007814 [1.007209,1.008420] (`6a1303c1`); selected drop=['v16F'], disabled hybrids=[]; phase1 native G0 passes: R 1.009997 [1.009669,1.010326], prepare 179.87s (`0e1f9bc8`); official scored run sender 843359 pending.
+phase0 R 1.007814 [1.007209,1.008420] (`6a1303c1`); selected drop=['v16F'], disabled hybrids=[]; phase1 native G0 passes: R 1.009997 [1.009669,1.010326], prepare 179.87s (`0e1f9bc8`); official 1.8892x (`210d40e0`), TASK pass, frozen.
 
 Base is S21 `eacc087b` / expanded `109c0135`, frozen at official 1.8781x (`ec8cc95c`). Exact12 gate at d1S, native-layout T128 banks, C3 full d16/d32 and v32F Rw4 remain.
 Current shipment: `problems/muse_decode_layer/cand_r3_best7_s22p1_final.py` (phase 1).
@@ -49,4 +49,4 @@ Phase 1, job `0e1f9bc8474648bc`: R 1.009997 [1.009669,1.010326], prepare **179.8
 | d32S (hybrids) | 0.998739 | [0.997826,0.999653] |
 | v1S (hybrids) | 1.017728 | [1.016461,1.018997] |
 
-Official scored run sender 843359 is pending; no freeze before its TASK result.
+Frozen: phase 1 `problems/muse_decode_layer/cand_r3_best7_s22p1_final.py`, official **1.8892x** (job `210d40e0c9cb4b71`, checks ok); see [frozen.json](frozen.json).

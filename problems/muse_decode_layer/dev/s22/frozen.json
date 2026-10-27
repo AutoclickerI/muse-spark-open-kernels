@@ -1,0 +1,42 @@
+{
+  "name": "S22",
+  "phase": 1,
+  "expanded_sha256": "fd5e0ca2ef4bbc1128b04b68aa6802c9543b61808e7663ca5ad10ec4d957110b",
+  "shipped_sha256": "2287496067a3da750d43afd1943c12e69fb1d5337ce1c5e528d4b6c64649a6fd",
+  "file": "problems/muse_decode_layer/cand_r3_best7_s22p1_final.py",
+  "dropped_cells": [
+    "v16F"
+  ],
+  "disabled_hybrids": [],
+  "scored_job": "210d40e0c9cb4b71",
+  "scored_speedup": 1.8892111637813869,
+  "scored_interval": [
+    1.860872996324666,
+    1.9175493312381076
+  ],
+  "scored_receipt": "runs/muse_decode_layer/20261027T013731Z_submit_210d40e0c9cb4b71.json",
+  "official_prepare_s": 179.620857115,
+  "official_TASK_run": "210d40e0c9cb4b71 (checks ok)",
+  "confirmation_job": "0e1f9bc8474648bc",
+  "confirmation_host": "muse_bf16_proj import-time lab",
+  "R": 1.0099969751719673,
+  "CI95": [
+    1.0096685101221141,
+    1.01032554707797
+  ],
+  "loads": {
+    "decode 1": 0.9989518604050308,
+    "decode 16": 1.0488962049083397,
+    "decode 32": 1.0016403687540685,
+    "verify 1": 1.010312179791033,
+    "verify 16": 1.0008890859398583,
+    "verify 32": 1.0002072610013941
+  },
+  "over": "S21 109c0135/eacc087b",
+  "seeds": 64,
+  "rounds": 16,
+  "TASK_checks": 2752,
+  "nearby_TASK_checks": 260,
+  "prepare_s": 179.866187,
+  "licenses": "Lee v56 (Apache-2.0) and operatorstack (MIT) notices shipped, R-20261026-1"
+}
