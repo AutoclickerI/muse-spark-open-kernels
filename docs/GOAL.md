@@ -31,7 +31,7 @@ limit, which now binds.
 
 ## Decision rights
 - Pre-authorized: any change that improves the score within the rules (R-20261023-3, R-20261023-4).
-- Jihoon's alone: `okc login` and accepting the rules (CONSTRAINTS 1); making the repo public (R-20261023-2).
+- Jihoon's alone: `okc login` and accepting the rules (CONSTRAINTS 1); the repo's visibility (public, R-20261103-1).
 
 ## Terms
 - **decode load** `decode N`: N requests, q_len 1. **verify load** `verify N`: N requests x 8 tokens.

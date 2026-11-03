@@ -1,1 +1,5 @@
 runs/ledger.jsonl merge=union
+
+# Readable split of the scored decode layer: build.py check compares bytes, so no line-ending conversion
+final/muse_decode_layer/** -text
+problems/muse_decode_layer/cand_r3_best7_s22p1_final.py -text

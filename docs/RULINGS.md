@@ -5,12 +5,6 @@ G0 and ranking decisions, answers to agents' questions. Ids are `R-<YYYYMMDD>-<n
 question-tool label is Jihoon's word; the question and option text are agent context. Transcript:
 `~/.claude/projects/-home-jihoon-competitions-muse-kernel/ae5ada91-d8f5-49d0-a518-22df30a603ba.jsonl`.
 
-## R-20261023-2 — 2026-10-23 14:37 KST — private GitHub repo
-> Private GitHub repo (Recommended)
-
-- Source: transcript:147. Answered "Where should the repo live?"
-- Effect: the repo is github.com/AutoclickerI/muse_kernel, private (RESOURCES).
-
 ## R-20261023-3 — 2026-10-23 16:48 KST — anything within the rules; no H200 rental
 > you can do anything that can improve performance within our spec. I cannot rent H200.
 
@@ -141,6 +135,15 @@ question-tool label is Jihoon's word; the question and option text are agent con
 - Effect: both repos' code may be reviewed, run in our H200 labs and shipped in our decode layer, keeping the MIT
   notice, or the Apache-2.0 license and any NOTICE text, in the shipped source. Other teams' code is still asked case
   by case.
+
+## R-20261103-1 — 2026-11-03 21:15 KST — public repo with its full history
+> I want to open it now. so, clean up the repo. make it readable, and open to public.
+
+- Source: Claude Code session `0045ab8f-54dd-41a4-8c54-fd714e9ef389`. Question-tool answers: "Publish with history",
+  "Now, include serving (Recommended)", and for scope "showcase. but you don't have to clean up the repo research
+  logs. we can just keep the logs as-is."
+- Effect: github.com/AutoclickerI/muse_kernel is public with its full history. README.md and `final/` are the front
+  door; the research logs stay as they were. Replaces R-20261023-2 of 2026-10-23 ("Private GitHub repo").
 
 ## Dropped agent rules (do not reintroduce)
 
